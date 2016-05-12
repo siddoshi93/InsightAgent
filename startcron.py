@@ -42,7 +42,7 @@ def sshDeploy(retry):
             s.login (host, user, ssh_key=password, original_prompt='[#$]')
         else:
             s.login (host, user, password, original_prompt='[#$]')
-        command="cd InsightAgent-master && sudo ./install.sh -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type
+        command="cd InsightAgent-staging && sudo ./install.sh -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type
         s.sendline (command)
         res = s.expect( expectations )
         if res == 0:
@@ -79,7 +79,7 @@ def get_args():
     parser.add_argument(
         '-t', '--AGENT_TYPE', type=str, help='Agent type: proc or docker', choices=['proc', 'docker'], required=True)
     parser.add_argument(
-        '-p', '--PASSWORD', type=str, help='Password or private key file path for ssh to hosts', required=True)
+        '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
     user_insightfinder = args.USER_NAME_IN_INSIGHTFINDER

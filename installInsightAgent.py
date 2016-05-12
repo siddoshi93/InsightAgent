@@ -41,7 +41,7 @@ def sshInstall(retry):
             s.login (host, user, ssh_key=password, original_prompt='[#$]')
         else:
             s.login (host, user, password, original_prompt='[#$]')
-        s.sendline ('sudo rm -rf insightagent* InsightAgent-master')
+        s.sendline ('sudo rm -rf insightagent* InsightAgent-staging')
         res = s.expect( expectations )
         #res = s.expect(["Password:", pexpect.EOF, pexpect.TIMEOUT])
         if res == 0:
@@ -52,13 +52,13 @@ def sshInstall(retry):
             return sshInstall(retry-1)
         s.prompt()
         print(s.before)
-        s.sendline ('wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/master.tar.gz -O insightagent.tar.gz')
+        s.sendline ('wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/staging.tar.gz -O insightagent.tar.gz')
         s.prompt()         
         print(s.before)
         s.sendline ('tar xzvf insightagent.tar.gz')       # run a command
         s.prompt()                    # match the prompt
         print(s.before)               # print everything before the prompt.
-        s.sendline ('cd InsightAgent-master && sudo python checkpackages.py')
+        s.sendline ('cd InsightAgent-staging && sudo python checkpackages.py')
         s.prompt()                    # match the prompt
         print(s.before)               # print everything before the prompt.
         s.logout()
