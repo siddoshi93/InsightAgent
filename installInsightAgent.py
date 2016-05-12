@@ -33,7 +33,8 @@ def sshInstall(retry):
            'No route to host',
            'Network is unreachable',
            'failure in name resolution',
-           'No space left on device'
+           'No space left on device',
+           '[sudo] password for %s: '%user
           ]
     try:
         s = pxssh.pxssh()
@@ -41,10 +42,10 @@ def sshInstall(retry):
             s.login (host, user, ssh_key=password, original_prompt='[#$]')
         else:
             s.login (host, user, password, original_prompt='[#$]')
-        s.sendline ('sudo rm -rf insightagent* InsightAgent-staging')
+        s.sendline ('sudo rm -rf insightagent* InsightAgent*')
         res = s.expect( expectations )
         #res = s.expect(["Password:", pexpect.EOF, pexpect.TIMEOUT])
-        if res == 0:
+        if res == 0 or res == 12:
             s.sendline(password)
         if res >= 4:
             s.prompt()
