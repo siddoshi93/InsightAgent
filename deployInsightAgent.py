@@ -65,7 +65,9 @@ if __name__ == '__main__':
     proc = subprocess.Popen(["sudo python "+os.path.join(homepath,"checkpackages.py")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "failed" in str(err) or "ERROR" in str(err):
-        sys.exit(err)
+        print err
+        print "Dependencies are missing. Please install the dependencies as stated in README"
+        sys.exit()
 
     user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type = get_args()
     retryOptionAttempts = 3
