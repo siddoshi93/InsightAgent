@@ -9,10 +9,11 @@ import argparse
 import re
 import paramiko
 import socket
+import Queue
+import threading
 
-def sshDeploy(retry):
+def sshDeploy(retry,hostname):
     global user
-    global host
     global password
     global user_insightfinder
     global license_key
@@ -21,8 +22,10 @@ def sshDeploy(retry):
     global agent_type
     global expectations
     if retry == 0:
-        return False
-
+        print "Deploy Fail in", hostname
+        q.task_done()
+        return
+    print "Start deploying agent in", hostname, "..."
     try:
         s = paramiko.SSHClient()
         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -42,16 +45,18 @@ def sshDeploy(retry):
         stdin.flush()
         session.recv_exit_status() #wait for exec_command to finish
         s.close()
-        return True
+        print "Deploy Succeed in", hostname
+        q.task_done()
+        return
     except paramiko.SSHException, e:
-        print "Password is invalid:" , e
-        return sshDeploy(retry-1)
+        print "Invalid Username/Password for %s:"%hostname , e
+        return sshDeploy(retry-1,hostname)
     except paramiko.AuthenticationException:
-        print "Authentication failed for some reason"
-        return sshDeploy(retry-1)
+        print "Authentication failed for some reason in %s"%hostname
+        return sshDeploy(retry-1,hostname)
     except socket.error, e:
-        print "Socket connection failed:", e
-        return sshDeploy(retry-1)
+        print "Socket connection failed in %s:"%hostname, e
+        return sshDeploy(retry-1,hostname)
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -83,7 +88,6 @@ def get_args():
 
 if __name__ == '__main__':
     global user
-    global host
     global password
     global hostfile
     global user_insightfinder
@@ -93,21 +97,22 @@ if __name__ == '__main__':
     global agent_type
     hostfile="hostlist.txt"
     user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type, password = get_args()
-    stat=True
+    q = Queue.Queue()
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:
             while True:
                 line = f.readline()
                 if line:
                     host=line.split("\n")[0]
-                    print "Start deploying agent in", host, "..."
-                    stat = sshDeploy(3)
-                    if stat:
-                        print "Deploy Succeed in", host
-                    else:
-                        print "Deploy Fail in", host
+                    q.put(host)
                 else:
                     break
+            while q.empty() != True:
+                host = q.get()
+                t = threading.Thread(target=sshDeploy, args=(3,host,))
+                t.daemon = True
+                t.start()
+            q.join()
     except (KeyboardInterrupt, SystemExit):
         print "Keyboard Interrupt!!"
         sys.exit()
