@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
-import pexpect
 import sys
 import time
 import os
-from pexpect import pxssh
 import getpass
 import getopt
 import argparse
 import re
+import paramiko
+import socket
 
 def sshDeploy(retry):
     global user
@@ -23,45 +23,35 @@ def sshDeploy(retry):
     if retry == 0:
         return False
 
-    expectations = ['password for %s: '%user,
-           '',
-           'continue (yes/no)?',
-           pexpect.EOF,
-           pexpect.TIMEOUT,
-           'Name or service not known',
-           'Permission denied',
-           'No such file or directory',
-           'No route to host',
-           'Network is unreachable',
-           'failure in name resolution',
-           'No space left on device'
-          ]
     try:
-        s = pxssh.pxssh()
+        s = paramiko.SSHClient()
+        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         if os.path.isfile(password) == True:
-            s.login (host, user, ssh_key=password, original_prompt='[#$]')
+            s.connect(host, username=user, key_filename = password, timeout=60)
         else:
-            s.login (host, user, password, original_prompt='[#$]')
-        command="cd InsightAgent-staging && sudo ./install.sh -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type
-        s.sendline (command)
-        res = s.expect( expectations )
-        if res == 0:
-            s.sendline(password)
-        if res >= 4:
-            s.prompt()
-            s.logout()
-            return sshDeploy(retry-1)
-        s.prompt()
-        print(s.before)
-        s.logout()
+            s.connect(host, username=user, password = password, timeout=60)
+        transport = s.get_transport()
+        session = transport.open_session()
+        session.set_combine_stderr(True)
+        session.get_pty()
+        command="cd InsightAgent-master && sudo ./install.sh -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type
+        session.exec_command(command)
+        stdin = session.makefile('wb', -1)
+        stdout = session.makefile('rb', -1)
+        stdin.write(password+'\n')
+        stdin.flush()
+        session.recv_exit_status() #wait for exec_command to finish
+        s.close()
         return True
-    except pxssh.ExceptionPxssh as e:
-        print(e)
-        if 'synchronize with original prompt' in str(e):
-            time.sleep(1)
-            return sshInstall(retry-1)
-        else:
-            return False
+    except paramiko.SSHException, e:
+        print "Password is invalid:" , e
+        return sshDeploy(retry-1)
+    except paramiko.AuthenticationException:
+        print "Authentication failed for some reason"
+        return sshDeploy(retry-1)
+    except socket.error, e:
+        print "Socket connection failed:", e
+        return sshDeploy(retry-1)
 
 def get_args():
     parser = argparse.ArgumentParser(
