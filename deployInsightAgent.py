@@ -101,4 +101,4 @@ if __name__ == '__main__':
     proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
-    print datetime.datetime.now().time().isoformat(), " : Deployment Complete"
+    print datetime.datetime.now().time().isoformat() + " : Deployment Complete"
