@@ -2,7 +2,7 @@
 import pip
 import os
 
-required_packages = ["pexpect","requests"]
+required_packages = ["paramiko","requests"]
 
 installed_packages = pip.get_installed_distributions()
 flat_installed_packages = [package.project_name for package in installed_packages]
