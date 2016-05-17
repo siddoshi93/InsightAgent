@@ -30,9 +30,9 @@ def sshDeploy(retry,hostname):
         s = paramiko.SSHClient()
         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         if os.path.isfile(password) == True:
-            s.connect(host, username=user, key_filename = password, timeout=60)
+            s.connect(hostname, username=user, key_filename = password, timeout=60)
         else:
-            s.connect(host, username=user, password = password, timeout=60)
+            s.connect(hostname, username=user, password = password, timeout=60)
         transport = s.get_transport()
         session = transport.open_session()
         session.set_combine_stderr(True)
