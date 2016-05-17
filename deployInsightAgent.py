@@ -51,25 +51,7 @@ if __name__ == '__main__':
     os.chmod("installInsightAgent.py",0755)
     os.chmod("startcron.py",0755)
     user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type = get_args()
-    retryOptionAttempts = 3
-    retryKeyAttempts = 3
-    while retryOptionAttempts:
-        passOrKey = raw_input("Enter one of the option:\n[p] for password authentiication\n[k] for key based authentication\n")
-        if passOrKey == 'p':
-            password=getpass.getpass("Enter %s's password for the deploying hosts:"%user)
-            break
-        elif passOrKey == 'k':
-            password = raw_input("Enter name of identify file with path:")
-            while os.path.isfile(password) == False and retryKeyAttempts != 0:
-                retryKeyAttempts-=1
-                password = raw_input("Invalid file/filepath. Please Enter again:")
-            break
-        else:
-            retryOptionAttempts-=1
-            continue
-    if retryOptionAttempts == 0 or retryKeyAttempts == 0:
-        print "Retry attempts exceeded. Exiting now"
-        sys.exit()
+    password=getpass.getpass("Enter %s's password for the deploying hosts:"%user)
     stat=True
     print "Starting Installation"
     proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
