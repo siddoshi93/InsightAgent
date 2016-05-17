@@ -1,5 +1,14 @@
 # InsightAgent
 
+Requirements:
+For Debian and Ubuntu, the following command will ensure that the required dependencies are installed:
+
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+
+For Fedora and RHEL-derivatives, the following command will ensure that the required dependencies are installed:
+
+sudo yum install gcc libffi-devel python-devel openssl-devel
+
 ###### To deploy agent on multiple hosts:
 
 - Get the deployment script from github using below command:
