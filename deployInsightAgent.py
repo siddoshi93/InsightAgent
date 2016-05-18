@@ -5,7 +5,7 @@ import getpass
 import subprocess
 import os
 import sys
-
+import datetime
 '''
 This script will start two scripts for deploying insightagent to hosts
 '''
@@ -89,13 +89,16 @@ if __name__ == '__main__':
         print "Retry attempts exceeded. Exiting now"
         sys.exit()
     stat=True
+    print datetime.datetime.now().time().isoformat() + " : Starting stage1 deployment"
     print "Starting Installation"
     proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "error" in out:
         sys.exit(out)
     print out
+    print datetime.datetime.now().time().isoformat() + " : Starting stage2 deployment"
     print "Proceeding to Deployment"
     proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
+    print datetime.datetime.now().time().isoformat() + " : Deployment Complete"
