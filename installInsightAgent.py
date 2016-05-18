@@ -53,7 +53,7 @@ def sshInstall(retry,hostname):
         print "Invalid Username/Password for %s:"%hostname , e
         return sshInstall(retry-1,hostname)
     except paramiko.AuthenticationException:
-        print "Authentication failed for some reason in %s"%hostname
+        print "Authentication failed for some reason in %s:"%hostname
         return sshInstall(retry-1,hostname)
     except socket.error, e:
         print "Socket connection failed in %s:"%hostname, e

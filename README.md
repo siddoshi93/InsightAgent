@@ -1,6 +1,6 @@
 # InsightAgent
 
-Requirements:
+###### Pre-requisites:
 For Debian and Ubuntu, the following command will ensure that the required dependencies are installed:
 
 sudo apt-get install build-essential libssl-dev libffi-dev python-dev
