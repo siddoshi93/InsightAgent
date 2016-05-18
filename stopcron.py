@@ -52,34 +52,17 @@ def get_args():
         description='Script retrieves arguments for stopping insightfinder agent.')
     parser.add_argument(
         '-n', '--USER_NAME_IN_HOST', type=str, help='User Name in Hosts', required=True)
+    parser.add_argument(
+        '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
-    return user
+    password = args.PASSWORD
+    return user, password
 
 if __name__ == '__main__':
     hostfile="hostlist.txt"
     q = Queue.Queue()
-    user = get_args()
-
-    retryOptionAttempts = 3
-    retryKeyAttempts = 3
-    while retryOptionAttempts:
-        passOrKey = raw_input("Enter one of the option:\n[p] for password authentiication\n[k] for key based authentication\n")
-        if passOrKey == 'p':
-            password=getpass.getpass("Enter %s's password for the deploying hosts:"%user)
-            break
-        elif passOrKey == 'k':
-            password = raw_input("Enter name of identify file with path:")
-            while os.path.isfile(password) == False and retryKeyAttempts != 0:
-                retryKeyAttempts-=1
-                password = raw_input("Invalid file/filepath. Please Enter again:")
-            break
-        else:
-            retryOptionAttempts-=1
-            continue
-    if retryOptionAttempts == 0 or retryKeyAttempts == 0:
-        print "Retry attempts exceeded. Exiting now"
-        sys.exit()
+    user, password = get_args()
 
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:

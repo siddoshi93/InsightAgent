@@ -36,12 +36,16 @@ Example: /home/insight/.ssh/id_rsa
 python deployInsightAgent.py -h
 ```
 
-###### To stop agent on multiple hosts:
-Get the script for stopping agents from github using below command:
+###### To manually stop agent on multiple hosts:
+- Get the script for stopping agents from github using below command:
 ```
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/stopcron.py
 ```
 
+- To stop the agent run the following command:
+python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
+
+#
 ###### To install agent on local machine:
 ```
 ./install.sh -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
