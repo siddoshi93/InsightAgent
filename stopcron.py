@@ -8,6 +8,7 @@ import paramiko
 import socket
 import Queue
 import threading
+import time
 
 def sshStopCron(retry,hostname):
     global user
@@ -27,7 +28,8 @@ def sshStopCron(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        session.exec_command("sudo rm /etc/cron.d/ifagent\n")
+        command = "sudo mv /etc/cron.d/ifagent InsightAgent-master/ifagent."+time.strftime("%Y%m%d%H%M%S")+"\n"
+        session.exec_command(command)
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
         stdin.write(password+'\n')
