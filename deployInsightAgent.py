@@ -5,7 +5,7 @@ import getpass
 import subprocess
 import os
 import sys
-
+import datetime
 '''
 This script will start two scripts for deploying insightagent to hosts
 '''
@@ -48,18 +48,57 @@ if __name__ == '__main__':
     (out,err) = proc.communicate()
     if "failed" in str(err) or "ERROR" in str(err):
         sys.exit(err)
+    proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/staging/checkpackages.py", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        sys.exit(err)
+    proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/staging/get-pip.py", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        sys.exit(err)
     os.chmod("installInsightAgent.py",0755)
     os.chmod("startcron.py",0755)
+    os.chmod("checkpackages.py",0755)
+    os.chmod("get-pip.py",0755)
+
+    #Check if required packages are installed
+    proc = subprocess.Popen(["sudo python "+os.path.join(homepath,"checkpackages.py")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        print "Dependencies are missing. Please install the dependencies as stated in README"
+        sys.exit()
+
     user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type = get_args()
-    password=getpass.getpass("Enter %s's password for the deploying hosts:"%user)
+    retryOptionAttempts = 3
+    retryKeyAttempts = 3
+    while retryOptionAttempts:
+        passOrKey = raw_input("Enter one of the option:\n[p] for password authentiication\n[k] for key based authentication\n")
+        if passOrKey == 'p':
+            password=getpass.getpass("Enter %s's password for the deploying hosts:"%user)
+            break
+        elif passOrKey == 'k':
+            password = raw_input("Enter name of identify file with path:")
+            while os.path.isfile(password) == False and retryKeyAttempts != 0:
+                retryKeyAttempts-=1
+                password = raw_input("Invalid file/filepath. Please Enter again:")
+            break
+        else:
+            retryOptionAttempts-=1
+            continue
+    if retryOptionAttempts == 0 or retryKeyAttempts == 0:
+        print "Retry attempts exceeded. Exiting now"
+        sys.exit()
     stat=True
+    print datetime.datetime.now().time().isoformat() + " : Starting stage1 deployment"
     print "Starting Installation"
     proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "error" in out:
         sys.exit(out)
     print out
+    print datetime.datetime.now().time().isoformat() + " : Starting stage2 deployment"
     print "Proceeding to Deployment"
     proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
+    print datetime.datetime.now().time().isoformat() + " : Deployment Complete"
