@@ -23,7 +23,7 @@ else:
     homepath = options.homepath
 datadir = 'data/'
 
-hostname="hgcc07.csc.ncsu.edu"
+hostname=socket.gethostname()
 cAdvisoraddress = "http://"+hostname+":8080/api/v1.3/docker/"
 
 counter_time_map = {}
@@ -34,13 +34,20 @@ dockers = []
 num_apache = 0
 num_sql = 0
 
+def getindex(colName):
+    if colName == "WEB_CPU_utilization#%" or colName == "DB_CPU_utilization#%":
+	return 1
+    elif colName == "WEB_DiskRead#MB" or colName == "DB_DiskRead#MB" or colName == "WEB_DiskWrite#MB" or colName == "DB_DiskWrite#MB":
+	return 2
+    elif colName == "WEB_NetworkIn#MB" or colName == "DB_NetworkIn#MB" or colName == "WEB_NetworkOut#MB" or colName == "DB_NetworkOut#MB":
+	return 3
+    elif colName == "WEB_MemUsed#MB" or colName == "DB_MemUsed#MB":
+	return 4
+
 def update_docker():
     global dockers
     global num_apache
     global num_sql
-
-    proc = subprocess.Popen(["source /home/ting/openrc.sh"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
 
     proc = subprocess.Popen(["sudo docker ps --no-trunc | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
@@ -102,15 +109,15 @@ def getmetric():
                 for j in range(prev_block_num):
                     prev_io_read += r.json()["/docker/"+dockers[i]]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
                     prev_io_write += r.json()["/docker/"+dockers[i]]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
-                io_read = float((curr_io_read - prev_io_read)/1024) #KB
-                io_write = float((curr_io_write - prev_io_write)/1024) #KB
+                io_read = float((curr_io_read - prev_io_read)/(1024*1024)) #MB
+                io_write = float((curr_io_write - prev_io_write)/(1024*1024)) #MB
                 #get network
                 prev_network_t = r.json()["/docker/"+dockers[i]]["stats"][index-1]["network"]["tx_bytes"]
                 prev_network_r = r.json()["/docker/"+dockers[i]]["stats"][index-1]["network"]["rx_bytes"]
                 curr_network_t = r.json()["/docker/"+dockers[i]]["stats"][index]["network"]["tx_bytes"]
                 curr_network_r = r.json()["/docker/"+dockers[i]]["stats"][index]["network"]["rx_bytes"]
-                network_t = float((curr_network_t - prev_network_t)/1024) #KB
-                network_r = float((curr_network_r - prev_network_r)/1024) #KB
+                network_t = float((curr_network_t - prev_network_t)/(1024*1024)) #MB
+                network_r = float((curr_network_r - prev_network_r)/(1024*1024)) #MB
                 log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
 
             print log #is it possible that print too many things?
@@ -119,7 +126,7 @@ def getmetric():
             resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
             numlines = len(resource_usage_file.readlines())
             if(numlines < 1):
-		fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#KB","WEB_DiskWrite#KB","WEB_NetworkIn#KB","WEB_NetworkOut#KB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#KB","DB_DiskWrite#KB","DB_NetworkIn#KB","DB_NetworkOut#KB","DB_MemUsed#MB"]
+		fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#MB","WEB_DiskWrite#MB","WEB_NetworkIn#MB","WEB_NetworkOut#MB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#MB","DB_DiskWrite#MB","DB_NetworkIn#MB","DB_NetworkOut#MB","DB_MemUsed#MB"]
 		fieldnames = fields[0]
 		host = hostname.partition(".")[0]
 		for i in range(1,len(fields)):
@@ -127,7 +134,8 @@ def getmetric():
 			continue
 		    if(fieldnames != ""):
 			fieldnames = fieldnames + ","
-		    fieldnames = fieldnames+fields[i] + "[" +host+"]"+":"+str(i%7)
+		    groupid = getindex(fields[i])
+		    fieldnames = fieldnames+fields[i] + "[" +host+"]"+":"+str(groupid)
 		resource_usage_file.write("%s\n"%(fieldnames))
             resource_usage_file.write("%s\n" % (writelog))
             resource_usage_file.flush()
