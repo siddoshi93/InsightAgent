@@ -154,7 +154,7 @@ else:
     json_data = json.dumps(alldata)
     print json_data
     print str(len(bytearray(json_data))) + " bytes data are reported"
-    url = 'https://insightfinderstaging.appspot.com/customprojectrawdata'
+    url = 'https://insightfindergae.appspot.com/customprojectrawdata'
     response = requests.post(url, data=json.loads(json_data))
 
 #old file cleaning
