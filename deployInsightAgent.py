@@ -5,7 +5,7 @@ import getpass
 import subprocess
 import os
 import sys
-import datetime
+
 '''
 This script will start two scripts for deploying insightagent to hosts
 '''
@@ -20,12 +20,12 @@ def get_args():
     parser.add_argument('-t', '--AGENT_TYPE', type=str, help='Agent type: proc or docker', choices=['proc', 'docker'],required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
-    user_insightfinder = args.USER_NAME_IN_INSIGHTFINDER
-    license_key = args.LICENSE_KEY
-    sampling_interval = args.SAMPLING_INTERVAL_MINUTE
-    reporting_interval = args.REPORTING_INTERVAL_MINUTE
-    agent_type = args.AGENT_TYPE
-    return user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type
+    userInsightfinder = args.USER_NAME_IN_INSIGHTFINDER
+    licenseKey = args.LICENSE_KEY
+    samplingInterval = args.SAMPLING_INTERVAL_MINUTE
+    reportingInterval = args.REPORTING_INTERVAL_MINUTE
+    agentType = args.AGENT_TYPE
+    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType
 
 
 if __name__ == '__main__':
@@ -33,11 +33,11 @@ if __name__ == '__main__':
     global host
     global password
     global hostfile
-    global user_insightfinder
-    global license_key
-    global sampling_interval
-    global reporting_interval
-    global agent_type
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
+    global agentType
 
     homepath = os.getcwd()
     proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/installInsightAgent.py", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         print "Dependencies are missing. Please install the dependencies as stated in README"
         sys.exit()
 
-    user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type = get_args()
+    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType = get_args()
     retryOptionAttempts = 3
     retryKeyAttempts = 3
     while retryOptionAttempts:
@@ -88,17 +88,13 @@ if __name__ == '__main__':
     if retryOptionAttempts == 0 or retryKeyAttempts == 0:
         print "Retry attempts exceeded. Exiting now"
         sys.exit()
-    stat=True
-    print datetime.datetime.now().time().isoformat() + " : Starting stage1 deployment"
     print "Starting Installation"
-    proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "error" in out:
         sys.exit(out)
     print out
-    print datetime.datetime.now().time().isoformat() + " : Starting stage2 deployment"
     print "Proceeding to Deployment"
-    proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
-    print datetime.datetime.now().time().isoformat() + " : Deployment Complete"

@@ -15,11 +15,10 @@ import threading
 def sshInstall(retry,hostname):
     global user
     global password
-    global user_insightfinder
-    global license_key
-    global sampling_interval
-    global reporting_interval
-    global expectations
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
     if retry == 0:
         print "Install Fail in", hostname
         q.task_done()
@@ -76,24 +75,24 @@ def get_args():
         '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
-    user_insightfinder = args.USER_NAME_IN_INSIGHTFINDER
-    license_key = args.LICENSE_KEY
-    sampling_interval = args.SAMPLING_INTERVAL_MINUTE
-    reporting_interval = args.REPORTING_INTERVAL_MINUTE
+    userInsightfinder = args.USER_NAME_IN_INSIGHTFINDER
+    licenseKey = args.LICENSE_KEY
+    samplingInterval = args.SAMPLING_INTERVAL_MINUTE
+    reportingInterval = args.REPORTING_INTERVAL_MINUTE
     password = args.PASSWORD
-    return user, user_insightfinder, license_key, sampling_interval, reporting_interval, password
+    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, password
 
 
 if __name__ == '__main__':
     global user
     global password
     global hostfile
-    global user_insightfinder
-    global license_key
-    global sampling_interval
-    global reporting_interval
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
     hostfile="hostlist.txt"
-    user, user_insightfinder, license_key, sampling_interval, reporting_interval, password = get_args()
+    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, password = get_args()
     q = Queue.Queue()
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:

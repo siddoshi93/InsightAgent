@@ -15,12 +15,11 @@ import threading
 def sshDeploy(retry,hostname):
     global user
     global password
-    global user_insightfinder
-    global license_key
-    global sampling_interval
-    global reporting_interval
-    global agent_type
-    global expectations
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
+    global agentType
     if retry == 0:
         print "Deploy Fail in", hostname
         q.task_done()
@@ -37,7 +36,7 @@ def sshDeploy(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        command="cd InsightAgent-testing && sudo ./install.sh -u "+user_insightfinder+" -k "+license_key+" -s "+sampling_interval+" -r "+reporting_interval+" -t "+agent_type
+        command="cd InsightAgent-testing && sudo ./install.sh -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         session.exec_command(command)
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
@@ -77,26 +76,26 @@ def get_args():
         '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
-    user_insightfinder = args.USER_NAME_IN_INSIGHTFINDER
-    license_key = args.LICENSE_KEY
-    sampling_interval = args.SAMPLING_INTERVAL_MINUTE
-    reporting_interval = args.REPORTING_INTERVAL_MINUTE
-    agent_type = args.AGENT_TYPE
+    userInsightfinder = args.USER_NAME_IN_INSIGHTFINDER
+    licenseKey = args.LICENSE_KEY
+    samplingInterval = args.SAMPLING_INTERVAL_MINUTE
+    reportingInterval = args.REPORTING_INTERVAL_MINUTE
+    agentType = args.AGENT_TYPE
     password = args.PASSWORD
-    return user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type, password
+    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password
 
 
 if __name__ == '__main__':
     global user
     global password
     global hostfile
-    global user_insightfinder
-    global license_key
-    global sampling_interval
-    global reporting_interval
-    global agent_type
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
+    global agentType
     hostfile="hostlist.txt"
-    user, user_insightfinder, license_key, sampling_interval, reporting_interval, agent_type, password = get_args()
+    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password = get_args()
     q = Queue.Queue()
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:
