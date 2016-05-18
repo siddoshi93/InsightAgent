@@ -28,11 +28,41 @@ def get_args():
     return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType
 
 downloadFiles = ["installInsightAgent.py", "startcron.py", "checkpackages.py", "get-pip.py"]
+homepath = os.getcwd()
+
+def removeFile(filename):
+    proc = subprocess.Popen("rm "+filename+"*", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
 
 def clearDownloads():
     for eachFile in downloadFiles:
-        proc = subprocess.Popen("rm "+eachFile, cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        (out,err) = proc.communicate()
+        removeFile(eachFile)
+
+def downloadFile(filename):
+    proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/"+filename, cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        sys.exit(err)
+    os.chmod(filename,0755)
+
+def downloadRequiredFiles():
+    for eachFile in downloadFiles:
+        downloadFile(eachFile)
+
+def stopCron():
+    global user
+    global password
+    removeFile("stopcron.py")
+    proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/stopcron.py", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        print "Can't download stopcron.py"
+        return
+    os.chmod("stopcron.py",0755)
+    proc = subprocess.Popen(["sudo python "+os.path.join(homepath,"stopcron.py")+" -n "+user+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "error" in str(err):
+        print "Can't stop agent in some machines"
 
 if __name__ == '__main__':
     global user
@@ -44,21 +74,6 @@ if __name__ == '__main__':
     global samplingInterval
     global reportingInterval
     global agentType
-
-    homepath = os.getcwd()
-    for eachFile in downloadFiles:
-        proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/"+eachFile, cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        (out,err) = proc.communicate()
-        if "failed" in str(err) or "ERROR" in str(err):
-            sys.exit(err)
-        os.chmod(eachFile,0755)
-
-    #Check if required packages are installed
-    proc = subprocess.Popen(["sudo python "+os.path.join(homepath,"checkpackages.py")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    (out,err) = proc.communicate()
-    if "failed" in str(err) or "ERROR" in str(err):
-        print "Dependencies are missing. Please install the dependencies as stated in README"
-        sys.exit()
 
     user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType = get_args()
     retryOptionAttempts = 3
@@ -80,6 +95,18 @@ if __name__ == '__main__':
     if retryOptionAttempts == 0 or retryKeyAttempts == 0:
         print "Retry attempts exceeded. Exiting now"
         sys.exit()
+
+    stopCron()
+    clearDownloads()
+    downloadRequiredFiles()
+
+    #Check if required packages are installed
+    proc = subprocess.Popen(["sudo python "+os.path.join(homepath,"checkpackages.py")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        print "Dependencies are missing. Please install the dependencies as stated in README"
+        sys.exit()
+
     print "Starting Installation"
     proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
@@ -90,4 +117,3 @@ if __name__ == '__main__':
     proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
-    clearDownloads()
