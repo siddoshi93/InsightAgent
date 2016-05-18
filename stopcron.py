@@ -28,7 +28,7 @@ def sshStopCron(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        command = "sudo mv /etc/cron.d/ifagent InsightAgent-master/ifagent."+time.strftime("%Y%m%d%H%M%S")+"\n"
+        command = "sudo mv /etc/cron.d/ifagent InsightAgent-testing/ifagent."+time.strftime("%Y%m%d%H%M%S")+"\n"
         session.exec_command(command)
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
