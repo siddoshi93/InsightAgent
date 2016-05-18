@@ -13,7 +13,7 @@ sudo yum install gcc libffi-devel python-devel openssl-devel
 
 - Get the deployment script from github using below command:
 ```
-wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/deployInsightAgent.py
+wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/staging/deployInsightAgent.py
 ```
 - Include IP address of all hosts in hostlist.txt and enter one IP address per line.
 - To deploy run the following command:
@@ -34,6 +34,17 @@ Example: /home/insight/.ssh/id_rsa
 ###### To get more details on the command, run 
 ```
 python deployInsightAgent.py -h
+```
+
+###### To manually stop agent on multiple hosts:
+- Get the script for stopping agents from github using below command:
+```
+wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/staging/stopcron.py
+```
+
+- To stop the agent run the following command:
+```
+python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
 ```
 
 ###### To install agent on local machine:
