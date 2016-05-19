@@ -120,5 +120,3 @@ if __name__ == '__main__':
     except IOError as e:
         print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
         sys.exit()
-    except:
-        print "Unexpected error in %s:"%host
