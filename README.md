@@ -10,7 +10,7 @@ For Fedora and RHEL-derivatives, the following command will ensure that the requ
 
 sudo yum install gcc libffi-devel python-devel openssl-devel
 
-For AGENT_TYPE = ccm, cAdvisor should be running in all hosts.
+For AGENT_TYPE = cadvisor, cAdvisor should be running in all hosts.
 - To run cAdvisor use
 ```
 sudo docker run \
@@ -41,7 +41,7 @@ python deployInsightAgent.py -n USER_NAME_IN_HOST
                              -r REPORTING_INTERVAL_MINUTE 
                              -t AGENT_TYPE
 ```
-Currently, AGENT_TYPE can be *proc* or *ccm*.
+Currently, AGENT_TYPE can be *proc* or *cadvisor*.
 
 When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
 Example: /home/insight/.ssh/id_rsa
