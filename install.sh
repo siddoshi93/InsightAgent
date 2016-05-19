@@ -34,7 +34,7 @@ while [ "$1" != "" ]; do
 	shift
 done
 
-if [ $AGENT_TYPE != 'proc' ] && [ $AGENT_TYPE != 'ccm' ]; then
+if [ $AGENT_TYPE != 'proc' ] && [ $AGENT_TYPE != 'cadvisor' ]; then
 	usage
 	exit 1
 fi
