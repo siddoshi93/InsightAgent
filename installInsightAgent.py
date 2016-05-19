@@ -57,6 +57,8 @@ def sshInstall(retry,hostname):
     except socket.error, e:
         print "Socket connection failed in %s:"%hostname, e
         return sshInstall(retry-1,hostname)
+    except:
+        print "Unexpected error in %s:"%hostname
 
 def get_args():
     parser = argparse.ArgumentParser(
@@ -115,3 +117,5 @@ if __name__ == '__main__':
     except IOError as e:
         print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
         sys.exit()
+    except:
+        print "Unexpected error in %s:"%host
