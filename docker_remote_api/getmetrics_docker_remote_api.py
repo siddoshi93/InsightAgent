@@ -60,8 +60,12 @@ def initPreviousResults():
 
     log = ''
     for i in range(len(dockers)-1):
-	filename = "stat%s.txt"%dockers[i]
-	statsFile = open(os.path.join(homepath,datadir+filename),'r')
+	try:
+	    filename = "stat%s.txt"%dockers[i]
+	    statsFile = open(os.path.join(homepath,datadir+filename),'r')
+	except IOError as e:
+	    print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
+	    continue
 	data = statsFile.readlines()
 	for eachline in data:
 	    if isJson(eachline) == True:
@@ -168,8 +172,12 @@ def getmetrics():
                 initPreviousResults()
 	    log = ''
 	    for i in range(len(dockers)-1):
-		filename = "stat%s.txt"%dockers[i]
-		statsFile = open(os.path.join(homepath,datadir+filename),'r')
+		try:
+		    filename = "stat%s.txt"%dockers[i]
+		    statsFile = open(os.path.join(homepath,datadir+filename),'r')
+		except IOError as e:
+		    print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
+		    continue
                 data = statsFile.readlines()
 		for eachline in data:
 		    if isJson(eachline) == True:
