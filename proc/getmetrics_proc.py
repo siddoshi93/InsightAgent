@@ -118,7 +118,7 @@ try:
     proc = subprocess.Popen([os.path.join(homepath,"getmetrics.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
 
-    if(os.path.isfile("previous_results.json") == False):
+    if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
         init_previous_results()
 
     tokens = []

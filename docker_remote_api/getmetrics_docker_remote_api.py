@@ -12,6 +12,7 @@ parser = OptionParser(usage=usage)
 parser.add_option("-d", "--directory",
     action="store", dest="homepath", help="Directory to run from")
 (options, args) = parser.parse_args()
+date = time.strftime("%Y%m%d")
 
 if options.homepath is None:
     homepath = os.getcwd()
@@ -20,12 +21,12 @@ else:
 datadir = 'data/'
 
 def listtocsv(lists):
-    log = ''
+    finallog = ''
     for i in range(0,len(lists)):
-        log = log + str(lists[i])
+        finallog = finallog + str(lists[i])
         if(i+1 != len(lists)):
-            log = log + ','
-    resource_usage_file.write("%s\n"%(log))
+            finallog = finallog + ','
+    csvFile.write("%s\n"%(finallog))
 
 def getindex(colName):
     if colName == "CPU_utilization#%":
@@ -37,6 +38,66 @@ def getindex(colName):
     elif colName == "MemUsed#MB":
         return 4
 
+metricResults = {}
+def toJson (header, values):
+    global metricResults
+    headerFields = header.split(",")
+    valueFields = values.split(",")
+    for i in range(0,len(headerFields)):
+        metricResults[headerFields[i]] = valueFields[i]
+
+def updateResults():
+    global metricResults
+    with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
+	json.dump(metricResults,f)
+
+def initPreviousResults():
+    global numlines
+    global date
+
+    log = ''
+    for i in range(len(dockers)-1):
+	filename = "stat%s.txt"%dockers[i]
+	statsFile = open(os.path.join(homepath,datadir+filename),'r')
+	data = statsFile.readlines()
+	for eachline in data:
+	    if isJson(eachline) == True:
+		metricData = json.loads(eachline)
+		break
+	if(numlines < 1):
+	    fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+	    if i == 0:
+		fieldnames = fields[0]
+	    host = dockers[i]
+	    for j in range(1,len(fields)):
+		if(fieldnames != ""):
+		    fieldnames = fieldnames + ","
+		groupid = getindex(fields[j])
+		nextfield = fields[j] + "[" +host+"]"+":"+str(groupid)
+		fieldnames = fieldnames + nextfield
+	else:
+	    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1)
+	timestamp = metricData['read'][:19]
+	timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()))
+	networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
+	networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
+	cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage']),4)
+	memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
+	diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB 
+	diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
+	if i == 0:
+	    log = log + str(timestamp)
+	log = log + "," + str(cpu) + "," + str(diskRead) + "," + str(diskWrite) + "," + str(networkRx) + "," + str(networkTx) + "," + str(memUsed)
+    toJson(fieldnames,log)
+    updateResults()
+    time.sleep(1)
+    proc = subprocess.Popen([os.path.join(homepath,datadir+"getmetrics_docker.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    (out,err) = proc.communicate()
+
+def getPreviousResults():
+    with open(os.path.join(homepath,datadir+"previous_results.json"),'r') as f:
+	return json.load(f)
+
 def isJson(jsonString):
     try:
 	jsonObject = json.loads(jsonString)
@@ -47,10 +108,37 @@ def isJson(jsonString):
 	return False
     return True
 
+def checkDelta(fd):
+    deltaFields = ["CPU_utilization", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut"]
+    for eachfield in deltaFields:
+	if(eachfield == fd):
+	    return True
+    return False
+
+def calculateDelta():
+    global fieldnames
+    fieldsList = fieldnames.split(",")
+    for eachff in fieldsList:
+	print eachff
+    previousResult = getPreviousResults()
+    currentResult = metricResults
+    finallogList = []
+    #finallogList.append(currentResult["timestamp"])
+    print previousResult
+    print finallogList
+    print currentResult
+    for key in fieldsList:
+	if(checkDelta(key.split('#')[0]) == True):
+	    deltaValue = float(currentResult[key]) - float(previousResult[key])
+	    finallogList.append(deltaValue)
+        else:
+	    finallogList.append(currentResult[key])
+    return finallogList
+
 def update_docker():
     global dockers
 
-    proc = subprocess.Popen(["docker ps | awk '{if(NR!=1) print $NF}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps | awk '{if(NR!=1) print $1}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     dockers = out.split("\n")
     cronfile = open(os.path.join(homepath,datadir+"getmetrics_docker.sh"),'w')
@@ -69,9 +157,17 @@ def update_docker():
  
 def getmetrics():
     global dockers
-
+    global numlines
+    global date
+    global fieldnames
+    global csvFile
     try:
 	while True:
+	    csvFile = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
+	    numlines = len(csvFile.readlines())
+            if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
+                initPreviousResults()
+	    log = ''
 	    for i in range(len(dockers)-1):
 		filename = "stat%s.txt"%dockers[i]
 		statsFile = open(os.path.join(homepath,datadir+filename),'r')
@@ -80,30 +176,39 @@ def getmetrics():
 		    if isJson(eachline) == True:
 			metricData = json.loads(eachline)
 			break
+                if(numlines < 1):
+                    fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+                    if i == 0:
+                        fieldnames = fields[0]
+                    host = dockers[i]
+                    for j in range(1,len(fields)):
+                        if(fieldnames != ""):
+                            fieldnames = fieldnames + ","
+                        groupid = getindex(fields[j])
+                        nextfield = fields[j] + "[" +host+"]"+":"+str(groupid)
+                        fieldnames = fieldnames + nextfield
+		else:
+		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
+		    print "Print fieldnames"
+		    print fieldnames
 	    	timestamp = metricData['read'][:19]
 		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()))
-		networkRx = float(metricData['network']['rx_bytes']/(1024*1024)) #MB
-		networkTx = float(metricData['network']['tx_bytes']/(1024*1024)) #MB
-		cpu = float(metricData['cpu_stats']['cpu_usage']['total_usage'])
-		memUsed = float(metricData['memory_stats']['usage']/(1024*1024)) #MB
-		diskRead = float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value']/(1024*1024)) #MB 
-		diskWrite = float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value']/(1024*1024)) #MB
-		log = str(timestamp) + "," + str(cpu) + "," + str(diskRead) + "," + str(diskWrite) + "," + str(networkRx) + "," + str(networkTx) + "," + str(memUsed)
-		print log
-		date = time.strftime("%Y%m%d")
-		csvFile = open(os.path.join(homepath,datadir+date+dockers[i]+".csv"), 'a+')
-            numlines = len(csvFile.readlines())
-            if(numlines < 1):
-                fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
-                fieldnames = fields[0]
-                host = dockers[i]
-		for j in range(1,len(fields)):
-		    if(fieldnames != ""):
-			fieldnames = fieldnames + ","
-		    groupid = getindex(fields[j])
-		    fieldnames = fieldnames+fields[j] + "[" +host+"]"+":"+str(groupid)
+		networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
+		networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
+		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
+		memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
+		diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB 
+		diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
+		if i == 0:
+		    log = log + str(timestamp)
+		log = log + "," + str(cpu) + "," + str(diskRead) + "," + str(diskWrite) + "," + str(networkRx) + "," + str(networkTx) + "," + str(memUsed)
+	    print log
+	    toJson(fieldnames,log)
+	    deltaList = calculateDelta()
+	    updateResults()
+	    if numlines < 1:    
 		csvFile.write("%s\n"%(fieldnames))
-	    csvFile.write("%s\n"%(log))
+	    listtocsv(deltaList)
 	    csvFile.flush()
 	    csvFile.close()
             break
