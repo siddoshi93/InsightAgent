@@ -6,6 +6,7 @@ import linecache
 import json
 import time
 import datetime
+import socket
 
 usage = "Usage: %prog [options]"
 parser = OptionParser(usage=usage)
@@ -13,6 +14,7 @@ parser.add_option("-d", "--directory",
     action="store", dest="homepath", help="Directory to run from")
 (options, args) = parser.parse_args()
 date = time.strftime("%Y%m%d")
+hostname=socket.gethostname().partition(".")[0]
 
 if options.homepath is None:
     homepath = os.getcwd()
@@ -54,6 +56,7 @@ def updateResults():
 def initPreviousResults():
     global numlines
     global date
+    global hostname
 
     log = ''
     for i in range(len(dockers)-1):
@@ -73,7 +76,7 @@ def initPreviousResults():
 		if(fieldnames != ""):
 		    fieldnames = fieldnames + ","
 		groupid = getindex(fields[j])
-		nextfield = fields[j] + "[" +host+"]"+":"+str(groupid)
+		nextfield = fields[j] + "[" +hostname+"_"+host+"]"+":"+str(groupid)
 		fieldnames = fieldnames + nextfield
 	else:
 	    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1)
@@ -156,6 +159,7 @@ def getmetrics():
     global date
     global fieldnames
     global csvFile
+    global hostname
     try:
 	while True:
 	    csvFile = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
@@ -180,7 +184,7 @@ def getmetrics():
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
                         groupid = getindex(fields[j])
-                        nextfield = fields[j] + "[" +host+"]"+":"+str(groupid)
+                        nextfield = fields[j] + "[" +hostname+"_"+host+"]"+":"+str(groupid)
                         fieldnames = fieldnames + nextfield
 		else:
 		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
