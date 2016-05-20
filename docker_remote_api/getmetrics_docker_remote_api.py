@@ -133,7 +133,7 @@ def calculateDelta():
     for key in fieldsList:
 	if((key.split('#')[0]) == "CPU_utilization"):
 	    previousCPU = precpu[key]
-	    deltaValue =  float(currentResult[key]) - float(previousCPU)
+	    deltaValue =  round((float(currentResult[key]) - float(previousCPU)),4)
 	    finallogList.append(deltaValue)
 	elif(checkDelta(key.split('#')[0]) == True):
 	    deltaValue = float(currentResult[key]) - float(previousResult[key])
