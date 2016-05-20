@@ -78,7 +78,7 @@ def initPreviousResults():
 	else:
 	    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1)
 	timestamp = metricData['read'][:19]
-	timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()))
+	timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
 	networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
 	networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
 	cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
@@ -101,7 +101,8 @@ def getPreviousResults():
 def isJson(jsonString):
     try:
 	jsonObject = json.loads(jsonString)
-	print jsonObject['read']
+	if jsonObject['read'] != "":
+	    return True
     except ValueError, e:
 	return False
     except TypeError, e:
@@ -121,10 +122,6 @@ def calculateDelta():
     previousResult = getPreviousResults()
     currentResult = metricResults
     finallogList = []
-    #finallogList.append(currentResult["timestamp"])
-    print previousResult
-    print finallogList
-    print currentResult
     for key in fieldsList:
 	if(checkDelta(key.split('#')[0]) == True):
 	    deltaValue = float(currentResult[key]) - float(previousResult[key])
@@ -187,10 +184,8 @@ def getmetrics():
                         fieldnames = fieldnames + nextfield
 		else:
 		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
-		    print "Print fieldnames"
-		    print fieldnames
 	    	timestamp = metricData['read'][:19]
-		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()i)*1000)
+		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
 		networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
 		networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
