@@ -81,7 +81,7 @@ def initPreviousResults():
 	timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()))
 	networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
 	networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
-	cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage']),4)
+	cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
 	memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
 	diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB 
 	diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
@@ -118,8 +118,6 @@ def checkDelta(fd):
 def calculateDelta():
     global fieldnames
     fieldsList = fieldnames.split(",")
-    for eachff in fieldsList:
-	print eachff
     previousResult = getPreviousResults()
     currentResult = metricResults
     finallogList = []
@@ -192,7 +190,7 @@ def getmetrics():
 		    print "Print fieldnames"
 		    print fieldnames
 	    	timestamp = metricData['read'][:19]
-		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()))
+		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple()i)*1000)
 		networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
 		networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
