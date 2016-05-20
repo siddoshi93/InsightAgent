@@ -123,6 +123,7 @@ def checkDelta(fd):
 	    return True
     return False
 
+precpu={}
 def calculateDelta():
     global fieldnames
     fieldsList = fieldnames.split(",")
@@ -130,7 +131,11 @@ def calculateDelta():
     currentResult = metricResults
     finallogList = []
     for key in fieldsList:
-	if(checkDelta(key.split('#')[0]) == True):
+	if((key.split('#')[0]) == "CPU_utilization"):
+	    previousCPU = precpu[key]
+	    deltaValue =  float(currentResult[key]) - float(previousCPU)
+	    finallogList.append(deltaValue)
+	elif(checkDelta(key.split('#')[0]) == True):
 	    deltaValue = float(currentResult[key]) - float(previousResult[key])
 	    finallogList.append(deltaValue)
         else:
@@ -201,13 +206,13 @@ def getmetrics():
 		networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
 		networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
+		precpu["CPU_utilization#%["+hostname+"_"+dockers[i]+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
 		memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
 		diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
 		diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
 		if i == 0:
 		    log = log + str(timestamp)
 		log = log + "," + str(cpu) + "," + str(diskRead) + "," + str(diskWrite) + "," + str(networkRx) + "," + str(networkTx) + "," + str(memUsed)
-	    print log
 	    toJson(fieldnames,log)
 	    deltaList = calculateDelta()
 	    updateResults()
