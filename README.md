@@ -41,7 +41,7 @@ python deployInsightAgent.py -n USER_NAME_IN_HOST
                              -r REPORTING_INTERVAL_MINUTE 
                              -t AGENT_TYPE
 ```
-Currently, AGENT_TYPE can be *proc* or *cadvisor*.
+Currently, AGENT_TYPE can be *proc* or *cadvisor* or *docker_remote_api*.
 
 When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
 Example: /home/insight/.ssh/id_rsa

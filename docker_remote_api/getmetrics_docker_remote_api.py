@@ -86,7 +86,7 @@ def initPreviousResults():
 	networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
 	cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
 	memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
-	diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB 
+	diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
 	diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
 	if i == 0:
 	    log = log + str(timestamp)
@@ -146,13 +146,13 @@ def update_docker():
 	if container == "":
 	    continue
         containerCount+=1
-    	command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
+	command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
 	cronfile.write(command+"\n")
     for i in range(1,containerCount+1):
 	cronfile.write("wait $PID"+str(i)+"\n")
     cronfile.close()
     os.chmod(os.path.join(homepath,datadir+"getmetrics_docker.sh"),0755)
- 
+
 def getmetrics():
     global dockers
     global numlines
@@ -188,13 +188,13 @@ def getmetrics():
                         fieldnames = fieldnames + nextfield
 		else:
 		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
-	    	timestamp = metricData['read'][:19]
+		timestamp = metricData['read'][:19]
 		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
 		networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
 		networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
 		memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
-		diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB 
+		diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
 		diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
 		if i == 0:
 		    log = log + str(timestamp)
@@ -203,7 +203,7 @@ def getmetrics():
 	    toJson(fieldnames,log)
 	    deltaList = calculateDelta()
 	    updateResults()
-	    if numlines < 1:    
+	    if numlines < 1:
 		csvFile.write("%s\n"%(fieldnames))
 	    listtocsv(deltaList)
 	    csvFile.flush()
@@ -211,7 +211,7 @@ def getmetrics():
             break
     except KeyboardInterrupt:
 	print "Keyboard Interrupt"
- 
+
 try:
     update_docker()
     proc = subprocess.Popen([os.path.join(homepath,datadir+"getmetrics_docker.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
@@ -220,4 +220,3 @@ try:
 except KeyboardInterrupt:
     print "Interrupt from keyboard"
 
- 
