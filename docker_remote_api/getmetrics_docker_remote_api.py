@@ -80,7 +80,7 @@ def initPreviousResults():
 		if(fieldnames != ""):
 		    fieldnames = fieldnames + ","
 		groupid = getindex(fields[j])
-		nextfield = fields[j] + "[" +hostname+"_"+host+"]"+":"+str(groupid)
+		nextfield = fields[j] + "[" +host+"_"+hostname+"]"+":"+str(groupid)
 		fieldnames = fieldnames + nextfield
 	else:
 	    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1)
@@ -207,7 +207,7 @@ def getmetrics():
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
                         groupid = getindex(fields[j])
-                        nextfield = fields[j] + "[" +hostname+"_"+host+"]"+":"+str(groupid)
+                        nextfield = fields[j] + "[" +host+"_"+hostname+"]"+":"+str(groupid)
                         fieldnames = fieldnames + nextfield
 		else:
 		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
@@ -226,7 +226,7 @@ def getmetrics():
 		    networkRx = round(float(networkRx/(1024*1024)),4) #MB
 		    networkTx = round(float(networkTx/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
-		precpu["CPU_utilization#%["+hostname+"_"+dockers[i]+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
+		precpu["CPU_utilization#%["+dockers[i]+"_"+hostname+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
 		memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
 		diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
 		diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
