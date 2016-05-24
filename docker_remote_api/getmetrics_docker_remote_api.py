@@ -86,8 +86,18 @@ def initPreviousResults():
 	    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1)
 	timestamp = metricData['read'][:19]
 	timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
-	networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
-	networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
+	try:
+	    networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
+	    networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
+	except KeyError,e:
+	    networkMetrics = metricData['networks']
+	    networkRx = 0
+	    networkTx = 0
+	    for key in networkMetrics:
+		networkRx += float(networkMetrics[key]['rx_bytes'])
+		networkTx += float(networkMetrics[key]['tx_bytes'])
+	    networkRx = round(float(networkRx/(1024*1024)),4) #MB
+	    networkTx = round(float(networkTx/(1024*1024)),4) #MB
 	cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
 	memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
 	diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
@@ -155,7 +165,7 @@ def update_docker():
 	if container == "":
 	    continue
         containerCount+=1
-	command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
+	command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 3 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
 	cronfile.write(command+"\n")
     for i in range(1,containerCount+1):
 	cronfile.write("wait $PID"+str(i)+"\n")
@@ -203,8 +213,18 @@ def getmetrics():
 		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
 		timestamp = metricData['read'][:19]
 		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
-		networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
-		networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
+		try:
+		    networkRx = round(float(float(metricData['network']['rx_bytes'])/(1024*1024)),4) #MB
+		    networkTx = round(float(float(metricData['network']['tx_bytes'])/(1024*1024)),4) #MB
+		except KeyError,e:
+		    networkMetrics = metricData['networks']
+		    networkRx = 0
+		    networkTx = 0
+		    for key in networkMetrics:
+			networkRx += float(networkMetrics[key]['rx_bytes'])
+			networkTx += float(networkMetrics[key]['tx_bytes'])
+		    networkRx = round(float(networkRx/(1024*1024)),4) #MB
+		    networkTx = round(float(networkTx/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
 		precpu["CPU_utilization#%["+hostname+"_"+dockers[i]+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
 		memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
