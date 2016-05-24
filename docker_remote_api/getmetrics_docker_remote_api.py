@@ -165,7 +165,7 @@ def update_docker():
 	if container == "":
 	    continue
         containerCount+=1
-	command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 3 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
+	command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
 	cronfile.write(command+"\n")
     for i in range(1,containerCount+1):
 	cronfile.write("wait $PID"+str(i)+"\n")
