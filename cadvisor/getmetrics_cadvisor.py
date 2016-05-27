@@ -36,13 +36,13 @@ num_sql = 0
 
 def getindex(colName):
     if colName == "WEB_CPU_utilization#%" or colName == "DB_CPU_utilization#%":
-	return 1
+        return 1
     elif colName == "WEB_DiskRead#MB" or colName == "DB_DiskRead#MB" or colName == "WEB_DiskWrite#MB" or colName == "DB_DiskWrite#MB":
-	return 2
+        return 2
     elif colName == "WEB_NetworkIn#MB" or colName == "DB_NetworkIn#MB" or colName == "WEB_NetworkOut#MB" or colName == "DB_NetworkOut#MB":
-	return 3
+        return 3
     elif colName == "WEB_MemUsed#MB" or colName == "DB_MemUsed#MB":
-	return 4
+        return 4
 
 def update_docker():
     global dockers
@@ -71,10 +71,15 @@ def getmetric():
     global cAdvisoraddress
 
     try:
+        millis = int(round(time.time() * 1000))
         while True:
             try:
                 r = requests.get(cAdvisoraddress)
             except:
+                currTime = int(round(time.time() * 1000))
+                if currTime > millis+10000:
+                    print "unable to get requests from ",cAdvisoraddress
+                    sys.exit()
                 continue
             index = len(r.json()["/docker/"+dockers[0]]["stats"])-1
             time_stamp = r.json()["/docker/"+dockers[0]]["stats"][index]["timestamp"][:19]
@@ -91,7 +96,7 @@ def getmetric():
                 cpu_used = r.json()["/docker/"+dockers[i]]["stats"][index]["cpu"]["usage"]["total"]
                 prev_cpu = r.json()["/docker/"+dockers[i]]["stats"][index-1]["cpu"]["usage"]["total"]
                 cur_cpu = float((cpu_used - prev_cpu)/10000000)
-		#get mem
+                #get mem
                 curr_mem = r.json()["/docker/"+dockers[i]]["stats"][index]['memory']['usage']
                 mem = float(curr_mem/(1024*1024)) #MB
                 #get disk
@@ -126,17 +131,17 @@ def getmetric():
             resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
             numlines = len(resource_usage_file.readlines())
             if(numlines < 1):
-		fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#MB","WEB_DiskWrite#MB","WEB_NetworkIn#MB","WEB_NetworkOut#MB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#MB","DB_DiskWrite#MB","DB_NetworkIn#MB","DB_NetworkOut#MB","DB_MemUsed#MB"]
-		fieldnames = fields[0]
-		host = hostname.partition(".")[0]
-		for i in range(1,len(fields)):
-		    if(fields[i] == "timestamp"):
-			continue
-		    if(fieldnames != ""):
-			fieldnames = fieldnames + ","
-		    groupid = getindex(fields[i])
-		    fieldnames = fieldnames+fields[i] + "[" +host+"]"+":"+str(groupid)
-		resource_usage_file.write("%s\n"%(fieldnames))
+                fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#MB","WEB_DiskWrite#MB","WEB_NetworkIn#MB","WEB_NetworkOut#MB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#MB","DB_DiskWrite#MB","DB_NetworkIn#MB","DB_NetworkOut#MB","DB_MemUsed#MB"]
+                fieldnames = fields[0]
+                host = hostname.partition(".")[0]
+                for i in range(1,len(fields)):
+                    if(fields[i] == "timestamp"):
+                        continue
+                    if(fieldnames != ""):
+                        fieldnames = fieldnames + ","
+                    groupid = getindex(fields[i])
+                    fieldnames = fieldnames+fields[i] + "[" +host+"]"+":"+str(groupid)
+                resource_usage_file.write("%s\n"%(fieldnames))
             resource_usage_file.write("%s\n" % (writelog))
             resource_usage_file.flush()
             resource_usage_file.close()
