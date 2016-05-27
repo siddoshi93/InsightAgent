@@ -71,13 +71,13 @@ def getmetric():
     global cAdvisoraddress
 
     try:
-        millis = int(round(time.time() * 1000))
+        startTime = int(round(time.time() * 1000))
         while True:
             try:
                 r = requests.get(cAdvisoraddress)
             except:
                 currTime = int(round(time.time() * 1000))
-                if currTime > millis+10000:
+                if currTime > startTime+10000:
                     print "unable to get requests from ",cAdvisoraddress
                     sys.exit()
                 continue
@@ -89,6 +89,9 @@ def getmetric():
             counter = (counter+1)%60
             log = str((int(time.mktime(time.strptime(time_stamp, "%Y-%m-%dT%H:%M:%S")))-4*3600)*1000)
             cpu_all = 0
+            date = time.strftime("%Y%m%d")
+            resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
+            numlines = len(resource_usage_file.readlines())
             if num_apache == 0:
                 log = log + ","
             for i in range(len(dockers)-1):
@@ -124,24 +127,20 @@ def getmetric():
                 network_t = float((curr_network_t - prev_network_t)/(1024*1024)) #MB
                 network_r = float((curr_network_r - prev_network_r)/(1024*1024)) #MB
                 log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
-
+                if(numlines < 1):
+                    fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#MB","WEB_DiskWrite#MB","WEB_NetworkIn#MB","WEB_NetworkOut#MB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#MB","DB_DiskWrite#MB","DB_NetworkIn#MB","DB_NetworkOut#MB","DB_MemUsed#MB"]
+                    fieldnames = fields[0]
+                    host = hostname.partition(".")[0]
+                    for i in range(1,len(fields)):
+                        if(fields[i] == "timestamp"):
+                            continue
+                        if(fieldnames != ""):
+                            fieldnames = fieldnames + ","
+                        groupid = getindex(fields[i])
+                        fieldnames = fieldnames+fields[i] + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
+                    resource_usage_file.write("%s\n"%(fieldnames))
             print log #is it possible that print too many things?
             writelog = log
-            date = time.strftime("%Y%m%d")
-            resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
-            numlines = len(resource_usage_file.readlines())
-            if(numlines < 1):
-                fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#MB","WEB_DiskWrite#MB","WEB_NetworkIn#MB","WEB_NetworkOut#MB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#MB","DB_DiskWrite#MB","DB_NetworkIn#MB","DB_NetworkOut#MB","DB_MemUsed#MB"]
-                fieldnames = fields[0]
-                host = hostname.partition(".")[0]
-                for i in range(1,len(fields)):
-                    if(fields[i] == "timestamp"):
-                        continue
-                    if(fieldnames != ""):
-                        fieldnames = fieldnames + ","
-                    groupid = getindex(fields[i])
-                    fieldnames = fieldnames+fields[i] + "[" +host+"]"+":"+str(groupid)
-                resource_usage_file.write("%s\n"%(fieldnames))
             resource_usage_file.write("%s\n" % (writelog))
             resource_usage_file.flush()
             resource_usage_file.close()
