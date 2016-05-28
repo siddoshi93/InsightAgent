@@ -128,17 +128,21 @@ def getmetric():
                 network_r = float((curr_network_r - prev_network_r)/(1024*1024)) #MB
                 log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
                 if(numlines < 1):
-                    fields = ["timestamp","WEB_CPU_utilization#%","WEB_DiskRead#MB","WEB_DiskWrite#MB","WEB_NetworkIn#MB","WEB_NetworkOut#MB","WEB_MemUsed#MB","timestamp","DB_CPU_utilization#%","DB_DiskRead#MB","DB_DiskWrite#MB","DB_NetworkIn#MB","DB_NetworkOut#MB","DB_MemUsed#MB"]
-                    fieldnames = fields[0]
+                    serverType = ["WEB", "DB"]
+                    fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+                    if i == 0:
+                        fieldnames = fields[0]
                     host = hostname.partition(".")[0]
-                    for i in range(1,len(fields)):
-                        if(fields[i] == "timestamp"):
+                    for k in range(1,len(fields)):
+                        if(fields[k] == "timestamp"):
                             continue
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
-                        groupid = getindex(fields[i])
-                        fieldnames = fieldnames+fields[i] + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
-                    resource_usage_file.write("%s\n"%(fieldnames))
+                        metric = serverType[i] + "_" + fields[k]
+                        groupid = getindex(metric)
+                        fieldnames = fieldnames + metric + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
+            if(numlines < 1):
+                resource_usage_file.write("%s\n"%(fieldnames))
             print log #is it possible that print too many things?
             writelog = log
             resource_usage_file.write("%s\n" % (writelog))
