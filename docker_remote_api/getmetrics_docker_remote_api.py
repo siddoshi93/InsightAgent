@@ -22,6 +22,8 @@ else:
     homepath = options.homepath
 datadir = 'data/'
 
+newInstanceAvailable = False
+
 def listtocsv(lists):
     finallog = ''
     for i in range(0,len(lists)):
@@ -136,25 +138,55 @@ def checkDelta(fd):
 precpu={}
 def calculateDelta():
     global fieldnames
+    global metricResults
     fieldsList = fieldnames.split(",")
     previousResult = getPreviousResults()
     currentResult = metricResults
     finallogList = []
     for key in fieldsList:
-	if((key.split('#')[0]) == "CPU_utilization"):
+        if((key.split('#')[0]) == "CPU_utilization"):
+            if  key not in precpu:
+                deltaValue = "NaN"
+                finallogList.append(deltaValue)
+                continue
 	    previousCPU = precpu[key]
-	    deltaValue =  round((float(currentResult[key]) - float(previousCPU)),4)
+	    if str(currentResult[key]) == "NaN" or str(previousCPU) == "NaN":
+                deltaValue = "NaN"
+            else:
+                deltaValue =  round((float(currentResult[key]) - float(previousCPU)),4)
+                if deltaValue < 0:
+                    deltaValue = 0
 	    finallogList.append(deltaValue)
 	elif(checkDelta(key.split('#')[0]) == True):
-	    deltaValue = float(currentResult[key]) - float(previousResult[key])
+            if key not in currentResult or key not in previousResult:
+                deltaValue = "NaN"
+            elif str(currentResult[key]) == "NaN" or str(previousResult[key]) == "NaN":
+                deltaValue = "NaN"
+            else:
+                deltaValue = float(currentResult[key]) - float(previousResult[key])
+                if deltaValue < 0:
+                    deltaValue = 0
 	    finallogList.append(deltaValue)
         else:
-	    finallogList.append(currentResult[key])
+            if key not in currentResult:
+                currentValue = "NaN"
+                finallogList.append(currentValue)
+            else:
+                finallogList.append(currentResult[key])
     return finallogList
 
+def removeStatFiles():
+    global dockerInstances
+    for i in range(len(dockerInstances)):
+        statfile = "stat%s.txt"%dockerInstances[i]
+        if os.path.isfile(os.path.join(homepath,datadir+statfile)) == True:
+            os.remove(os.path.join(homepath,datadir+statfile))
+
+dockerInstances = []
 def update_docker():
     global dockers
-
+    global newInstanceAvailable
+    global dockerInstances
     proc = subprocess.Popen(["docker ps | awk '{if(NR!=1) print $1}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     dockers = out.split("\n")
@@ -171,25 +203,61 @@ def update_docker():
 	cronfile.write("wait $PID"+str(i)+"\n")
     cronfile.close()
     os.chmod(os.path.join(homepath,datadir+"getmetrics_docker.sh"),0755)
+    if os.path.isfile(os.path.join(homepath,datadir+"totalInstances.json")) == False:
+        towritePreviousInstances = {}
+        for containers in dockers:
+            if containers != "":
+                dockerInstances.append(containers)
+        towritePreviousInstances["overallDockerInstances"] = dockerInstances
+        with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
+            json.dump(towritePreviousInstances,f)
+    else:
+        with open(os.path.join(homepath,datadir+"totalInstances.json"),'r') as f:
+            dockerInstances = json.load(f)["overallDockerInstances"]
+    for eachDocker in dockers:
+        if eachDocker == "":
+            continue
+        if eachDocker not in dockerInstances:
+            print "not present"
+            towritePreviousInstances = {}
+            dockerInstances.append(eachDocker)
+            towritePreviousInstances["overallDockerInstances"] = dockerInstances
+            with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
+                json.dump(towritePreviousInstances,f)
+            newInstanceAvailable = True
 
 def getmetrics():
-    global dockers
+    global dockerInstances
     global numlines
     global date
     global fieldnames
     global csvFile
     global hostname
+    global newInstanceAvailable
+    timestampAvailable = False
     try:
 	while True:
+            fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+            if newInstanceAvailable == True:
+                oldFile = os.path.join(homepath,datadir+date+".csv")
+                newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
+                os.rename(oldFile,newFile)
 	    csvFile = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
 	    numlines = len(csvFile.readlines())
             if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
                 initPreviousResults()
 	    log = ''
-	    for i in range(len(dockers)-1):
+	    for i in range(len(dockerInstances)):
 		try:
-		    filename = "stat%s.txt"%dockers[i]
-		    statsFile = open(os.path.join(homepath,datadir+filename),'r')
+                    filename = "stat%s.txt"%dockerInstances[i]
+                    if os.path.isfile(os.path.join(homepath,datadir+filename)) == False:
+                        for fieldIndex in range(1,len(fields)):
+                            if(log != ""):
+                                log = log + ","
+                            log = log + "NaN"
+                        continue
+                    else:
+                        statsFile = open(os.path.join(homepath,datadir+filename),'r')
 		except IOError as e:
 		    print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
 		    continue
@@ -198,11 +266,10 @@ def getmetrics():
 		    if isJson(eachline) == True:
 			metricData = json.loads(eachline)
 			break
-                if(numlines < 1):
-                    fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+                if(numlines < 1 or newInstanceAvailable == True):
                     if i == 0:
                         fieldnames = fields[0]
-                    host = dockers[i]
+                    host = dockerInstances[i]
                     for j in range(1,len(fields)):
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
@@ -226,17 +293,23 @@ def getmetrics():
 		    networkRx = round(float(networkRx/(1024*1024)),4) #MB
 		    networkTx = round(float(networkTx/(1024*1024)),4) #MB
 		cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
-		precpu["CPU_utilization#%["+dockers[i]+"_"+hostname+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
+		precpu["CPU_utilization#%["+dockerInstances[i]+"_"+hostname+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
 		memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
 		diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
 		diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
-		if i == 0:
-		    log = log + str(timestamp)
+		if timestampAvailable == False:
+                    if log == "":
+                        log = str(timestamp)
+                    else:
+                        log = str(timestamp) + "," + log
+		    timestampAvailable = True
 		log = log + "," + str(cpu) + "," + str(diskRead) + "," + str(diskWrite) + "," + str(networkRx) + "," + str(networkTx) + "," + str(memUsed)
+	    if timestampAvailable == False:
+                log = "NaN" + "," + log
 	    toJson(fieldnames,log)
 	    deltaList = calculateDelta()
 	    updateResults()
-	    if numlines < 1:
+	    if numlines < 1 or newInstanceAvailable == True:
 		csvFile.write("%s\n"%(fieldnames))
 	    listtocsv(deltaList)
 	    csvFile.flush()
@@ -250,6 +323,7 @@ try:
     proc = subprocess.Popen([os.path.join(homepath,datadir+"getmetrics_docker.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     getmetrics()
+    removeStatFiles()
 except KeyboardInterrupt:
     print "Interrupt from keyboard"
 
