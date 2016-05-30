@@ -126,7 +126,7 @@ def isJson(jsonString):
 	return False
     except TypeError, e:
 	return False
-    return True
+    return False
 
 def checkDelta(fd):
     deltaFields = ["CPU_utilization", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut"]
@@ -225,6 +225,7 @@ def update_docker():
                 json.dump(towritePreviousInstances,f)
             newInstanceAvailable = True
 
+metricData = {}
 def getmetrics():
     global dockerInstances
     global numlines
@@ -234,6 +235,7 @@ def getmetrics():
     global hostname
     global newInstanceAvailable
     timestampAvailable = False
+    global metricData
     try:
 	while True:
             fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
@@ -261,9 +263,11 @@ def getmetrics():
 		    print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
 		    continue
                 data = statsFile.readlines()
-		for eachline in data:
+                jsonAvailable = False
+                for eachline in data:
 		    if isJson(eachline) == True:
 			metricData = json.loads(eachline)
+			jsonAvailable = True
 			break
                 if(numlines < 1 or newInstanceAvailable == True):
                     if i == 0:
@@ -277,6 +281,13 @@ def getmetrics():
                         fieldnames = fieldnames + nextfield
 		else:
 		    fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1).rstrip("\n")
+                #File available but stat file doesn't have json object
+		if jsonAvailable == False:
+                    for fieldIndex in range(1,len(fields)):
+                        if(log != ""):
+                            log = log + ","
+                        log = log + "NaN"
+                    continue
 		timestamp = metricData['read'][:19]
 		timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
 		try:
