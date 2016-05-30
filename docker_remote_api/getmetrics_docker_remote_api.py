@@ -46,6 +46,8 @@ def getindex(colName):
 metricResults = {}
 def toJson (header, values):
     global metricResults
+    if header == "" or values == "":
+        return
     headerFields = header.split(",")
     valueFields = values.split(",")
     for i in range(0,len(headerFields)):
@@ -53,6 +55,8 @@ def toJson (header, values):
 
 def updateResults():
     global metricResults
+    if not metricResults:
+        return
     with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
 	json.dump(metricResults,f)
 
@@ -141,10 +145,12 @@ precpu={}
 def calculateDelta():
     global fieldnames
     global metricResults
+    finallogList = []
+    if fieldnames == "":
+        return finallogList
     fieldsList = fieldnames.split(",")
     previousResult = getPreviousResults()
     currentResult = metricResults
-    finallogList = []
     for key in fieldsList:
         if((key.split('#')[0]) == "CPU_utilization"):
             if  key not in precpu:
