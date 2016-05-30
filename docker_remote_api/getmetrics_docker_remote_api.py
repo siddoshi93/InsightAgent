@@ -218,7 +218,6 @@ def update_docker():
         if eachDocker == "":
             continue
         if eachDocker not in dockerInstances:
-            print "not present"
             towritePreviousInstances = {}
             dockerInstances.append(eachDocker)
             towritePreviousInstances["overallDockerInstances"] = dockerInstances
