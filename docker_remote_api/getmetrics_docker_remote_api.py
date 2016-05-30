@@ -30,7 +30,8 @@ def listtocsv(lists):
         finallog = finallog + str(lists[i])
         if(i+1 != len(lists)):
             finallog = finallog + ','
-    csvFile.write("%s\n"%(finallog))
+    if finallog != "":
+        csvFile.write("%s\n"%(finallog))
 
 def getindex(colName):
     if colName == "CPU_utilization#%":
@@ -61,6 +62,7 @@ def initPreviousResults():
     global hostname
 
     log = ''
+    fieldnames = ''
     for i in range(len(dockers)-1):
 	try:
 	    filename = "stat%s.txt"%dockers[i]
@@ -248,6 +250,7 @@ def getmetrics():
             if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
                 initPreviousResults()
 	    log = ''
+	    fieldnames = ''
 	    for i in range(len(dockerInstances)):
 		try:
                     filename = "stat%s.txt"%dockerInstances[i]
@@ -314,13 +317,14 @@ def getmetrics():
                         log = str(timestamp) + "," + log
 		    timestampAvailable = True
 		log = log + "," + str(cpu) + "," + str(diskRead) + "," + str(diskWrite) + "," + str(networkRx) + "," + str(networkTx) + "," + str(memUsed)
-	    if timestampAvailable == False:
+	    if timestampAvailable == False and fieldnames != "":
                 log = "NaN" + "," + log
 	    toJson(fieldnames,log)
 	    deltaList = calculateDelta()
 	    updateResults()
 	    if numlines < 1 or newInstanceAvailable == True:
-		csvFile.write("%s\n"%(fieldnames))
+                if fieldnames != "":
+                    csvFile.write("%s\n"%(fieldnames))
 	    listtocsv(deltaList)
 	    csvFile.flush()
 	    csvFile.close()
