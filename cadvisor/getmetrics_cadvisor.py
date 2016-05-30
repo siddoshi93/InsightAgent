@@ -44,20 +44,21 @@ def getindex(colName):
     elif colName == "WEB_MemUsed#MB" or colName == "DB_MemUsed#MB":
         return 4
 
+dockerInstances = []
 def update_docker():
     global dockers
     global num_apache
     global num_sql
 
-    proc = subprocess.Popen(["sudo docker ps --no-trunc | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     num_apache = int(out.split("\n")[0])
 
-    proc = subprocess.Popen(["sudo docker ps --no-trunc | grep -cP 'rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     num_sql = int(out.split("\n")[0])
 
-    proc = subprocess.Popen(["sudo docker ps --no-trunc | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps --no-trunc | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     dockers = out.split("\n")
 
@@ -81,6 +82,8 @@ def getmetric():
                     print "unable to get requests from ",cAdvisoraddress
                     sys.exit()
                 continue
+            if num_apache == 0 and num_sql == 0:
+                break
             index = len(r.json()["/docker/"+dockers[0]]["stats"])-1
             time_stamp = r.json()["/docker/"+dockers[0]]["stats"][index]["timestamp"][:19]
             if (time_stamp in counter_time_map.values()):
@@ -93,7 +96,7 @@ def getmetric():
             resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
             numlines = len(resource_usage_file.readlines())
             if num_apache == 0:
-                log = log + ","
+                log = log + "NaN,NaN,NaN,NaN,NaN,NaN,"
             for i in range(len(dockers)-1):
                 #get cpu
                 cpu_used = r.json()["/docker/"+dockers[i]]["stats"][index]["cpu"]["usage"]["total"]
@@ -138,7 +141,11 @@ def getmetric():
                             continue
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
-                        metric = serverType[i] + "_" + fields[k]
+                        if num_apache == 0:
+                            server = serverType[1]
+                        else:
+                            server = serverType[i]
+                        metric = server + "_" + fields[k]
                         groupid = getindex(metric)
                         fieldnames = fieldnames + metric + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
             if(numlines < 1):
