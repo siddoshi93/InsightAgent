@@ -10,6 +10,7 @@ import subprocess
 import signal
 import socket
 from optparse import OptionParser
+import json
 
 usage = "Usage: %prog [options]"
 parser = OptionParser(usage=usage)
@@ -33,6 +34,7 @@ index = 59
 dockers = []
 num_apache = 0
 num_sql = 0
+newInstanceAvailable = False
 
 def getindex(colName):
     if colName == "WEB_CPU_utilization#%" or colName == "DB_CPU_utilization#%":
@@ -49,6 +51,8 @@ def update_docker():
     global dockers
     global num_apache
     global num_sql
+    global newInstanceAvailable
+    global dockerInstances
 
     proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
@@ -61,6 +65,27 @@ def update_docker():
     proc = subprocess.Popen(["docker ps --no-trunc | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     dockers = out.split("\n")
+    if os.path.isfile(os.path.join(homepath,datadir+"totalInstances.json")) == False:
+        towritePreviousInstances = {}
+        for containers in dockers:
+            if containers != "":
+                dockerInstances.append(containers)
+        towritePreviousInstances["overallDockerInstances"] = dockerInstances
+        with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
+            json.dump(towritePreviousInstances,f)
+    else:
+        with open(os.path.join(homepath,datadir+"totalInstances.json"),'r') as f:
+            dockerInstances = json.load(f)["overallDockerInstances"]
+    for eachDocker in dockers:
+        if eachDocker == "":
+            continue
+        if eachDocker not in dockerInstances:
+            towritePreviousInstances = {}
+            dockerInstances.append(eachDocker)
+            towritePreviousInstances["overallDockerInstances"] = dockerInstances
+            with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
+                json.dump(towritePreviousInstances,f)
+            newInstanceAvailable = True
 
 def getmetric():
     global counter_time_map
@@ -70,9 +95,11 @@ def getmetric():
     global num_apache
     global num_sql
     global cAdvisoraddress
+    global dockerInstances
 
     try:
         startTime = int(round(time.time() * 1000))
+        date = time.strftime("%Y%m%d")
         while True:
             try:
                 r = requests.get(cAdvisoraddress)
@@ -84,6 +111,10 @@ def getmetric():
                 continue
             if num_apache == 0 and num_sql == 0:
                 break
+            if newInstanceAvailable == True:
+                oldFile = os.path.join(homepath,datadir+date+".csv")
+                newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
+                os.rename(oldFile,newFile)
             index = len(r.json()["/docker/"+dockers[0]]["stats"])-1
             time_stamp = r.json()["/docker/"+dockers[0]]["stats"][index]["timestamp"][:19]
             if (time_stamp in counter_time_map.values()):
@@ -92,11 +123,10 @@ def getmetric():
             counter = (counter+1)%60
             log = str((int(time.mktime(time.strptime(time_stamp, "%Y-%m-%dT%H:%M:%S")))-4*3600)*1000)
             cpu_all = 0
-            date = time.strftime("%Y%m%d")
             resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
             numlines = len(resource_usage_file.readlines())
-            if num_apache == 0:
-                log = log + "NaN,NaN,NaN,NaN,NaN,NaN,"
+            if num_apache == 0 and len(dockers)-1 != len(dockerInstances):
+                log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
             for i in range(len(dockers)-1):
                 #get cpu
                 cpu_used = r.json()["/docker/"+dockers[i]]["stats"][index]["cpu"]["usage"]["total"]
@@ -148,6 +178,8 @@ def getmetric():
                         metric = server + "_" + fields[k]
                         groupid = getindex(metric)
                         fieldnames = fieldnames + metric + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
+            if num_sql == 0 and len(dockers)-1 != len(dockerInstances):
+                log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
             if(numlines < 1):
                 resource_usage_file.write("%s\n"%(fieldnames))
             print log #is it possible that print too many things?
