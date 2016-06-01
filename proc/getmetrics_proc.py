@@ -103,7 +103,7 @@ def get_cpuusage(filename,field_values,which_dict):
     which_dict["cpu_usage"] = cpu_dict
     Total = cpu_dict["user"] + cpu_dict["nice"] + cpu_dict["system"] + cpu_dict["idle"] + cpu_dict["iowait"] + cpu_dict["irq"] + cpu_dict["softirq"]
     idle = cpu_dict["idle"] + cpu_dict["iowait"]
-    field_values[0] = "CPU_utilization#%"
+    field_values[0] = "CPU#%"
     result = 1 - round(float(idle/Total),4)
     field_values.append(result*100)
 
