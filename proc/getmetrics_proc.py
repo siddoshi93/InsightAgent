@@ -72,6 +72,7 @@ def check_delta(field):
 def calculate_delta(fieldname,value):
     previous_result = get_previous_results()
     delta = float(value) - previous_result[fieldname]
+    delta = abs(delta)
     return round(delta,4)
 
 def calculate_cpudelta(current_result):
@@ -89,6 +90,7 @@ def calculate_cpudelta(current_result):
         result = 0
     else:
         result = (1-round((curr_idle - prev_idle)/(curr_total - prev_total),4))*100
+    result = abs(result)
     return result
 
 def get_cpuusage(filename,field_values,which_dict):
