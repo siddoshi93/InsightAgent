@@ -54,15 +54,15 @@ def update_docker():
     global newInstanceAvailable
     global dockerInstances
 
-    proc = subprocess.Popen(["docker ps | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     num_apache = int(out.split("\n")[0])
 
-    proc = subprocess.Popen(["docker ps | grep -cP 'rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     num_sql = int(out.split("\n")[0])
 
-    proc = subprocess.Popen(["docker ps | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps --no-trunc | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     dockers = out.split("\n")
     if os.path.isfile(os.path.join(homepath,datadir+"totalInstances.json")) == False:
