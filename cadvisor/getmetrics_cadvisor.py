@@ -37,9 +37,9 @@ num_sql = 0
 newInstanceAvailable = False
 
 def getindex(colName):
-    if colName == "CPU_Web#%" or colName == "CPU_DB#%":
+    if colName == "CPU[Web]#%" or colName == "CPU[DB]#%":
         return 1
-    elif colName == "MemUsed_Web#MB" or colName == "MemUsed_DB#MB":
+    elif colName == "MemUsed[Web]#MB" or colName == "MemUsed[DB]#MB":
         return 2
 
 dockerInstances = []
@@ -174,7 +174,7 @@ def getmetric():
                         else:
                             server = serverType[i]
                         splitFields = fields[k].split("#")
-                        metric = splitFields[0] + "_" + server + "#" + splitFields[1]
+                        metric = splitFields[0] + "[" + server + "]#" + splitFields[1]
                         groupid = getindex(metric)
                         fieldnames = fieldnames + metric + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
             if num_sql == 0 and len(dockers)-1 != len(dockerInstances):
