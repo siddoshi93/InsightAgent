@@ -37,9 +37,9 @@ num_sql = 0
 newInstanceAvailable = False
 
 def getindex(colName):
-    if colName == "CPU[Web]#%" or colName == "CPU[DB]#%":
+    if colName == "CPU(Web)#%" or colName == "CPU(DB)#%":
         return 1
-    elif colName == "MemUsed[Web]#MB" or colName == "MemUsed[DB]#MB":
+    elif colName == "MemUsed(Web)#MB" or colName == "MemUsed(DB)#MB":
         return 2
 
 dockerInstances = []
