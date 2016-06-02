@@ -37,13 +37,13 @@ num_sql = 0
 newInstanceAvailable = False
 
 def getindex(colName):
-    if colName == "WEB_CPU_utilization#%" or colName == "DB_CPU_utilization#%":
+    if colName == "CPU_Web#%" or colName == "CPU_DB#%":
         return 1
-    elif colName == "WEB_DiskRead#MB" or colName == "DB_DiskRead#MB" or colName == "WEB_DiskWrite#MB" or colName == "DB_DiskWrite#MB":
+    elif colName == "DiskRead_Web#MB" or colName == "DiskRead_DB#MB" or colName == "DiskWrite_Web#MB" or colName == "DiskWrite_DB#MB":
         return 2
-    elif colName == "WEB_NetworkIn#MB" or colName == "DB_NetworkIn#MB" or colName == "WEB_NetworkOut#MB" or colName == "DB_NetworkOut#MB":
+    elif colName == "NetworkIn_Web#MB" or colName == "NetworkIn_DB#MB" or colName == "NetworkOut_Web#MB" or colName == "NetworkOut_DB#MB":
         return 3
-    elif colName == "WEB_MemUsed#MB" or colName == "DB_MemUsed#MB":
+    elif colName == "MemUsed_Web#MB" or colName == "MemUsed_DB#MB":
         return 4
 
 dockerInstances = []
@@ -54,15 +54,15 @@ def update_docker():
     global newInstanceAvailable
     global dockerInstances
 
-    proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps | grep -cP 'rubis_apache' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     num_apache = int(out.split("\n")[0])
 
-    proc = subprocess.Popen(["docker ps --no-trunc | grep -cP 'rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps | grep -cP 'rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     num_sql = int(out.split("\n")[0])
 
-    proc = subprocess.Popen(["docker ps --no-trunc | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["docker ps | grep -E 'rubis_apache|rubis_db' | awk '{print $ 1;}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     dockers = out.split("\n")
     if os.path.isfile(os.path.join(homepath,datadir+"totalInstances.json")) == False:
@@ -126,7 +126,7 @@ def getmetric():
             resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
             numlines = len(resource_usage_file.readlines())
             if num_apache == 0 and len(dockers)-1 != len(dockerInstances):
-                log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
+                log = log + ",NaN,NaN"
             for i in range(len(dockers)-1):
                 #get cpu
                 cpu_used = r.json()["/docker/"+dockers[i]]["stats"][index]["cpu"]["usage"]["total"]
@@ -159,10 +159,12 @@ def getmetric():
                 curr_network_r = r.json()["/docker/"+dockers[i]]["stats"][index]["network"]["rx_bytes"]
                 network_t = float((curr_network_t - prev_network_t)/(1024*1024)) #MB
                 network_r = float((curr_network_r - prev_network_r)/(1024*1024)) #MB
-                log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
+                #log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
+                log = log + "," + str(cur_cpu) + "," + str(mem)
                 if(numlines < 1):
-                    serverType = ["WEB", "DB"]
-                    fields = ["timestamp","CPU_utilization#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+                    serverType = ["Web", "DB"]
+                    #fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
+                    fields = ["timestamp","CPU#%","MemUsed#MB"]
                     if i == 0:
                         fieldnames = fields[0]
                     host = hostname.partition(".")[0]
@@ -175,11 +177,13 @@ def getmetric():
                             server = serverType[1]
                         else:
                             server = serverType[i]
-                        metric = server + "_" + fields[k]
+                        splitFields = fields[k].split("#")
+                        metric = splitFields[0] + "_" + server + "#" + splitFields[1]
                         groupid = getindex(metric)
                         fieldnames = fieldnames + metric + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
             if num_sql == 0 and len(dockers)-1 != len(dockerInstances):
-                log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
+                #log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
+                log = log + ",NaN,NaN"
             if(numlines < 1):
                 resource_usage_file.write("%s\n"%(fieldnames))
             print log #is it possible that print too many things?
