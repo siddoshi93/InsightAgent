@@ -48,8 +48,16 @@ def init_previous_results():
             lines = txt_file.read().split("\n")
             for eachline in lines:
                 tokens = eachline.split("=")
+                if(eachfile != "timestamp.txt" and eachfile != "cpumetrics.txt"):
+                    tokens[0] = tokens[0]+"#MB"
                 if(len(tokens) == 1):
                     continue
+                if(eachfile == "diskmetrics.txt"):
+                    tokens[1] = float(float(tokens[1])*512/(1024*1024))
+                elif(eachfile == "diskusedmetrics.txt" or eachfile == "memmetrics.txt"):
+                    tokens[1] = float(float(tokens[1])/1024)
+                elif(eachfile == "networkmetrics.txt"):
+                    tokens[1] = float(float(tokens[1])/(1024*1024))
                 first_result[tokens[0]] = float(tokens[1])
     update_results(first_result)
     time.sleep(1)
@@ -141,14 +149,22 @@ try:
                 tokens = eachline.split("=")
                 if(len(tokens) == 1):
                     continue
+                if(eachfile != "timestamp.txt" and eachfile != "cpumetrics.txt"):
+                    tokens[0] = tokens[0]+"#MB"
                 fields.append(tokens[0])
+                if(eachfile == "diskmetrics.txt"):
+                    tokens[1] = float(float(tokens[1])*512/(1024*1024))
+                elif(eachfile == "diskusedmetrics.txt" or eachfile == "memmetrics.txt"):
+                    tokens[1] = float(float(tokens[1])/1024)
+                elif(eachfile == "networkmetrics.txt"):
+                    tokens[1] = float(float(tokens[1])/(1024*1024))
                 if(check_delta(tokens[0]) == True):
                     deltaValue = calculate_delta(tokens[0],tokens[1])
                     values.append(deltaValue)
                     dict[tokens[0]] = float(tokens[1]) # Actual values need to be stored in dict and not delta values
                 else:
-                   values.append(tokens[1])
-                   dict[tokens[0]] = round(float(tokens[1]),4)
+                   values.append(round(float(tokens[1]),4))
+                   dict[tokens[0]] = float(tokens[1])
 
 
     if(numlines < 1):
