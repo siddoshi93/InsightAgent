@@ -163,9 +163,11 @@ try:
                     values.append(deltaValue)
                     dict[tokens[0]] = float(tokens[1]) # Actual values need to be stored in dict and not delta values
                 else:
-                   values.append(round(float(tokens[1]),4))
-                   dict[tokens[0]] = float(tokens[1])
-
+                    if(tokens[0] == "timestamp"):
+                        values.append(tokens[1])
+                    else:
+                        values.append(round(float(tokens[1]),4))
+                    dict[tokens[0]] = float(tokens[1])
 
     if(numlines < 1):
         listtocsv(fields)
