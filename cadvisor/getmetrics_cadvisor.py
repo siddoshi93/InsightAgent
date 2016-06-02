@@ -128,9 +128,11 @@ def getmetric():
                 cpu_used = r.json()["/docker/"+dockers[i]]["stats"][index]["cpu"]["usage"]["total"]
                 prev_cpu = r.json()["/docker/"+dockers[i]]["stats"][index-1]["cpu"]["usage"]["total"]
                 cur_cpu = float((cpu_used - prev_cpu)/10000000)
+                cur_cpu = abs(cur_cpu)
                 #get mem
                 curr_mem = r.json()["/docker/"+dockers[i]]["stats"][index]['memory']['usage']
                 mem = float(curr_mem/(1024*1024)) #MB
+                mem = abs(mem)
                 #get disk
                 curr_block_num = len(r.json()["/docker/"+dockers[i]]["stats"][index]["diskio"]["io_service_bytes"])
                 curr_io_read = 0
