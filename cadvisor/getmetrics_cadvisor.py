@@ -39,12 +39,8 @@ newInstanceAvailable = False
 def getindex(colName):
     if colName == "CPU_Web#%" or colName == "CPU_DB#%":
         return 1
-    elif colName == "DiskRead_Web#MB" or colName == "DiskRead_DB#MB" or colName == "DiskWrite_Web#MB" or colName == "DiskWrite_DB#MB":
-        return 2
-    elif colName == "NetworkIn_Web#MB" or colName == "NetworkIn_DB#MB" or colName == "NetworkOut_Web#MB" or colName == "NetworkOut_DB#MB":
-        return 3
     elif colName == "MemUsed_Web#MB" or colName == "MemUsed_DB#MB":
-        return 4
+        return 2
 
 dockerInstances = []
 def update_docker():
