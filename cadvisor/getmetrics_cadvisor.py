@@ -182,8 +182,7 @@ def getmetric():
                         else:
                             server = serverType[i]
                         groupid = getindex(fields[k])
-                        splitFields = fields[k].split("#")
-                        metric = splitFields[0] + "[" + server + "_" + str(ipAddress) + "]#" + splitFields[1]
+                        metric = fields[k] + "[" + server + "_" + str(ipAddress) + "]"
                         fieldnames = fieldnames + metric +":"+str(groupid)
             if num_sql == 0 and len(dockers)-1 != len(dockerInstances):
                 #log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
