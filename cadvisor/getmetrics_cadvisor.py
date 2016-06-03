@@ -37,10 +37,15 @@ num_sql = 0
 newInstanceAvailable = False
 
 def getindex(colName):
-    if colName == "CPU(Web)#%" or colName == "CPU(DB)#%":
+    if colName == "CPU#%":
         return 1
-    elif colName == "MemUsed(Web)#MB" or colName == "MemUsed(DB)#MB":
+    elif colName == "MemUsed#MB":
         return 2
+
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
 dockerInstances = []
 def update_docker():
@@ -96,6 +101,7 @@ def getmetric():
     try:
         startTime = int(round(time.time() * 1000))
         date = time.strftime("%Y%m%d")
+        ipAddress = get_ip_address()
         while True:
             try:
                 r = requests.get(cAdvisoraddress)
@@ -175,10 +181,10 @@ def getmetric():
                             server = serverType[1]
                         else:
                             server = serverType[i]
+                        groupid = getindex(fields[k])
                         splitFields = fields[k].split("#")
-                        metric = splitFields[0] + "(" + server + ")#" + splitFields[1]
-                        groupid = getindex(metric)
-                        fieldnames = fieldnames + metric + "[" +dockers[i]+"_"+host+"]"+":"+str(groupid)
+                        metric = splitFields[0] + "[" + server + "_" + str(ipAddress) + "]#" + splitFields[1]
+                        fieldnames = fieldnames + metric +":"+str(groupid)
             if num_sql == 0 and len(dockers)-1 != len(dockerInstances):
                 #log = log + ",NaN,NaN,NaN,NaN,NaN,NaN"
                 log = log + ",NaN,NaN"
