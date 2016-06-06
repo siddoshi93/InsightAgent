@@ -66,7 +66,10 @@ def init_previous_results():
 		timestampRead = True
 	    elif(eachfile == "timestamp.txt"):
 		continue
-	    txt_file = open(os.path.join(homepath,datadir,correctFile))
+	    try:
+		txt_file = open(os.path.join(homepath,datadir,correctFile))
+	    except IOError:
+		continue
 	    lines = txt_file.read().split("\n")
 	    for eachline in lines:
 		tokens = eachline.split("=")
@@ -83,8 +86,9 @@ def init_previous_results():
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
-		groupid = getindex(tokens[0])
-		tokens[0] = tokens[0] + ":" + str(groupid)
+		if(tokens[0] != "timestamp"):
+		    groupid = getindex(tokens[0])
+		    tokens[0] = tokens[0] + ":" + str(groupid)
 		first_result[tokens[0]] = float(tokens[1])
     update_results(first_result)
     time.sleep(1)
@@ -139,7 +143,10 @@ try:
 		timestampread = True
 	    elif(eachfile == "timestamp.txt"):
 		continue
-	    txt_file = open(os.path.join(homepath,datadir,correctFile))
+	    try:
+		txt_file = open(os.path.join(homepath,datadir,correctFile))
+	    except IOError:
+		continue
 	    lines = txt_file.read().split("\n")
 	    for eachline in lines:
 		tokens = eachline.split("=")
@@ -156,8 +163,9 @@ try:
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
-		groupid = getindex(tokens[0])
-		tokens[0] = tokens[0] + ":" + str(groupid)
+		if(tokens[0] != "timestamp"):
+		    groupid = getindex(tokens[0])
+		    tokens[0] = tokens[0] + ":" + str(groupid)
 		fields.append(tokens[0])
 		if(check_delta(tokens[0]) == True):
 		    deltaValue = calculate_delta(tokens[0], tokens[1])

@@ -12,6 +12,10 @@ for SEARCHKEY in "rubis_apache" "rubis_db"
 do
 echo $SEARCHKEY
 apacheweb=$(docker ps --no-trunc | grep $SEARCHKEY | awk '{print $1}')
+if [ -z "$apacheweb" ]
+then
+continue
+else
 echo $apacheweb
 CONTAINER_PID=`docker inspect -f '{{ .State.Pid }}' $apacheweb`
 date +%s%3N | awk '{print "timestamp="$1}' > timestamp.txt & PID1=$!
@@ -28,4 +32,5 @@ wait $PID3
 wait $PID4
 wait $PID5
 wait $PID6
+fi
 done
