@@ -84,7 +84,7 @@ def get_previous_results():
         return json.load(f)
 
 def check_delta(field):
-    deltaFields = ["DiskRead", "DiskWrite", "NetworkIn", "NetworkOut"]
+    deltaFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut"]
     for eachfield in deltaFields:
         if(eachfield in field):
             return True
@@ -95,7 +95,7 @@ def calculate_delta(fieldname,value):
     delta = float(value) - previous_result[fieldname]
     delta = abs(delta)
     if("CPU" in fieldname):
-        delta = delta/10000000
+        delta = delta/100
     return round(delta,4)
 
 fields = []
