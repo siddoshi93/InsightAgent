@@ -38,6 +38,17 @@ def listtocsv(lists):
             log = log + ','
     resource_usage_file.write("%s\n"%(log))
 
+def getindex(colName):
+    if "CPU#%" in colName:
+        return 1
+    elif "DiskRead#MB" in colName or "DiskWrite#MB" in colName:
+        return 2
+    elif "NetworkIn#MB" in colName or "NetworkOut#MB" in colName:
+        return 3
+    elif "MemUsed#MB" in colName:
+        return 4
+
+
 def update_results(lists):
     with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
         json.dump(lists,f)
@@ -145,6 +156,8 @@ try:
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
+		groupId = getindex(tokens[0])
+		tokens[0] = token[0] + ":" + str(groupid)
 		fields.append(tokens[0])
 		if(check_delta(tokens[0]) == True):
 		    print "Delta value"
