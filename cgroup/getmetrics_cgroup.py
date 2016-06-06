@@ -61,13 +61,18 @@ def init_previous_results():
 		tokens = eachline.split("=")
 		if(len(tokens) == 1):
 		    continue
-		if(server == "rubis_apache" and correctFile != "timestamp.txt"):
+		if(eachfile == "cpumetrics.txt"):
+                    if(server == "rubis_apache"):
+                        tokens[0] = tokens[0] + "#%[Web_" + ipAddress + "]"
+                    elif(server == "rubis_db"):
+                        tokens[0] = tokens[0] + "#%[DB_" + ipAddress + "]"
+		elif(server == "rubis_apache" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] + "#MB[Web_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
-		first_result[tokens[0]] = tokens[1]
+		first_result[tokens[0]] = float(tokens[1])
 
     update_results(first_result)
     time.sleep(1)
@@ -94,7 +99,7 @@ def calculate_delta(fieldname,value):
     return round(delta,4)
 
 fields = []
-filenames = ["timestamp.txt","diskmetricsread.txt","diskmetricswrite.txt","networkmetrics.txt","memmetrics.txt"]
+filenames = ["timestamp.txt","cpumetrics.txt","diskmetricsread.txt","diskmetricswrite.txt","networkmetrics.txt","memmetrics.txt"]
 try:
     date = time.strftime("%Y%m%d")
     resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"),'a+')
