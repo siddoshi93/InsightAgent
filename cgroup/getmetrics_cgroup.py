@@ -83,8 +83,9 @@ def init_previous_results():
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
+		groupid = getindex(tokens[0])
+		tokens[0] = tokens[0] + ":" + str(groupid)
 		first_result[tokens[0]] = float(tokens[1])
-
     update_results(first_result)
     time.sleep(1)
     proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
@@ -138,7 +139,6 @@ try:
 		timestampread = True
 	    elif(eachfile == "timestamp.txt"):
 		continue
-	    print correctFile
 	    txt_file = open(os.path.join(homepath,datadir,correctFile))
 	    lines = txt_file.read().split("\n")
 	    for eachline in lines:
@@ -156,11 +156,10 @@ try:
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
-		groupId = getindex(tokens[0])
+		groupid = getindex(tokens[0])
 		tokens[0] = tokens[0] + ":" + str(groupid)
 		fields.append(tokens[0])
 		if(check_delta(tokens[0]) == True):
-		    print "Delta value"
 		    deltaValue = calculate_delta(tokens[0], tokens[1])
 		    valuetoappend = "%.4f" %deltaValue
 		    values.append(valuetoappend)
@@ -168,7 +167,7 @@ try:
 		    if(tokens[0] == "timestamp"):
 			values.append(tokens[1])
 		    else:
-			valuetoappend = "%.4f" %tokens[1]
+			valuetoappend = "%.4f" %float(tokens[1])
 			values.append(valuetoappend)
 		dict[tokens[0]] = float(tokens[1])
     if(numlines < 1):
