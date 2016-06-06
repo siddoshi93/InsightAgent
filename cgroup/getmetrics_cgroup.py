@@ -183,6 +183,7 @@ try:
     listtocsv(values)
     resource_usage_file.flush()
     resource_usage_file.close()
+    update_results(dict)
 
 except KeyboardInterrupt:
     print "Interrupt from keyboard"
