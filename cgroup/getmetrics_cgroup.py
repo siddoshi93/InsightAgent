@@ -89,6 +89,8 @@ def calculate_delta(fieldname,value):
     previous_result = get_previous_results()
     delta = float(value) - previous_result[fieldname]
     delta = abs(delta)
+    if("CPU" in fieldname):
+        delta = delta/10000000
     return round(delta,4)
 
 fields = []
@@ -127,7 +129,12 @@ try:
 		tokens = eachline.split("=")
 		if(len(tokens) == 1):
 		    continue
-		if(server == "rubis_apache" and correctFile != "timestamp.txt"):
+		if(eachfile == "cpumetrics.txt"):
+                    if(server == "rubis_apache"):
+                        tokens[0] = tokens[0] + "#%[Web_" + ipAddress + "]"
+                    elif(server == "rubis_db"):
+                        tokens[0] = tokens[0] + "#%[DB_" + ipAddress + "]"
+		elif(server == "rubis_apache" and correctFile != "timestamp.txt"):
 		    tokens[0] = tokens[0] + "#MB[Web_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
 		elif(server == "rubis_db" and correctFile != "timestamp.txt"):
