@@ -71,7 +71,7 @@ def init_previous_results():
 
     update_results(first_result)
     time.sleep(1)
-    proc = subprocess.Popen([os.path.join(homepath,"getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
 
 def get_previous_results():
@@ -101,7 +101,7 @@ try:
     dict = {}
     timestampread = False
     ipAddress = get_ip_address()
-    proc = subprocess.Popen([os.path.join(homepath,"getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
     print err

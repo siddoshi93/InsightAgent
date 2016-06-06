@@ -1,6 +1,6 @@
 #!/bin/sh
 DATADIR='data/'
-cd $DATADIR
+cd ../$DATADIR
 echo $1
 while [ "$1" != "" ]; do
 	SEARCHKEY=$1
