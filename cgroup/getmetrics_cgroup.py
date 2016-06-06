@@ -157,7 +157,7 @@ try:
 		    tokens[0] = tokens[0] +"#MB[DB_" + ipAddress + "]"
 		    tokens[1] = float(float(tokens[1])/(1024*1024))
 		groupId = getindex(tokens[0])
-		tokens[0] = token[0] + ":" + str(groupid)
+		tokens[0] = tokens[0] + ":" + str(groupid)
 		fields.append(tokens[0])
 		if(check_delta(tokens[0]) == True):
 		    print "Delta value"
