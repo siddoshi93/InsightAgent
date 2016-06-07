@@ -1,16 +1,9 @@
 #!/bin/sh
 DATADIR='data/'
 cd $DATADIR
-echo $1
-while [ "$1" != "" ]; do
-	SEARCHKEY=$1
-	shift
-done
-echo $SEARCHKEY
 
 for SEARCHKEY in "rubis_apache" "rubis_db"
 do
-echo $SEARCHKEY
 apacheweb=$(docker ps --no-trunc | grep $SEARCHKEY | awk '{print $1}')
 if [ -z "$apacheweb" ]
 then

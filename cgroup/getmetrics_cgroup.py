@@ -129,6 +129,8 @@ try:
     print out
     print err
 
+    if(os.path.isfile(homepath+"/"+datadir+"timestamp.txt") == False):
+        sys.exit()
     if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
         init_previous_results()
 
