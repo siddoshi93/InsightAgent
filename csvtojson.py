@@ -86,6 +86,11 @@ if mode == "replay" and prev_endtime != "0" and len(prev_endtime) >= 8:
     # pad a second after prev_endtime
     start_time_epoch = 1000+long(1000*time.mktime(time.strptime(start_time, "%Y%m%d%H%M%S")));
     end_time_epoch = start_time_epoch + 1000*60*reporting_interval
+elif prev_endtime != "0":
+    start_time = prev_endtime
+    # pad a second after prev_endtime
+    start_time_epoch = 1000+long(1000*time.mktime(time.strptime(start_time, "%Y%m%d%H%M%S")));
+    end_time_epoch = start_time_epoch + 1000*60*reporting_interval
 else: # prev_endtime == 0
     end_time_epoch = int(time.time())*1000
     start_time_epoch = end_time_epoch - 1000*60*reporting_interval
@@ -153,10 +158,7 @@ else:
                     else:
                         colname = fieldnames[i]
                         if colname.find("]") == -1:
-                            colname = colname+"[-]"
-                        if colname.find(":") == -1:
-                            groupid = i
-                            colname = colname+":"+str(groupid)
+                            colname = colname+"["+hostname+"]"
                         thisData[colname] = row[i]
                 metricData.append(thisData)
         file.close()
@@ -179,7 +181,6 @@ else:
     print json_data
     print str(len(bytearray(json_data))) + " bytes data are reported"
     url = 'https://insightfindergae.appspot.com/customprojectrawdata'
-    #url = 'http://localhost:8888/customprojectrawdata'
     response = requests.post(url, data=json.loads(json_data))
 
 #old file cleaning
