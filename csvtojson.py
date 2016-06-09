@@ -70,6 +70,23 @@ def update_timestamp(prev_endtime):
     with open(os.path.join(homepath,"reporting_config.json"),"w") as f:
         json.dump(config, f)
 
+#send data to insightfinder
+def sendData():
+    if len(metricData) == 0:
+	return
+    #update projectKey, userName in dict
+    alldata["metricData"] = json.dumps(metricData)
+    alldata["projectKey"] = PROJECTKEY
+    alldata["userName"] = USERNAME
+    alldata["instanceName"] = hostname
+
+    #print the json
+    json_data = json.dumps(alldata)
+    print json_data
+    print str(len(bytearray(json_data))) + " bytes data are reported"
+    url = 'https://insightfindergae.appspot.com/customprojectrawdata'
+    response = requests.post(url, data=json.loads(json_data))
+
 #main
 with open(os.path.join(homepath,"reporting_config.json"), 'r') as f:
     config = json.load(f)
@@ -140,6 +157,8 @@ else:
     if os.path.isfile(os.path.join(homepath,datadir+options.inputFile)):
         file = open(os.path.join(homepath,datadir+options.inputFile))
         fileReader = csv.reader(file)
+        metricdataSizeKnown = False
+        metricdataSize = 0
         for row in fileReader:
             if fileReader.line_num == 1:
                 #Get all the metric names
@@ -148,8 +167,6 @@ else:
                     if fieldnames[i] == "timestamp":
                         timestamp_index = i
             elif fileReader.line_num > 1:
-                if long(row[timestamp_index]) < long(start_time_epoch) or long(row[timestamp_index]) > long(end_time_epoch) :
-                    continue                
                 #Read each line from csv and generate a json
                 thisData = {}
                 for i in range(0,len(row)):
@@ -162,6 +179,15 @@ else:
                             colname = colname+"["+hostname+"]"
                         thisData[colname] = row[i]
                 metricData.append(thisData)
+                if metricdataSizeKnown == False:
+                    metricdataSize = len(bytearray(json.dumps(metricData)))
+                    metricdataSizeKnown = True
+            if ((len(bytearray(json.dumps(metricData))) + metricdataSize) < 10000): #Not using exact 1MB as some data will be padded later
+                continue
+            else:
+                sendData()
+                metricData = []
+                alldata = {}
         file.close()
 
 #update endtime in config
@@ -172,18 +198,7 @@ else:
     new_prev_endtime = time.strftime("%Y%m%d%H%M%S", time.localtime(long(new_prev_endtimeinsec)))
     update_timestamp(new_prev_endtime)
 
-    #update projectKey, userName in dict
-    alldata["metricData"] = json.dumps(metricData)
-    alldata["projectKey"] = PROJECTKEY
-    alldata["userName"] = USERNAME
-    alldata["instanceName"] = hostname
-
-    #print the json
-    json_data = json.dumps(alldata)
-    print json_data
-    print str(len(bytearray(json_data))) + " bytes data are reported"
-    url = 'https://insightfindergae.appspot.com/customprojectrawdata'
-    response = requests.post(url, data=json.loads(json_data))
+    sendData()
 
 #old file cleaning
 for dirpath, dirnames, filenames in os.walk(os.path.join(homepath,datadir)):
