@@ -79,6 +79,10 @@ def initPreviousResults():
             if isJson(eachline) == True:
                 metricData = json.loads(eachline)
                 break
+        timestamp = metricData['read'][:19]
+        timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
+        if (time.time()*1000 - timestamp) > 300000:
+            continue
         if(numlines < 1):
             fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
             if i == 0:
@@ -199,7 +203,8 @@ def update_docker():
     global dockers
     global newInstanceAvailable
     global dockerInstances
-    dockers = [line.rstrip('\n') for line in open(os.path.join(homepath,'containerlist.txt'))]
+    #dockers = [line.rstrip('\n') for line in open(os.path.join(homepath,'containerlist.txt'))]
+    dockers = os.listdir("/var/lib/docker/containers")
     cronfile = open(os.path.join(homepath,datadir+"getmetrics_docker.sh"),'w')
     cronfile.write("#!/bin/sh\nDATADIR='data/'\ncd $DATADIR\n")
     containerCount = 0
@@ -207,7 +212,7 @@ def update_docker():
         if container == "":
             continue
         containerCount+=1
-        command = "echo \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
+        command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
         cronfile.write(command+"\n")
     for i in range(1,containerCount+1):
         cronfile.write("wait $PID"+str(i)+"\n")
@@ -280,6 +285,12 @@ def getmetrics():
                         metricData = json.loads(eachline)
                         jsonAvailable = True
                         break
+                timestamp = metricData['read'][:19]
+                print timestamp
+                timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
+                print timestamp
+                if (time.time()*1000 - timestamp) > 300000:
+                    continue
                 if(numlines < 1 or newInstanceAvailable == True):
                     if i == 0:
                         fieldnames = fields[0]
