@@ -90,6 +90,8 @@ def initPreviousResults():
                 fieldnames = fields[0]
                 timestampRecorded = True
             host = dockers[i]
+            if len(host) > 12:
+                host = host[:12]
             for j in range(1,len(fields)):
                 if(fieldnames != ""):
                     fieldnames = fieldnames + ","
@@ -297,6 +299,8 @@ def getmetrics():
                     if timestampAvailable == False:
                         fieldnames = fields[0]
                     host = dockerInstances[i]
+                    if len(host) > 12:
+                        host = host[:12]
                     for j in range(1,len(fields)):
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
