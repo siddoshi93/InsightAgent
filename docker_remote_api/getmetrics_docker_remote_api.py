@@ -64,6 +64,7 @@ def initPreviousResults():
     global numlines
     global date
     global hostname
+    timestampRecorded = False
 
     log = ''
     fieldnames = ''
@@ -85,8 +86,9 @@ def initPreviousResults():
             continue
         if(numlines < 1):
             fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
-            if i == 0:
+            if timestampRecorded == False:
                 fieldnames = fields[0]
+                timestampRecorded = True
             host = dockers[i]
             for j in range(1,len(fields)):
                 if(fieldnames != ""):
@@ -212,7 +214,7 @@ def update_docker():
         if container == "":
             continue
         containerCount+=1
-        command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
+        command = "echo \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
         cronfile.write(command+"\n")
     for i in range(1,containerCount+1):
         cronfile.write("wait $PID"+str(i)+"\n")
@@ -292,7 +294,7 @@ def getmetrics():
                 if (time.time()*1000 - timestamp) > 300000:
                     continue
                 if(numlines < 1 or newInstanceAvailable == True):
-                    if i == 0:
+                    if timestampAvailable == False:
                         fieldnames = fields[0]
                     host = dockerInstances[i]
                     for j in range(1,len(fields)):
