@@ -81,15 +81,15 @@ def initPreviousResults():
                 break
         if(numlines < 1):
             fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
-                if i == 0:
-                    fieldnames = fields[0]
-                host = dockers[i]
-                for j in range(1,len(fields)):
-                    if(fieldnames != ""):
-                        fieldnames = fieldnames + ","
-                    groupid = getindex(fields[j])
-                    nextfield = fields[j] + "[" +host+"_"+hostname+"]"+":"+str(groupid)
-                    fieldnames = fieldnames + nextfield
+            if i == 0:
+                fieldnames = fields[0]
+            host = dockers[i]
+            for j in range(1,len(fields)):
+                if(fieldnames != ""):
+                    fieldnames = fieldnames + ","
+                groupid = getindex(fields[j])
+                nextfield = fields[j] + "[" +host+"_"+hostname+"]"+":"+str(groupid)
+                fieldnames = fieldnames + nextfield
         else:
             fieldnames = linecache.getline(os.path.join(homepath,datadir+date+".csv"),1)
         timestamp = metricData['read'][:19]
