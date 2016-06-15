@@ -295,12 +295,12 @@ def getmetrics():
                 print timestamp
                 if (time.time()*1000 - timestamp) > 300000:
                     continue
+                host = dockerInstances[i]
+                if len(host) > 12:
+                    host = host[:12]
                 if(numlines < 1 or newInstanceAvailable == True):
                     if timestampAvailable == False:
                         fieldnames = fields[0]
-                    host = dockerInstances[i]
-                    if len(host) > 12:
-                        host = host[:12]
                     for j in range(1,len(fields)):
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
@@ -335,7 +335,7 @@ def getmetrics():
                     networkRx = round(float(networkRx/(1024*1024)),4) #MB
                     networkTx = round(float(networkTx/(1024*1024)),4) #MB
                 cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
-                precpu["CPU#%["+dockerInstances[i]+"_"+hostname+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
+                precpu["CPU#%["+host+"_"+hostname+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
                 memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
                 diskRead = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][0]['value'])/(1024*1024)),4) #MB
                 diskWrite = round(float(float(metricData['blkio_stats']['io_service_bytes_recursive'][1]['value'])/(1024*1024)),4) #MB
