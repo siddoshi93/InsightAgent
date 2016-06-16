@@ -84,6 +84,14 @@ def initPreviousResults():
         timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
         if (time.time()*1000 - timestamp) > 300000:
             continue
+        if os.path.isfile("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json") == False:
+            continue
+        containerConfig = open("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json","r")
+        dataline = f1.readline()
+        containerName = json.loads(dataline)["Name"]
+        print containerName
+        if "insightfinder" in containerName:
+            continue
         if(numlines < 1):
             fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
             if timestampRecorded == False:
@@ -294,6 +302,14 @@ def getmetrics():
                 timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
                 print timestamp
                 if (time.time()*1000 - timestamp) > 300000:
+                    continue
+                if os.path.isfile("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json") == False:
+                    continue
+                containerConfig = open("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json","r")
+                dataline = f1.readline()
+                containerName = json.loads(dataline)["Name"]
+                print containerName
+                if "insightfinder" in containerName:
                     continue
                 host = dockerInstances[i]
                 if len(host) > 12:
