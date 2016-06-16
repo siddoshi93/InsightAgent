@@ -87,7 +87,7 @@ def initPreviousResults():
         if os.path.isfile("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json") == False:
             continue
         containerConfig = open("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json","r")
-        dataline = f1.readline()
+        dataline = containerConfig.readline()
         containerName = json.loads(dataline)["Name"]
         print containerName
         if "insightfinder" in containerName:
@@ -306,7 +306,7 @@ def getmetrics():
                 if os.path.isfile("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json") == False:
                     continue
                 containerConfig = open("/var/lib/docker/containers/"+dockerInstances[i]+"/config.json","r")
-                dataline = f1.readline()
+                dataline = containerConfig.readline()
                 containerName = json.loads(dataline)["Name"]
                 print containerName
                 if "insightfinder" in containerName:
