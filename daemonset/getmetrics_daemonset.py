@@ -64,6 +64,7 @@ def initPreviousResults():
     global numlines
     global date
     global hostname
+    timestampRecorded = False
 
     log = ''
     fieldnames = ''
@@ -79,11 +80,18 @@ def initPreviousResults():
             if isJson(eachline) == True:
                 metricData = json.loads(eachline)
                 break
+        timestamp = metricData['read'][:19]
+        timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
+        if (time.time()*1000 - timestamp) > 300000:
+            continue
         if(numlines < 1):
             fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
-            if i == 0:
+            if timestampRecorded == False:
                 fieldnames = fields[0]
+                timestampRecorded = True
             host = dockers[i]
+            if len(host) > 12:
+                host = host[:12]
             for j in range(1,len(fields)):
                 if(fieldnames != ""):
                     fieldnames = fieldnames + ","
@@ -199,9 +207,8 @@ def update_docker():
     global dockers
     global newInstanceAvailable
     global dockerInstances
-    proc = subprocess.Popen(["docker ps | awk '{if(NR!=1) print $1}'"], stdout=subprocess.PIPE, shell=True)
-    (out, err) = proc.communicate()
-    dockers = out.split("\n")
+    #dockers = [line.rstrip('\n') for line in open(os.path.join(homepath,'containerlist.txt'))]
+    dockers = os.listdir("/var/lib/docker/containers")
     cronfile = open(os.path.join(homepath,datadir+"getmetrics_docker.sh"),'w')
     cronfile.write("#!/bin/sh\nDATADIR='data/'\ncd $DATADIR\n")
     containerCount = 0
@@ -209,7 +216,7 @@ def update_docker():
         if container == "":
             continue
         containerCount+=1
-        command = "echo -e \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
+        command = "echo \"GET /containers/"+container+"/stats?stream=0 HTTP/1.1\\r\\n\" | nc -U -i 10 /var/run/docker.sock > stat"+container+".txt & PID"+str(containerCount)+"=$!"
         cronfile.write(command+"\n")
     for i in range(1,containerCount+1):
         cronfile.write("wait $PID"+str(i)+"\n")
@@ -282,10 +289,18 @@ def getmetrics():
                         metricData = json.loads(eachline)
                         jsonAvailable = True
                         break
+                timestamp = metricData['read'][:19]
+                print timestamp
+                timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
+                print timestamp
+                if (time.time()*1000 - timestamp) > 300000:
+                    continue
+                host = dockerInstances[i]
+                if len(host) > 12:
+                    host = host[:12]
                 if(numlines < 1 or newInstanceAvailable == True):
-                    if i == 0:
+                    if timestampAvailable == False:
                         fieldnames = fields[0]
-                    host = dockerInstances[i]
                     for j in range(1,len(fields)):
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
