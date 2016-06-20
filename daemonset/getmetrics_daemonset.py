@@ -212,9 +212,9 @@ def calculateDelta():
     return finallogList
 
 def removeStatFiles():
-    global dockerInstances
-    for i in range(len(dockerInstances)):
-        statfile = "stat%s.txt"%dockerInstances[i]
+    global dockers
+    for i in range(len(dockers)):
+        statfile = "stat%s.txt"%dockers[i]
         if os.path.isfile(os.path.join(homepath,datadir+statfile)) == True:
             os.remove(os.path.join(homepath,datadir+statfile))
 
