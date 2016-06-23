@@ -35,11 +35,12 @@ def sshInstall(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        session.exec_command("pip install --user virtualenv\n \
-        sudo rm -rf insightagent* InsightAgent*\n \
-        wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
+        session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
+        wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/master.tar.gz -O insightagent.tar.gz\n \
         tar xzvf insightagent.tar.gz\n \
-        cd InsightAgent-testing\n \
+        cd InsightAgent-master\n \
+        sudo python checkpackages.py\n \
+        pip install --user virtualenv\n \
         python  ~/.local/lib/python2.7/site-packages/virtualenv.py pyenv\n \
         source pyenv/bin/activate\n \
         pip install -r requirements\n")
