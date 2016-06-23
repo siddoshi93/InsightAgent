@@ -43,7 +43,7 @@ if [ -z "$INSIGHTAGENTDIR" ]; then
 	export INSIGHTAGENTDIR=`pwd`
 fi
 
-python $INSIGHTAGENTDIR/initconfig.py -r $REPORTING_INTERVAL
+$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/initconfig.py -r $REPORTING_INTERVAL
 
 if [[ ! -d $INSIGHTAGENTDIR/data ]]
 then
@@ -74,9 +74,9 @@ then
 fi
 USER=`whoami`
 
-echo "*/$SAMPLING_INTERVAL * * * * root python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
+echo "*/$SAMPLING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
 
-echo "*/$REPORTING_INTERVAL * * * * root python $INSIGHTAGENTDIR/csvtojson.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/reporting.err 1>$INSIGHTAGENTDIR/log/reporting.out" >> $TEMPCRON
+echo "*/$REPORTING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/csvtojson.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/reporting.err 1>$INSIGHTAGENTDIR/log/reporting.out" >> $TEMPCRON
 sudo chown root:root $TEMPCRON
 sudo chmod 644 $TEMPCRON
 sudo mv $TEMPCRON /etc/cron.d/
