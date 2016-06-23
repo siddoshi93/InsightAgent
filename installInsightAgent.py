@@ -39,11 +39,7 @@ def sshInstall(retry,hostname):
         wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
         tar xzvf insightagent.tar.gz\n \
         cd InsightAgent-testing\n \
-        sudo python checkpackages.py\n \
-        pip install --user virtualenv\n \
-        python  ~/.local/lib/python2.7/site-packages/virtualenv.py pyenv\n \
-        source pyenv/bin/activate\n \
-        pip install -r requirements\n")
+        sudo python checkpackages.py\n")
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
         stdin.write(password+'\n')
