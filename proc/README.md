@@ -1,5 +1,6 @@
-# InsightAgent
+# InsightAgent: Proc
 Agent Type: Proc
+
 Platform: Linux
 
 InsightFinder agent can be used to monitor system performance metrics on bare metal machines or virtual machines.
