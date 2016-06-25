@@ -3,10 +3,10 @@
 function usage()
 {
 	echo "Usage: ./install.sh -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
-AGENT_TYPE = proc or docker"
+AGENT_TYPE = proc or cadvisor or docker_remote_api or cgroup or replay or daemonset or hypervisor"
 }
 
-if [ "$#" -ne 10 ]; then
+if [ "$#" -lt 10 ]; then
 	usage
 	exit 1
 fi
@@ -34,7 +34,7 @@ while [ "$1" != "" ]; do
 	shift
 done
 
-if [ $AGENT_TYPE != 'proc' ] && [ $AGENT_TYPE != 'docker' ]; then
+if [ $AGENT_TYPE != 'proc' ] && [ $AGENT_TYPE != 'cadvisor' ] && [ $AGENT_TYPE != 'docker_remote_api' ] && [ $AGENT_TYPE != 'cgroup' ] && [ $AGENT_TYPE != 'replay' ] && [ $AGENT_TYPE != 'daemonset' ] && [ $AGENT_TYPE != 'hypervisor' ]; then
 	usage
 	exit 1
 fi
@@ -43,7 +43,7 @@ if [ -z "$INSIGHTAGENTDIR" ]; then
 	export INSIGHTAGENTDIR=`pwd`
 fi
 
-python $INSIGHTAGENTDIR/initconfig.py -r $REPORTING_INTERVAL
+$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/initconfig.py -r $REPORTING_INTERVAL
 
 if [[ ! -d $INSIGHTAGENTDIR/data ]]
 then
@@ -63,6 +63,10 @@ echo "export INSIGHTFINDER_PROJECT_KEY=$PROJECTKEY" >> $AGENTRC
 echo "export INSIGHTFINDER_USER_NAME=$USERNAME" >> $AGENTRC
 echo "export INSIGHTAGENTDIR=$INSIGHTAGENTDIR" >> $AGENTRC
 
+if [ $AGENT_TYPE == 'replay' ]; then
+	exit 1
+fi
+
 TEMPCRON=$INSIGHTAGENTDIR/ifagent
 if [[ -f $TEMPCRON ]]
 then
@@ -70,13 +74,9 @@ then
 fi
 USER=`whoami`
 
-if [ $AGENT_TYPE = 'proc' ]; then
-	echo "*/$SAMPLING_INTERVAL * * * * root python $INSIGHTAGENTDIR/getmetrics_proc.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
-elif [ $AGENT_TYPE = 'docker' ]; then
-	echo "*/$SAMPLING_INTERVAL * * * * root python $INSIGHTAGENTDIR/getmetrics_docker.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
-fi
+echo "*/$SAMPLING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
 
-echo "*/$REPORTING_INTERVAL * * * * root python $INSIGHTAGENTDIR/csvtojson.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/reporting.err 1>$INSIGHTAGENTDIR/log/reporting.out" >> $TEMPCRON
+echo "*/$REPORTING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/csvtojson.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/reporting.err 1>$INSIGHTAGENTDIR/log/reporting.out" >> $TEMPCRON
 sudo chown root:root $TEMPCRON
 sudo chmod 644 $TEMPCRON
 sudo mv $TEMPCRON /etc/cron.d/

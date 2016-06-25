@@ -38,7 +38,7 @@ def sshInstall(retry,hostname):
         session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
         wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/staging.tar.gz -O insightagent.tar.gz\n \
         tar xzvf insightagent.tar.gz\n \
-        cd InsightAgent-staging && sudo python checkpackages.py\n")
+        cd InsightAgent-staging && python checkpackages.py\n")
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
         stdin.write(password+'\n')
@@ -57,6 +57,8 @@ def sshInstall(retry,hostname):
     except socket.error, e:
         print "Socket connection failed in %s:"%hostname, e
         return sshInstall(retry-1,hostname)
+    except:
+        print "Unexpected error in %s:"%hostname
 
 def get_args():
     parser = argparse.ArgumentParser(

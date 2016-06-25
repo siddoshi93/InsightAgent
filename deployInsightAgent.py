@@ -17,7 +17,7 @@ def get_args():
     parser.add_argument('-k', '--LICENSE_KEY', type=str, help='License key of an agent project', required=True)
     parser.add_argument('-s', '--SAMPLING_INTERVAL_MINUTE', type=str, help='Sampling Interval Minutes', required=True)
     parser.add_argument('-r', '--REPORTING_INTERVAL_MINUTE', type=str, help='Reporting Interval Minutes', required=True)
-    parser.add_argument('-t', '--AGENT_TYPE', type=str, help='Agent type: proc or docker', choices=['proc', 'docker'],required=True)
+    parser.add_argument('-t', '--AGENT_TYPE', type=str, help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset', choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'],required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
     userInsightfinder = args.USER_NAME_IN_INSIGHTFINDER
@@ -63,6 +63,7 @@ def stopCron():
     (out,err) = proc.communicate()
     if "failed" in str(err) or "error" in str(err):
         print "Can't stop agent in some machines"
+    removeFile("stopcron.py")
 
 if __name__ == '__main__':
     global user
@@ -117,3 +118,5 @@ if __name__ == '__main__':
     proc = subprocess.Popen([os.path.join(homepath,"startcron.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
+    clearDownloads()
+    removeFile("deployInsightAgent.py")
