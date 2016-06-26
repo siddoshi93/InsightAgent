@@ -50,7 +50,6 @@ proc.communicate()
 PROJECTKEY = os.environ["INSIGHTFINDER_PROJECT_KEY"]
 USERNAME = os.environ["INSIGHTFINDER_USER_NAME"]
 serverUrl = 'https://insightfinderstaging.appspot.com'
-#serverUrl = 'http://localhost:8888'
 
 reportedDataSize = 0
 totalSize = 0
