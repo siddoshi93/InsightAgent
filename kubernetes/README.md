@@ -21,7 +21,8 @@ SAMPLING_INTERVAL - The rate at which the metrics are sampled.
 
 REPORTING_INTERVAL - The rate at which the collected metrics are reported to insightfinder.
 
-Modify the insightfinder.yaml with the correct parameter values.
+Modify the insightfinder.yaml with the appropriate parameter values.
+
 Example:
 ```
 env:
