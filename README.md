@@ -1,5 +1,5 @@
 # InsightAgent
-InsightFinder agents can be used to monitor system performance for bare-metal machines, virtual machines and also for docker containers.
+InsightFinder agents can be used to monitor system performance on bare-metal machines, virtual machines and for docker containers.
 
 The following types of agents are available:
  - proc
@@ -8,4 +8,4 @@ The following types of agents are available:
  - cadvisor
  - daemonset
 
-Instructions on how to use each agent is available in the respective folders.
+Instructions on how to use each agent is available in the README file of each agent folders.
