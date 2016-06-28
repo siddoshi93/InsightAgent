@@ -1,22 +1,29 @@
 #!/usr/bin/python
 
-import argparse
-import getpass
-import os
 import sys
+import time
+import os
+import getpass
+import getopt
+import argparse
+import re
 import paramiko
 import socket
 import Queue
 import threading
-import time
 
-def sshStopCron(retry,hostname):
+def sshInstall(retry,hostname):
     global user
     global password
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
     if retry == 0:
-        print "Stop Cron Failed in", hostname
+        print "Install Fail in", hostname
         q.task_done()
         return
+    print "Start installing agent in", hostname, "..."
     try:
         s = paramiko.SSHClient()
         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -28,44 +35,67 @@ def sshStopCron(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        command = "sudo mv /etc/cron.d/ifagent InsightAgent-testing/ifagent."+time.strftime("%Y%m%d%H%M%S")+"\n"
-        session.exec_command(command)
+        session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
+        wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/master.tar.gz -O insightagent.tar.gz\n \
+        tar xzvf insightagent.tar.gz\n \
+        cd InsightAgent-master && python deployment/checkpackages.py\n")
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
         stdin.write(password+'\n')
         stdin.flush()
         session.recv_exit_status() #wait for exec_command to finish
         s.close()
-        print "Stopped Cron in ", hostname
+        print "Install Succeed in", hostname
         q.task_done()
         return
     except paramiko.SSHException, e:
         print "Invalid Username/Password for %s:"%hostname , e
-        return sshStopCron(retry-1,hostname)
+        return sshInstall(retry-1,hostname)
     except paramiko.AuthenticationException:
         print "Authentication failed for some reason in %s:"%hostname
-        return sshStopCron(retry-1,hostname)
+        return sshInstall(retry-1,hostname)
     except socket.error, e:
         print "Socket connection failed in %s:"%hostname, e
-        return sshStopCron(retry-1,hostname)
+        return sshInstall(retry-1,hostname)
+    except:
+        print "Unexpected error in %s:"%hostname
 
 def get_args():
     parser = argparse.ArgumentParser(
-        description='Script retrieves arguments for stopping insightfinder agent.')
+        description='Script retrieves arguments for insightfinder agent.')
     parser.add_argument(
         '-n', '--USER_NAME_IN_HOST', type=str, help='User Name in Hosts', required=True)
+    parser.add_argument(
+        '-u', '--USER_NAME_IN_INSIGHTFINDER', type=str, help='User Name in Insightfinder', required=True)
+    parser.add_argument(
+        '-k', '--LICENSE_KEY', type=str, help='License key of an agent project', required=True)
+    parser.add_argument(
+        '-s', '--SAMPLING_INTERVAL_MINUTE', type=str, help='Sampling Interval Minutes', required=True)
+    parser.add_argument(
+        '-r', '--REPORTING_INTERVAL_MINUTE', type=str, help='Reporting Interval Minutes', required=True)
     parser.add_argument(
         '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
+    userInsightfinder = args.USER_NAME_IN_INSIGHTFINDER
+    licenseKey = args.LICENSE_KEY
+    samplingInterval = args.SAMPLING_INTERVAL_MINUTE
+    reportingInterval = args.REPORTING_INTERVAL_MINUTE
     password = args.PASSWORD
-    return user, password
+    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, password
+
 
 if __name__ == '__main__':
+    global user
+    global password
+    global hostfile
+    global userInsightfinder
+    global licenseKey
+    global samplingInterval
+    global reportingInterval
     hostfile="hostlist.txt"
+    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, password = get_args()
     q = Queue.Queue()
-    user, password = get_args()
-
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:
             while True:
@@ -77,7 +107,7 @@ if __name__ == '__main__':
                     break
             while q.empty() != True:
                 host = q.get()
-                t = threading.Thread(target=sshStopCron, args=(3,host,))
+                t = threading.Thread(target=sshInstall, args=(3,host,))
                 t.daemon = True
                 t.start()
             q.join()
