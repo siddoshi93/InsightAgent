@@ -92,6 +92,7 @@ def get_args():
 
 
 if __name__ == '__main__':
+    global projectName
     global user
     global password
     global hostfile
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     global reportingInterval
     global agentType
     hostfile="hostlist.txt"
-    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password = get_args()
+    projectName, user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password = get_args()
     q = Queue.Queue()
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:
