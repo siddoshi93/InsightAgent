@@ -37,7 +37,7 @@ def sshDeploy(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        command="cd InsightAgent-testing && sudo ./install.sh -p "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
+        command="cd InsightAgent-testing && sudo ./install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         session.exec_command(command)
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
@@ -64,7 +64,7 @@ def get_args():
     parser = argparse.ArgumentParser(
         description='Script retrieves arguments for insightfinder agent.')
     parser.add_argument(
-        '-p', '--PROJECT_NAME_IN_INSIGHTFINDER', type=str, help='Project Name registered in Insightfinder', required=True)
+        '-i', '--PROJECT_NAME_IN_INSIGHTFINDER', type=str, help='Project Name registered in Insightfinder', required=True)
     parser.add_argument(
         '-n', '--USER_NAME_IN_HOST', type=str, help='User Name in Hosts', required=True)
     parser.add_argument(

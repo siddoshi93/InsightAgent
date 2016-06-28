@@ -16,7 +16,7 @@ while [ "$1" != "" ]; do
 		-k )	shift
 			PROJECTKEY=$1
 			;;
-		-p )	shift
+		-i )	shift
 			PROJECTNAME=$1
 			;;
 		-u )	shift
