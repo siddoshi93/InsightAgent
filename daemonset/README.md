@@ -1,25 +1,25 @@
 # Kubernetes Daemonset for insightfinder agent
 Insightfinder agent can be deployed as a kubernetes daemonset using the configuration file "insightfinder.yaml".
 
-###### Instructions to register a project in Insightfinder.com
-1) Go to the link https://insightfinder.com/
+##### Instructions to register a project in Insightfinder.com
+- Go to the link https://insightfinder.com/
 
-2) Sign in with the user credentials or sign up for a new account.
+- Sign in with the user credentials or sign up for a new account.
 
-3) Go to Settings and Register for a project under "Insight Agent" tab.
+- Go to Settings and Register for a project under "Insight Agent" tab.
 
-4) Give a project name, select Project Type as "Private Cloud". When registered a project license key is sent to the registered email account.
+- Give a project name, select Project Type as "Private Cloud". When registered a project license key is sent to the registered email account.
 
-###### Changes to be made in insightfinder.yaml
+##### Changes to be made in insightfinder.yaml
 In the env part of insightfinder.yaml, the following parameters are required:
 
-INSIGHTFINDER_PROJECTKEY - is available via email when a project is registered with insightfinder
+- INSIGHTFINDER_PROJECTKEY - is available via email when a project is registered with insightfinder
 
-INSIGHTFINDER_USERNAME - username used to login into insightfinder website.
+- INSIGHTFINDER_USERNAME - username used to login into insightfinder website.
 
-SAMPLING_INTERVAL - The rate at which the metrics are sampled.
+- SAMPLING_INTERVAL - The rate at which the metrics are sampled.
 
-REPORTING_INTERVAL - The rate at which the collected metrics are reported to insightfinder.
+- REPORTING_INTERVAL - The rate at which the collected metrics are reported to insightfinder.
 
 Modify the insightfinder.yaml with the appropriate parameter values.
 
@@ -38,22 +38,22 @@ env:
     value: "daemonset"
 ```
 
-###### To run config file
+##### To run config file
 ```
 kubectl create -f insightfinder.yaml
 ```
 
-###### To check for status of the pods created:
+##### To check for status of the pods created:
 ```
 kubectl get pods
 ```
 
-###### Command to check available nodes
+##### Command to check available nodes
 ```
 kubectl get nodes
 ```
 
-###### Command to check for logs of a pod
+##### Command to check for logs of a pod
 ```
 kubectl describe pods <pod id>
 ```
