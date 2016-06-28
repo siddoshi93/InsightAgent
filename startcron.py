@@ -13,6 +13,7 @@ import Queue
 import threading
 
 def sshDeploy(retry,hostname):
+    global projectName
     global user
     global password
     global userInsightfinder
@@ -36,7 +37,7 @@ def sshDeploy(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        command="cd InsightAgent-testing && sudo ./install.sh -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
+        command="cd InsightAgent-testing && sudo ./install.sh -p "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         session.exec_command(command)
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
@@ -63,6 +64,8 @@ def get_args():
     parser = argparse.ArgumentParser(
         description='Script retrieves arguments for insightfinder agent.')
     parser.add_argument(
+        '-p', '--PROJECT_NAME_IN_INSIGHTFINDER', type=str, help='Project Name registered in Insightfinder', required=True)
+    parser.add_argument(
         '-n', '--USER_NAME_IN_HOST', type=str, help='User Name in Hosts', required=True)
     parser.add_argument(
         '-u', '--USER_NAME_IN_INSIGHTFINDER', type=str, help='User Name in Insightfinder', required=True)
@@ -77,6 +80,7 @@ def get_args():
     parser.add_argument(
         '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
+    projectName = args.PROJECT_NAME_IN_INSIGHTFINDER
     user = args.USER_NAME_IN_HOST
     userInsightfinder = args.USER_NAME_IN_INSIGHTFINDER
     licenseKey = args.LICENSE_KEY
@@ -84,7 +88,7 @@ def get_args():
     reportingInterval = args.REPORTING_INTERVAL_MINUTE
     agentType = args.AGENT_TYPE
     password = args.PASSWORD
-    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password
+    return projectName, user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ function usage()
 AGENT_TYPE = proc or cadvisor or docker_remote_api or cgroup or replay or daemonset or hypervisor"
 }
 
-if [ "$#" -lt 10 ]; then
+if [ "$#" -lt 12 ]; then
 	usage
 	exit 1
 fi
@@ -15,6 +15,9 @@ while [ "$1" != "" ]; do
 	case $1 in
 		-k )	shift
 			PROJECTKEY=$1
+			;;
+		-p )	shift
+			PROJECTNAME=$1
 			;;
 		-u )	shift
 			USERNAME=$1
@@ -64,6 +67,7 @@ then
 	rm $AGENTRC
 fi
 echo "export INSIGHTFINDER_PROJECT_KEY=$PROJECTKEY" >> $AGENTRC
+echo "export INSIGHTFINDER_PROJECT_NAME=$PROJECTNAME" >> $AGENTRC
 echo "export INSIGHTFINDER_USER_NAME=$USERNAME" >> $AGENTRC
 echo "export INSIGHTAGENTDIR=$INSIGHTAGENTDIR" >> $AGENTRC
 
