@@ -5,6 +5,15 @@ Platform: Linux
 
 InsightFinder agent can be used to monitor system performance metrics on bare metal machines or virtual machines.
 
+###### Instructions to register a project in Insightfinder.com
+1) Go to the link https://insightfinder.com/
+
+2) Sign in with the user credentials or sign up for a new account.
+
+3) Go to Settings and Register for a project under "Insight Agent" tab.
+
+4) Give a project name, select Project Type as "Private Cloud". When registered a project license key is sent to the registered email account.
+
 ###### Pre-requisites:
 This pre-requisite is needed on the machine which launches deployInsightAgent.py.
 For Debian and Ubuntu, the following command will ensure that the required dependencies are installed:
@@ -26,7 +35,8 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 - Include IP address of all hosts in hostlist.txt and enter one IP address per line.
 - To deploy run the following command:
 ```
-python deployInsightAgent.py -n USER_NAME_IN_HOST
+python deployInsightAgent.py -i PROJECT_NAME_IN_INSIGHTFINDER
+                             -n USER_NAME_IN_HOST
                              -u USER_NAME_IN_INSIGHTFINDER 
                              -k LICENSE_KEY 
                              -s SAMPLING_INTERVAL_MINUTE 
@@ -59,7 +69,6 @@ python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
 
 ###### To install agent on local machine:
 ```
-./install.sh -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
+./install.sh -i PROJECT_NAME -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
 ```
-
 
