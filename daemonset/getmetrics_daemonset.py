@@ -90,7 +90,7 @@ def initPreviousResults():
         timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
         if (time.time()*1000 - timestamp) > 300000:
             continue
-        configFileName = [filename for filename in os.listdir("/var/lib/docker/containers/"+dockers[i]+"/") if filename.startswith("config")]
+        configFileName = [fname for fname in os.listdir("/var/lib/docker/containers/"+dockers[i]+"/") if fname.startswith("config")]
         if os.path.isfile("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0]) == False:
             continue
         containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0],"r")
@@ -315,7 +315,7 @@ def getmetrics():
                 timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
                 if (time.time()*1000 - timestamp) > 300000:
                     continue
-                configFileName = [filename for filename in os.listdir("/var/lib/docker/containers/"+dockers[i]+"/") if filename.startswith("config")]
+                configFileName = [fname for fname in os.listdir("/var/lib/docker/containers/"+dockers[i]+"/") if fname.startswith("config")]
                 if os.path.isfile("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0]) == False:
                     continue
                 containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0],"r")
