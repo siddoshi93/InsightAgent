@@ -1,9 +1,9 @@
-# InsightAgent: proc
-Agent Type: proc
+# InsightAgent: cgroup
+Agent Type: cgroup
 
 Platform: Linux
 
-InsightFinder agent can be used to monitor system performance metrics on bare metal machines or virtual machines.
+InsightFinder agent can be used to monitor performance metrics of docker containers using cgroup.
 
 ##### Instructions to register a project in Insightfinder.com
 - Go to the link https://insightfinder.com/
@@ -40,7 +40,7 @@ python deployInsightAgent.py -i PROJECT_NAME_IN_INSIGHTFINDER
                              -s SAMPLING_INTERVAL_MINUTE 
                              -r REPORTING_INTERVAL_MINUTE 
                              -t AGENT_TYPE
-AGENT_TYPE is *proc*.
+AGENT_TYPE is *cgroup*.
 ```
 - When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
 Example: /home/insight/.ssh/id_rsa

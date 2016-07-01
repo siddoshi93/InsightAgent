@@ -1,9 +1,9 @@
-# InsightAgent: proc
-Agent Type: proc
+# InsightAgent: cadvisor
+Agent Type: cadvisor
 
 Platform: Linux
 
-InsightFinder agent can be used to monitor system performance metrics on bare metal machines or virtual machines.
+InsightFinder agent can be used to monitor performance metrics of docker containers using cadvisor.
 
 ##### Instructions to register a project in Insightfinder.com
 - Go to the link https://insightfinder.com/
@@ -21,6 +21,19 @@ For Fedora and RHEL-derivatives, the following command will ensure that the requ
 ```
 sudo yum install gcc libffi-devel python-devel openssl-devel
 ```
+cAdvisor should be running in all hosts. To run cAdvisor use
+```
+sudo docker run \
+  --cpuset=3 \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:rw \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  google/cadvisor:latest
+```
 
 ##### To deploy agent on multiple hosts:
 
@@ -34,19 +47,19 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 - To deploy run the following command:
 ```
 python deployInsightAgent.py -i PROJECT_NAME_IN_INSIGHTFINDER
-                             -n USER_NAME_IN_HOST
+                             -n USER_NAME_IN_HOST 
                              -u USER_NAME_IN_INSIGHTFINDER 
                              -k LICENSE_KEY 
                              -s SAMPLING_INTERVAL_MINUTE 
                              -r REPORTING_INTERVAL_MINUTE 
                              -t AGENT_TYPE
-AGENT_TYPE is *proc*.
+AGENT_TYPE is *cadvisor*.
 ```
 - When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
 Example: /home/insight/.ssh/id_rsa
 
 
-##### To get more details on the command, run
+##### To get more details on the command, run 
 ```
 python deployInsightAgent.py -h
 ```

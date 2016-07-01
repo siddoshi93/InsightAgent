@@ -70,7 +70,7 @@ def initPreviousResults():
     log = ''
     fieldnames = ''
     towritePreviousInstances = {}
-    for i in range(len(dockers)-1):
+    for i in range(len(dockers)):
         validDocker = False
         try:
             filename = "stat%s.txt"%dockers[i]
@@ -90,12 +90,12 @@ def initPreviousResults():
         timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
         if (time.time()*1000 - timestamp) > 300000:
             continue
-        if os.path.isfile("/var/lib/docker/containers/"+dockers[i]+"/config.json") == False:
+        configFileName = [fname for fname in os.listdir("/var/lib/docker/containers/"+dockers[i]+"/") if fname.startswith("config")]
+        if os.path.isfile("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0]) == False:
             continue
-        containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/config.json","r")
+        containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0],"r")
         dataline = containerConfig.readline()
         containerName = json.loads(dataline)["Name"]
-        print containerName
         if "insightfinder" in containerName:
             continue
         fields = ["timestamp","CPU#%","DiskRead#MB","DiskWrite#MB","NetworkIn#MB","NetworkOut#MB","MemUsed#MB"]
@@ -264,7 +264,7 @@ def getmetrics():
                 initPreviousResults()
             log = ''
             fieldnames = ''
-            for i in range(len(dockers)-1):
+            for i in range(len(dockers)):
                 try:
                     with open(os.path.join(homepath,datadir+"totalInstances.json"),'r') as f:
                         dockerInstances = json.load(f)["overallDockerInstances"]
@@ -315,9 +315,10 @@ def getmetrics():
                 timestamp =  int(time.mktime(datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timetuple())*1000)
                 if (time.time()*1000 - timestamp) > 300000:
                     continue
-                if os.path.isfile("/var/lib/docker/containers/"+dockers[i]+"/config.json") == False:
+                configFileName = [fname for fname in os.listdir("/var/lib/docker/containers/"+dockers[i]+"/") if fname.startswith("config")]
+                if os.path.isfile("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0]) == False:
                     continue
-                containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/config.json","r")
+                containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0],"r")
                 dataline = containerConfig.readline()
                 containerName = json.loads(dataline)["Name"]
                 if "insightfinder" in containerName:
