@@ -50,8 +50,7 @@ proc.communicate()
 PROJECTKEY = os.environ["INSIGHTFINDER_PROJECT_KEY"]
 PROJECTNAME = os.environ["INSIGHTFINDER_PROJECT_NAME"]
 USERNAME = os.environ["INSIGHTFINDER_USER_NAME"]
-#serverUrl = 'https://insightfindergae.appspot.com'
-serverUrl = 'https://agentdata-dot-insightfinderstaging.appspot.com/projectData?'
+serverUrl = 'https://insightfindergae.appspot.com'
 
 reportedDataSize = 0
 totalSize = 0
@@ -96,8 +95,7 @@ def sendData():
         print str(min(100.0,math.ceil(reportedDataPer))) + "% of data are reported"
     else:
         print str(len(bytearray(json_data))) + " bytes data are reported"
-    #url = serverUrl + "/customprojectrawdata"
-    url = serverUrl
+    url = serverUrl + "/customprojectrawdata"
     response = requests.post(url, data=json.loads(json_data))
 
 def updateAgentDataRange(minTS,maxTS):
