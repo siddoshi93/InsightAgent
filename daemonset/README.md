@@ -10,7 +10,7 @@ Insightfinder agent can be deployed as a kubernetes daemonset using the configur
 
 - Give a project name, select Project Type as "Private Cloud". When registered a project license key is sent to the registered email account.
 
-##### Instructions to get deployment file:
+##### Instructions to get deployment file
 
 - Get the deployment file from github using below command:
 ```
