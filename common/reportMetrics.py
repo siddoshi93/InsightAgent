@@ -82,7 +82,7 @@ def sendData():
         return
     #update projectKey, userName in dict
     alldata["metricData"] = json.dumps(metricData)
-    alldata["projectKey"] = LICENSEKEY
+    alldata["licenseKey"] = LICENSEKEY
     alldata["projectName"] = PROJECTNAME
     alldata["userName"] = USERNAME
     alldata["instanceName"] = hostname
@@ -101,7 +101,7 @@ def sendData():
 
 def updateAgentDataRange(minTS,maxTS):
     #update projectKey, userName in dict
-    alldata["projectKey"] = LICENSEKEY
+    alldata["licenseKey"] = LICENSEKEY
     alldata["projectName"] = PROJECTNAME
     alldata["userName"] = USERNAME
     alldata["operation"] = "updateAgentDataRange"
