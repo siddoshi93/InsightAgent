@@ -47,7 +47,7 @@ for line in proc.stdout:
   os.environ[key] = value.strip()
 proc.communicate()
 
-PROJECTKEY = os.environ["INSIGHTFINDER_PROJECT_KEY"]
+LICENSEKEY = os.environ["INSIGHTFINDER_LICENSE_KEY"]
 PROJECTNAME = os.environ["INSIGHTFINDER_PROJECT_NAME"]
 USERNAME = os.environ["INSIGHTFINDER_USER_NAME"]
 serverUrl = 'https://insightfindergae.appspot.com'
@@ -81,7 +81,7 @@ def sendData():
         return
     #update projectKey, userName in dict
     alldata["metricData"] = json.dumps(metricData)
-    alldata["projectKey"] = PROJECTKEY
+    alldata["licenseKey"] = LICENSEKEY
     alldata["projectName"] = PROJECTNAME
     alldata["userName"] = USERNAME
     alldata["instanceName"] = hostname
@@ -100,7 +100,7 @@ def sendData():
 
 def updateAgentDataRange(minTS,maxTS):
     #update projectKey, userName in dict
-    alldata["projectKey"] = PROJECTKEY
+    alldata["licenseKey"] = LICENSEKEY
     alldata["projectName"] = PROJECTNAME
     alldata["userName"] = USERNAME
     alldata["operation"] = "updateAgentDataRange"

@@ -14,7 +14,7 @@ fi
 while [ "$1" != "" ]; do
 	case $1 in
 		-k )	shift
-			PROJECTKEY=$1
+			LICENSEKEY=$1
 			;;
 		-i )	shift
 			PROJECTNAME=$1
@@ -66,7 +66,7 @@ if [[ -f $AGENTRC ]]
 then
 	rm $AGENTRC
 fi
-echo "export INSIGHTFINDER_PROJECT_KEY=$PROJECTKEY" >> $AGENTRC
+echo "export INSIGHTFINDER_LICENSE_KEY=$LICENSEKEY" >> $AGENTRC
 echo "export INSIGHTFINDER_PROJECT_NAME=$PROJECTNAME" >> $AGENTRC
 echo "export INSIGHTFINDER_USER_NAME=$USERNAME" >> $AGENTRC
 echo "export INSIGHTAGENTDIR=$INSIGHTAGENTDIR" >> $AGENTRC
