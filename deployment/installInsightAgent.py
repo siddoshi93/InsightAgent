@@ -19,6 +19,7 @@ def sshInstall(retry,hostname):
     global licenseKey
     global samplingInterval
     global reportingInterval
+    global agentType
     if retry == 0:
         print "Install Fail in", hostname
         q.task_done()
@@ -35,10 +36,13 @@ def sshInstall(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
-        wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
-        tar xzvf insightagent.tar.gz\n \
-        cd InsightAgent-testing && python deployment/checkpackages.py\n")
+        if agentType == "lttng":
+            session.exec_command("python syscall/installLttng.py -d "+ os.getcwd()+"/syscall")
+        else:
+            session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
+            wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
+            tar xzvf insightagent.tar.gz\n \
+            cd InsightAgent-testing && python deployment/checkpackages.py\n")
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
         stdin.write(password+'\n')
@@ -74,6 +78,8 @@ def get_args():
     parser.add_argument(
         '-r', '--REPORTING_INTERVAL_MINUTE', type=str, help='Reporting Interval Minutes', required=True)
     parser.add_argument(
+        '-t', '--AGENT_TYPE', type=str, help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset', choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'], required=True)
+    parser.add_argument(
         '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
@@ -81,8 +87,9 @@ def get_args():
     licenseKey = args.LICENSE_KEY
     samplingInterval = args.SAMPLING_INTERVAL_MINUTE
     reportingInterval = args.REPORTING_INTERVAL_MINUTE
+    agentType = args.AGENT_TYPE
     password = args.PASSWORD
-    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, password
+    return user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password
 
 
 if __name__ == '__main__':
@@ -93,8 +100,9 @@ if __name__ == '__main__':
     global licenseKey
     global samplingInterval
     global reportingInterval
+    global agentType
     hostfile="hostlist.txt"
-    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, password = get_args()
+    user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password = get_args()
     q = Queue.Queue()
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:
