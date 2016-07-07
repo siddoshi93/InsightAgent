@@ -101,6 +101,7 @@ if __name__ == '__main__':
     install.installAgent(install.sshInstall)
     if configStatus == True:
         config.configChange(config.sshConfig)
+        deploy.removeFile("config.json")
     startagent = startcron(attr)
     startagent.deployAgent(startagent.sshDeploy)
     deploy.clearDownloads()
