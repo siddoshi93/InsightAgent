@@ -108,7 +108,7 @@ class changeConfig:
             session.get_pty()
             configfile = open("config.json", "r")
             line = configfile.readline()
-            command = "cd InsightAgent-cleanup\nsudo chown " + self.user + " " + self.agentType + "/data\nsudo echo " + line + " > ./"+self.agentType+"/data/config.json\n"
+            command = "cd InsightAgent-cleanup\nsudo chown " + self.user + " " + self.agentType + "/data\nsudo echo " + line + " > ./config.json\n"
             print command
             session.exec_command(command)
             stdin = session.makefile('wb', -1)
