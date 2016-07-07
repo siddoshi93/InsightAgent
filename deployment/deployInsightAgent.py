@@ -5,11 +5,15 @@ import getpass
 import os
 import sys
 import subprocess
-from Attributes import Attributes
-from installInsightAgent import installInsightAgent
-from startcron import startcron
-from checkpackages import checkpackages
-from stopcron import stopcron
+
+
+
+def imports():
+    from Attributes import Attributes
+    from installInsightAgent import installInsightAgent
+    from startcron import startcron
+    from checkpackages import checkpackages
+    from stopcron import stopcron
 
 class deployInsightAgent:
 
@@ -88,6 +92,7 @@ if __name__ == '__main__':
 
     deploy.clearDownloads()
     deploy.downloadRequiredFiles()
+    imports()
     attr = Attributes(projectName, user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password)
     attr.displayAttributes()
     checkReq = checkpackages()
