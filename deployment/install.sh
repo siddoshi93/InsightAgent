@@ -46,14 +46,16 @@ if [ -z "$INSIGHTAGENTDIR" ]; then
 	export INSIGHTAGENTDIR=`pwd`
 fi
 
-if [[ ! -d $INSIGHTAGENTDIR/$AGENT_TYPE/data ]]
+if [[ -d $INSIGHTAGENTDIR/$AGENT_TYPE/data ]]
 then
-	mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/data
+	rm -rf $INSIGHTAGENTDIR/$AGENT_TYPE/data
 fi
-if [[ ! -d $INSIGHTAGENTDIR/$AGENT_TYPE/log ]]
+mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/data
+if [[ -d $INSIGHTAGENTDIR/$AGENT_TYPE/log ]]
 then
-	mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
+	rm -rf $INSIGHTAGENTDIR/$AGENT_TYPE/log
 fi
+mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
 
 if [ $AGENT_TYPE == 'daemonset' ]; then
 	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
