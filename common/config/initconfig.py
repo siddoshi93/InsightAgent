@@ -44,8 +44,7 @@ def update_configs(reporting_interval,prev_endtime,keep_file_days):
         json.dump(config, f)
 
 def updateReportingConfig():
-    if os.path.isfile(os.path.join(homepath,"config.json")) == True:
-        os.rename(os.path.join(homepath,"config.json"), os.path.join(homepath,datadir,"config.json"))
+    if os.path.isfile(os.path.join(homepath, datadir, "config.json")) == True:
         return
     global agentType
     if agentType == "proc":
