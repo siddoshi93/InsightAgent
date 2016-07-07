@@ -1,5 +1,5 @@
 class Attributes:
-    def __init__(self, projectName, user, insightUser, insightKey, samplingInterval, reportingInterval, agentType, password):
+    def __init__(self, projectName="", user="", insightUser="", insightKey="", samplingInterval="", reportingInterval="", agentType="", password=""):
         self.projectName = projectName
         self.user = user
         self.insightUser = insightUser

@@ -39,7 +39,7 @@ class deployInsightAgent:
         (out, err) = proc.communicate()
 
     def clearDownloads(self):
-        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "stopcron.py", "get-pip.py"]
+        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "stopcron.py", "changeConfig.py", "get-pip.py"]
         for eachFile in downloadFiles:
             self.removeFile(eachFile)
 
@@ -53,7 +53,7 @@ class deployInsightAgent:
         os.chmod(filename, 0755)
 
     def downloadRequiredFiles(self):
-        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "stopcron.py", "get-pip.py"]
+        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "stopcron.py", "changeConfig.py", "get-pip.py"]
         for eachFile in downloadFiles:
             self.downloadFile(eachFile)
 
@@ -88,14 +88,18 @@ if __name__ == '__main__':
     from startcron import startcron
     from checkpackages import checkpackages
     from stopcron import stopcron
+    from changeConfig import changeConfig
     attr = Attributes(projectName, user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password)
     attr.displayAttributes()
+    config = changeConfig(attr)
+    config.finalizeConfig()
     checkReq = checkpackages()
     checkReq.installPackagesForDeployment()
     stopagent = stopcron(attr)
     stopagent.stopAgent(stopagent.sshStopCron)
     install = installInsightAgent(attr)
     install.installAgent(install.sshInstall)
+    config.configChange(config.sshConfig)
     startagent = startcron(attr)
     startagent.deployAgent(startagent.sshDeploy)
     deploy.clearDownloads()

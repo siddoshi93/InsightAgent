@@ -21,7 +21,7 @@ class startcron:
     def sshDeploy(self, retry, hostname, hostQueue):
         if retry == 0:
             print "Deploy Fail in", hostname
-            self.q.task_done()
+            hostQueue.task_done()
             return
         print "Start deploying agent in", hostname, "..."
         try:

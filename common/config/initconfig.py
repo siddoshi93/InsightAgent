@@ -23,10 +23,14 @@ if options.reporting_interval is None:
 else:
     reporting_interval = options.reporting_interval
 if homepath is None:
-	homepath = os.getcwd()
+    homepath = os.getcwd()
 
 datadir = agentType+'/data/'
 deltaFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB"]
+procFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "DiskUsed#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
+cadvisorFields = ["CPU#%"]
+cgroupFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
+dockerRemoteApiFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
 
 #update endtime in config file
 def update_configs(reporting_interval,prev_endtime,keep_file_days):
@@ -39,4 +43,24 @@ def update_configs(reporting_interval,prev_endtime,keep_file_days):
     with open(os.path.join(homepath, datadir, "reporting_config.json"),"w") as f:
         json.dump(config, f)
 
+def updateReportingConfig():
+    if os.path.isfile(os.path.join(homepath,"config.json")) == True:
+        os.rename(os.path.join(homepath,"config.json"), os.path.join(homepath,datadir,"config.json"))
+        return
+    global agentType
+    if agentType == "proc":
+        fields = procFields
+    elif agentType == "cadvisor":
+        fields = cadvisorFields
+    elif agentType == "cgroup":
+        fields = cgroupFields
+    elif agentType == "docker_remote_api":
+        fields = dockerRemoteApiFields
+    else:
+        fields = ""
+    reportingConfig = {'reportingFields' : fields}
+    with open(os.path.join(homepath, datadir, "config.json"),"w") as conf:
+        json.dump(reportingConfig, conf)
+
 update_configs(reporting_interval,"0","5")
+updateReportingConfig()
