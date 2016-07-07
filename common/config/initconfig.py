@@ -62,5 +62,21 @@ def updateReportingConfig():
     with open(os.path.join(homepath, datadir, "config.json"),"w") as conf:
         json.dump(reportingConfig, conf)
 
+def agentTracker():
+    agentLookup = {}
+    if os.path.isfile(os.path.join(homepath, "agentLookup.json")) == False:
+        agentLookup['proc'] = '0'
+        agentLookup['docker_remote_api'] = '0'
+        agentLookup['cgroup'] = '0'
+        agentLookup['cadvisor'] = '0'
+        agentLookup['replay'] = '0'
+        with open(os.path.join(homepath,"agentLookup.json"), "w") as lookup:
+            json.dump(agentLookup, lookup)
+    else:
+        with open(os.path.join(homepath, "agentLookup.json"), "w") as lookup:
+            agentLookup = json.load(lookup)
+        agentLookup[agentType] = '1'
+
 update_configs(reporting_interval,"0","5")
 updateReportingConfig()
+agentTracker()
