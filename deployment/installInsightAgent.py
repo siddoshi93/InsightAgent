@@ -59,8 +59,8 @@ class installInsightAgent:
         except socket.error, e:
             print "Socket connection failed in %s:" % hostname, e
             return self.sshInstall(retry - 1, hostname, hostQueue)
-        except:
-            print "Unexpected error in %s:" % hostname
+        #except:
+        #    print "Unexpected error in %s:" % hostname
 
     def installAgent(self, sshFunc):
         hostfile = "hostlist.txt"
