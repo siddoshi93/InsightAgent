@@ -20,7 +20,7 @@ if options.homepath is None:
     homepath = os.getcwd()
 else:
     homepath = options.homepath
-datadir = 'data/'
+datadir = 'docker_remote_api/data/'
 
 newInstanceAvailable = False
 
