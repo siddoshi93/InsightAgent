@@ -48,7 +48,7 @@ class deployInsightAgent:
         (out, err) = proc.communicate()
 
     def clearDownloads(self):
-        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "get-pip.py"]
+        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "stopcron.py", "get-pip.py"]
         for eachFile in downloadFiles:
             self.removeFile(eachFile)
 
@@ -62,7 +62,7 @@ class deployInsightAgent:
         os.chmod(filename, 0755)
 
     def downloadRequiredFiles(self):
-        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "get-pip.py"]
+        downloadFiles = ["Attributes.py", "installInsightAgent.py", "startcron.py", "checkpackages.py", "stopcron.py", "get-pip.py"]
         for eachFile in downloadFiles:
             self.downloadFile(eachFile)
 
