@@ -70,7 +70,7 @@ def get_previous_results():
         return json.load(f)
 
 def check_delta(field):
-    with open(os.path.join(homepath,"reporting_config.json"),'r') as f:
+    with open(os.path.join(homepath, datadir, "reporting_config.json"),'r') as f:
         config_lists = json.load(f)
     deltaFields = config_lists['delta_fields']
     for eachfield in deltaFields:
