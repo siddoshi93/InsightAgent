@@ -128,9 +128,9 @@ class changeConfig:
         except socket.error, e:
             print "Socket connection failed in %s:" % hostname, e
             return self.sshConfig(retry - 1, hostname)
-        except:
-            print "Unexpected error in %s:" % hostname
-            sys.exit()
+        #except:
+        #    print "Unexpected error in %s:" % hostname
+        #    sys.exit()
 
     def configChange(self, sshFunc):
         hostfile = "hostlist.txt"
