@@ -39,7 +39,7 @@ def get_args():
 
 
 class changeConfig:
-    def __init__(self, params, , manualConfigChange = False):
+    def __init__(self, params, manualConfigChange = False):
         self.user = params.user
         self.password = params.password
         self.agentType = params.agentType
