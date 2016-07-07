@@ -39,11 +39,12 @@ def get_args():
 
 
 class changeConfig:
-    def __init__(self, params):
+    def __init__(self, params, , manualConfigChange = False):
         self.user = params.user
         self.password = params.password
         self.agentType = params.agentType
         self.datadir = self.agentType + "/data/"
+        self.manualConfigChange = False
 
     def getFields(self):
         if self.agentType == "proc":
@@ -109,6 +110,8 @@ class changeConfig:
             line = configfile.readline()
             line = json.dumps(line)
             command = "cd InsightAgent-cleanup\nsudo chown " + self.user + " " + self.agentType + "/data\nsudo echo " + line + " > ./config.json\n"
+            if self.manualConfigChange == True:
+                command = "cd InsightAgent-cleanup\nsudo chown " + self.user + " " + self.agentType + "/data\nsudo echo " + line + " > ./"+self.datadir+"/config.json\n"
             print command
             session.exec_command(command)
             stdin = session.makefile('wb', -1)
@@ -173,7 +176,8 @@ if __name__ == '__main__':
     from Attributes import Attributes
     attr = Attributes(user=user, password=password, agentType=agentType)
     attr.displayAttributes()
-    config = changeConfig(attr)
+    config = changeConfig(attr, True)
+    config.finalizeConfig()
     config.configChange(config.sshConfig)
     os.remove("changeConfig.py")
     os.remove("Attributes.py")
