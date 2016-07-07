@@ -60,10 +60,11 @@ class checkpackages:
         except:
             print "Unable to install %s using pip. Please install the dependencies as stated in README" % eachpackage
 
-homepath = os.getcwd()
-user = pwd.getpwuid(os.geteuid()).pw_name
-checkReq = checkpackages()
-checkReq.checkRequirementsFile()
-checkReq.installpip()
-checkReq.installVirtualenv()
+if __name__ == '__main__':
+    homepath = os.getcwd()
+    user = pwd.getpwuid(os.geteuid()).pw_name
+    checkReq = checkpackages()
+    checkReq.checkRequirementsFile()
+    checkReq.installpip()
+    checkReq.installVirtualenv()
 
