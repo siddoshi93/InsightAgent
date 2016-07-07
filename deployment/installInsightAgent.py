@@ -38,7 +38,7 @@ class installInsightAgent:
             session.exec_command("wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
             tar xzvf insightagent.tar.gz\n \
             cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
-            sudo rm insightagent*\n")
+            sudo rm ../insightagent*\n")
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)
             stdin.write(self.password + '\n')
@@ -46,7 +46,7 @@ class installInsightAgent:
             result = session.recv_exit_status()  # wait for exec_command to finish
             s.close()
             if result != 0:
-                return self.sshInstall(retry - 1, hostname)
+                return self.sshInstall(retry - 1, hostname, hostQueue)
             print "Install Succeed in", hostname
             hostQueue.task_done()
             return

@@ -44,7 +44,7 @@ class startcron:
             result = session.recv_exit_status()  # wait for exec_command to finish
             s.close()
             if result != 0:
-                return self.sshDeploy(retry - 1, hostname)
+                return self.sshDeploy(retry - 1, hostname, hostQueue)
             print "Deploy Succeed in", hostname
             hostQueue.task_done()
             return
