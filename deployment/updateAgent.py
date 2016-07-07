@@ -17,6 +17,8 @@ else:
     agentType = options.agentType
 
 def getTotalAgents():
+    if os.path.isfile(os.path.join("InsightAgent-cleanup", "agentLookup.json")) == False:
+        return 0
     with open(os.path.join("InsightAgent-cleanup", "agentLookup.json"), "r") as f:
         agentLookup = json.load(f)
     agents = 0
