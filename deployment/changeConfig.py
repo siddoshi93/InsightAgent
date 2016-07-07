@@ -44,7 +44,7 @@ class changeConfig:
         self.password = params.password
         self.agentType = params.agentType
         self.datadir = self.agentType + "/data/"
-        self.manualConfigChange = False
+        self.manualConfigChange = manualConfigChange
 
     def getFields(self):
         if self.agentType == "proc":
