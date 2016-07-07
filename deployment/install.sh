@@ -52,16 +52,16 @@ else
 	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
 fi
 
-if [[ ! -d $INSIGHTAGENTDIR/data ]]
+if [[ ! -d $INSIGHTAGENTDIR/$AGENT_TYPE/data ]]
 then
-	mkdir $INSIGHTAGENTDIR/data
+	mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/data
 fi
-if [[ ! -d $INSIGHTAGENTDIR/log ]]
+if [[ ! -d $INSIGHTAGENTDIR/$AGENT_TYPE/log ]]
 then
-	mkdir $INSIGHTAGENTDIR/log
+	mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
 fi
 
-AGENTRC=$INSIGHTAGENTDIR/.agent.bashrc
+AGENTRC=$INSIGHTAGENTDIR/$AGENT_TYPE/.agent.bashrc
 if [[ -f $AGENTRC ]]
 then
 	rm $AGENTRC
@@ -75,7 +75,7 @@ if [ $AGENT_TYPE == 'replay' ]; then
 	exit 1
 fi
 
-TEMPCRON=$INSIGHTAGENTDIR/ifagent
+TEMPCRON=$INSIGHTAGENTDIR/ifagent$AGENT_TYPE
 if [[ -f $TEMPCRON ]]
 then
 	rm $TEMPCRON
@@ -83,15 +83,15 @@ fi
 USER=`whoami`
 
 if [ $AGENT_TYPE == 'daemonset' ]; then
-	echo "*/$SAMPLING_INTERVAL * * * * root python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
-	echo "*/$REPORTING_INTERVAL * * * * root python $INSIGHTAGENTDIR/common/reportMetrics.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/reporting.err 1>$INSIGHTAGENTDIR/log/reporting.out" >> $TEMPCRON
+	echo "*/$SAMPLING_INTERVAL * * * * root python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.out" >> $TEMPCRON
+	echo "*/$REPORTING_INTERVAL * * * * root python $INSIGHTAGENTDIR/common/csvtojson.py -d $INSIGHTAGENTDIR -t $AGENT_TYPE 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.out" >> $TEMPCRON
 else
-	echo "*/$SAMPLING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/sampling.err 1>$INSIGHTAGENTDIR/log/sampling.out" >> $TEMPCRON
-	echo "*/$REPORTING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/reportMetrics.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/log/reporting.err 1>$INSIGHTAGENTDIR/log/reporting.out" >> $TEMPCRON
+	echo "*/$SAMPLING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.out" >> $TEMPCRON
+	echo "*/$REPORTING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/csvtojson.py -d $INSIGHTAGENTDIR -t $AGENT_TYPE 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.out" >> $TEMPCRON
 fi
 
 sudo chown root:root $TEMPCRON
 sudo chmod 644 $TEMPCRON
 sudo mv $TEMPCRON /etc/cron.d/
 
-echo "Agent configuration completed. Two cron jobs are created via /etc/cron.d/ifagent"
+echo "Agent configuration completed. Two cron jobs are created via /etc/cron.d/ifagent"$AGENTTYPE

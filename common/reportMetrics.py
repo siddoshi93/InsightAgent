@@ -28,6 +28,8 @@ parser.add_option("-m", "--mode",
     action="store", dest="mode", help="Running mode: live or replay")
 parser.add_option("-d", "--directory",
     action="store", dest="homepath", help="Directory to run from")
+parser.add_option("-t", "--agentType",
+    action="store", dest="agentType", help="AgentType")
 (options, args) = parser.parse_args()
 
 if options.homepath is None:
@@ -38,9 +40,13 @@ if options.mode is None:
     mode = "live"
 else:
     mode = options.mode
-datadir = 'data/'
+if options.agentType is None:
+    agentType = "proc"
+else:
+    agentType = options.agentType
+datadir = agentType+'/data/'
 
-command = ['bash', '-c', 'source ' + str(homepath) + '/.agent.bashrc && env']
+command = ['bash', '-c', 'source ' + str(homepath) + '/' + agentType + '/.agent.bashrc && env']
 proc = subprocess.Popen(command, stdout = subprocess.PIPE)
 for line in proc.stdout:
   (key, _, value) = line.partition("=")

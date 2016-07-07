@@ -1,5 +1,5 @@
 #!/bin/sh
-DATADIR='data/'
+DATADIR='proc/data/'
 cd $DATADIR
 date +%s%3N | awk '{print "timestamp="$1}' > timestamp.txt & PID1=$!
 

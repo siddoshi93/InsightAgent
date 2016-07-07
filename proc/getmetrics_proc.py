@@ -24,7 +24,7 @@ if options.homepath is None:
     homepath = os.getcwd()
 else:
     homepath = options.homepath
-datadir = 'data/'
+datadir = 'proc/data/'
 
 def listtocsv(lists):
     log = ''
