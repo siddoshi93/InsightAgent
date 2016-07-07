@@ -97,22 +97,22 @@ class changeConfig:
         try:
             s = paramiko.SSHClient()
             s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            if os.path.isfile(password) == True:
-                s.connect(hostname, username=user, key_filename=password, timeout=60)
+            if os.path.isfile(self.password) == True:
+                s.connect(hostname, username=self.user, key_filename=self.password, timeout=60)
             else:
-                s.connect(hostname, username=user, password=password, timeout=60)
+                s.connect(hostname, username=self.user, password=self.password, timeout=60)
             transport = s.get_transport()
             session = transport.open_session()
             session.set_combine_stderr(True)
             session.get_pty()
             configfile = open("config.json", "r")
             line = configfile.readline()
-            command = "cd InsightAgent-cleanup\nsudo chown " + user + " " + self.agentType + "/data\nsudo echo " + line + " > ./"+self.agentType+"/data/config.json\n"
+            command = "cd InsightAgent-cleanup\nsudo chown " + self.user + " " + self.agentType + "/data\nsudo echo " + line + " > ./"+self.agentType+"/data/config.json\n"
             print command
             session.exec_command(command)
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)
-            stdin.write(password + '\n')
+            stdin.write(self.password + '\n')
             stdin.flush()
             session.recv_exit_status()  # wait for exec_command to finish
             s.close()
@@ -128,9 +128,9 @@ class changeConfig:
         except socket.error, e:
             print "Socket connection failed in %s:" % hostname, e
             return self.sshConfig(retry - 1, hostname)
-        #except:
-        #    print "Unexpected error in %s:" % hostname
-        #    sys.exit()
+        except:
+            print "Unexpected error in %s:" % hostname
+            sys.exit()
 
     def configChange(self, sshFunc):
         hostfile = "hostlist.txt"
