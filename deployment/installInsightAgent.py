@@ -35,10 +35,8 @@ class installInsightAgent:
             session.set_combine_stderr(True)
             session.get_pty()
             #session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
-            session.exec_command("wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
-            tar xzvf insightagent.tar.gz\n \
-            cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
-            sudo rm ../insightagent*\n")
+            session.exec_command("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/cleanup/deployment/updateAgent.py\n \
+                                sudo python updateAgent.py -t "+self.agentType+" \n")
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)
             stdin.write(self.password + '\n')
