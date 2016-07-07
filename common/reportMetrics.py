@@ -60,6 +60,8 @@ serverUrl = 'https://insightfindergae.appspot.com'
 
 reportedDataSize = 0
 totalSize = 0
+metrictoReport = []
+configMetricAvailable = False
 def getindex(col_name):
     if col_name == "CPU#%":
         return 1
@@ -119,6 +121,18 @@ def updateAgentDataRange(minTS,maxTS):
     url = serverUrl + "/agentdatahelper"
     response = requests.post(url, data=json.loads(json_data))
 
+#Get metrics to be reported
+def getMetricsToReport():
+    global metrictoReport
+    global configMetricAvailable
+    if os.path.isfile(os.path.join(homepath, datadir, "config.json")) == False:
+        metrictoReport = []
+        configMetricAvailable = False
+    else:
+        with open(os.path.join(homepath, datadir, "config.json"), 'r') as conf:
+            metrictoReport = json.load(conf)['reportingFields']
+            configMetricAvailable = True
+
 #main
 with open(os.path.join(homepath, datadir, "reporting_config.json"), 'r') as f:
     config = json.load(f)
@@ -152,6 +166,7 @@ idxdate = 0
 hostname = socket.gethostname().partition(".")[0]
 minTimestampEpoch = 0
 maxTimestampEpoch = 0
+getMetricsToReport()
 
 if options.inputFile is None:
     for i in range(0,2+int(float(reporting_interval)/24/60)):
@@ -178,6 +193,8 @@ if options.inputFile is None:
                             thisData[fieldnames[i]] = row[i]
                         else:
                             colname = fieldnames[i]
+                            if (colname in metrictoReport) == False and configMetricAvailable == True:
+                                continue
                             if colname.find("]") == -1:
                                 colname = colname+"["+hostname+"]"
                             if colname.find(":") == -1:
