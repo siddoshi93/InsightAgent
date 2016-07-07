@@ -1,18 +1,14 @@
 #!/usr/bin/python
 
 import sys
-import time
 import os
-import getpass
-import getopt
 import argparse
-import re
 import paramiko
 import socket
 import Queue
 import threading
 import json
-from Attributes import Attributes
+import subprocess
 
 homepath = os.getenv("INSIGHTAGENTDIR")
 
@@ -165,6 +161,13 @@ if __name__ == '__main__':
     global agentType
     global hostfile
     user, password, agentType = get_args()
+    if os.path.isfile("Attributes.py") == False:
+        proc = subprocess.Popen("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/cleanup/deployment/Attributes.py",
+            cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+        if "failed" in str(err) or "ERROR" in str(err):
+            sys.exit(err)
+    from Attributes import Attributes
     attr = Attributes(user=user, password=password, agentType=agentType)
     attr.displayAttributes()
     config = changeConfig(attr)
