@@ -173,4 +173,6 @@ if __name__ == '__main__':
     config = changeConfig(attr)
     if config.finalizeConfig() == True:
         config.configChange(config.sshConfig)
+    os.remove("changeConfig.py")
+    os.remove("Attributes.py")
 
