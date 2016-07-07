@@ -99,10 +99,9 @@ if __name__ == '__main__':
     stopagent.stopAgent(stopagent.sshStopCron)
     install = installInsightAgent(attr)
     install.installAgent(install.sshInstall)
-    if configStatus == True:
-        config.configChange(config.sshConfig)
-        deploy.removeFile("config.json")
+    config.configChange(config.sshConfig)
     startagent = startcron(attr)
     startagent.deployAgent(startagent.sshDeploy)
     deploy.clearDownloads()
     deploy.removeFile("deployInsightAgent.py")
+    deploy.removeFile("config.json")

@@ -66,7 +66,10 @@ class changeConfig:
             configOption = raw_input("Menu for configuring reporting metrics:\n\
     Enter one of the option:\n[1] To use default metrics\n[2] To edit metrics to be reported\n")
             if configOption == "1":
-                return False
+                reportingConfig = {'reportingFields': fields}
+                with open(os.path.join(homepath, "config.json"), "w") as conf:
+                    json.dump(reportingConfig, conf)
+                return
             elif configOption == "2":
                 print "Selected Option 2"
                 for eachfield in fields:
@@ -82,8 +85,8 @@ class changeConfig:
                 configRetries -= 1
                 continue
             print configFields
-            return True
-        return False
+            return
+        return
 
     def sshConfig(self, retry, hostname, hostQueue):
         if retry == 0:
@@ -171,8 +174,7 @@ if __name__ == '__main__':
     attr = Attributes(user=user, password=password, agentType=agentType)
     attr.displayAttributes()
     config = changeConfig(attr)
-    if config.finalizeConfig() == True:
-        config.configChange(config.sshConfig)
+    config.configChange(config.sshConfig)
     os.remove("changeConfig.py")
     os.remove("Attributes.py")
 
