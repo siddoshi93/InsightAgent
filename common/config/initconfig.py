@@ -70,12 +70,14 @@ def agentTracker():
         agentLookup['cgroup'] = '0'
         agentLookup['cadvisor'] = '0'
         agentLookup['replay'] = '0'
+        agentLookup[agentType] = '1'
         with open(os.path.join(homepath,"agentLookup.json"), "w") as lookup:
             json.dump(agentLookup, lookup)
     else:
-        with open(os.path.join(homepath, "agentLookup.json"), "w") as lookup:
+        with open(os.path.join(homepath, "agentLookup.json"), "rw") as lookup:
             agentLookup = json.load(lookup)
-        agentLookup[agentType] = '1'
+            agentLookup[agentType] = '1'
+            json.dump(agentLookup, lookup)
 
 update_configs(reporting_interval,"0","5")
 updateReportingConfig()
