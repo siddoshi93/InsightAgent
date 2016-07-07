@@ -98,3 +98,5 @@ if __name__ == '__main__':
     install.installAgent(install.sshInstall)
     startagent = startcron(attr)
     startagent.deployAgent(startagent.sshDeploy)
+    deploy.clearDownloads()
+    deploy.removeFile("deployInsightAgent.py")

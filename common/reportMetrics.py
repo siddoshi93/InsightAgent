@@ -74,10 +74,10 @@ def getindex(col_name):
 
 #update prev_endtime in config file
 def update_timestamp(prev_endtime):
-    with open(os.path.join(homepath,"reporting_config.json"), 'r') as f:
+    with open(os.path.join(homepath, datadir, "reporting_config.json"), 'r') as f:
         config = json.load(f)
     config['prev_endtime'] = prev_endtime
-    with open(os.path.join(homepath,"reporting_config.json"),"w") as f:
+    with open(os.path.join(homepath, datadir, "reporting_config.json"),"w") as f:
         json.dump(config, f)
 
 #send data to insightfinder
@@ -120,7 +120,7 @@ def updateAgentDataRange(minTS,maxTS):
     response = requests.post(url, data=json.loads(json_data))
 
 #main
-with open(os.path.join(homepath,"reporting_config.json"), 'r') as f:
+with open(os.path.join(homepath, datadir, "reporting_config.json"), 'r') as f:
     config = json.load(f)
 reporting_interval = int(config['reporting_interval'])
 keep_file_days = int(config['keep_file_days'])

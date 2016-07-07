@@ -47,9 +47,9 @@ if [ -z "$INSIGHTAGENTDIR" ]; then
 fi
 
 if [ $AGENT_TYPE == 'daemonset' ]; then
-	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
+	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
 else
-	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
+	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
 fi
 
 if [[ ! -d $INSIGHTAGENTDIR/$AGENT_TYPE/data ]]
@@ -84,10 +84,10 @@ USER=`whoami`
 
 if [ $AGENT_TYPE == 'daemonset' ]; then
 	echo "*/$SAMPLING_INTERVAL * * * * root python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.out" >> $TEMPCRON
-	echo "*/$REPORTING_INTERVAL * * * * root python $INSIGHTAGENTDIR/common/csvtojson.py -d $INSIGHTAGENTDIR -t $AGENT_TYPE 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.out" >> $TEMPCRON
+	echo "*/$REPORTING_INTERVAL * * * * root python $INSIGHTAGENTDIR/common/reportMetrics.py -d $INSIGHTAGENTDIR -t $AGENT_TYPE 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.out" >> $TEMPCRON
 else
 	echo "*/$SAMPLING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/$AGENT_TYPE/getmetrics_$AGENT_TYPE.py -d $INSIGHTAGENTDIR 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/sampling.out" >> $TEMPCRON
-	echo "*/$REPORTING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/csvtojson.py -d $INSIGHTAGENTDIR -t $AGENT_TYPE 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.out" >> $TEMPCRON
+	echo "*/$REPORTING_INTERVAL * * * * root $INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/reportMetrics.py -d $INSIGHTAGENTDIR -t $AGENT_TYPE 2>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.err 1>$INSIGHTAGENTDIR/$AGENT_TYPE/log/reporting.out" >> $TEMPCRON
 fi
 
 sudo chown root:root $TEMPCRON
