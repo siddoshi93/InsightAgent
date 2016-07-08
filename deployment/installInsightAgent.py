@@ -36,7 +36,7 @@ class installInsightAgent:
             session.get_pty()
             #session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
             session.exec_command("wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/cleanup/deployment/updateAgent.py\n \
-                                sudo python updateAgent.py -t "+self.agentType+" \n \
+                                python updateAgent.py -t "+self.agentType+" \n \
                                 sudo rm updateAgent.py\n")
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)
