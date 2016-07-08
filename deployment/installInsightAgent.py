@@ -37,7 +37,11 @@ def sshInstall(retry,hostname):
         session.set_combine_stderr(True)
         session.get_pty()
         if agentType == "lttng":
-            session.exec_command("python syscall/installLttng.py -d "+ os.getcwd()+"/syscall")
+            session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
+            wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
+            tar xzvf insightagent.tar.gz\n \
+            cd InsightAgent-testing\n \
+            python syscall/installLttng.py -d "+ os.getcwd()+"/syscall")
         else:
             session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
             wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
