@@ -41,12 +41,18 @@ def isAgentDeployed(agent):
 
 def updateAgent():
     if os.path.isdir("InsightAgent-cleanup") == True:
-        if getTotalAgents() > 1 or isAgentDeployed(agentType) == True:
+        if getTotalAgents() < 2 and isAgentDeployed(agentType) == True:
+            command = "sudo rm -rf insightagent* InsightAgent*\n \
+                wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
+                tar xzvf insightagent.tar.gz\n \
+                cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
+                sudo rm ../insightagent*\n"
+        else:
             command = "wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
                     tar xzvf insightagent.tar.gz\n \
                     cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
                     sudo rm ../insightagent*\n"
-            return command
+        return command
     command = "sudo rm -rf insightagent* InsightAgent*\n \
     wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
         tar xzvf insightagent.tar.gz\n \
