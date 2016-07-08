@@ -203,7 +203,7 @@ def update_docker():
     (out, err) = proc.communicate()
     dockers = out.split("\n")
     cronfile = open(os.path.join(homepath,datadir+"getmetrics_docker.sh"),'w')
-    cronfile.write("#!/bin/sh\nDATADIR='data/'\ncd $DATADIR\n")
+    cronfile.write("#!/bin/sh\nDATADIR='docker_remote_api/data/'\ncd $DATADIR\n")
     containerCount = 0
     for container in dockers:
         if container == "":
