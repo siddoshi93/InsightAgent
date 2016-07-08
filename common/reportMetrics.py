@@ -13,9 +13,9 @@ import math
 
 '''
 this script reads reporting interval and prev endtime config2
-and opens daily log file and reports header + rows within 
+and opens daily log file and reports header + rows within
 window of reporting interval after prev endtime
-if prev endtime is 0, report most recent reporting interval 
+if prev endtime is 0, report most recent reporting interval
 till now from today's log file (may or may not be present)
 assumping gmt epoch timestamp and local date daily file
 '''
@@ -51,20 +51,19 @@ LICENSEKEY = os.environ["INSIGHTFINDER_LICENSE_KEY"]
 PROJECTNAME = os.environ["INSIGHTFINDER_PROJECT_NAME"]
 USERNAME = os.environ["INSIGHTFINDER_USER_NAME"]
 serverUrl = 'https://insightfindergae.appspot.com'
-#serverUrl = 'https://agentdata-dot-insightfinderstaging.appspot.com'
 
 reportedDataSize = 0
 totalSize = 0
 def getindex(col_name):
-    if col_name == "CPU#%":
+    if col_name == "CPU":
         return 1
-    elif col_name == "DiskRead#MB" or col_name == "DiskWrite#MB":
+    elif col_name == "DiskRead" or col_name == "DiskWrite":
         return 2
-    elif col_name == "DiskUsed#MB":
+    elif col_name == "DiskUsed":
         return 3
-    elif col_name == "NetworkIn#MB" or col_name == "NetworkOut#MB":
+    elif col_name == "NetworkIn" or col_name == "NetworkOut":
         return 4
-    elif col_name == "MemUsed#MB":
+    elif col_name == "MemUsed":
         return 5
 
 #update prev_endtime in config file
@@ -164,7 +163,7 @@ if options.inputFile is None:
                             timestamp_index = i
                 elif dailyFileReader.line_num > 1:
                     if long(row[timestamp_index]) < long(start_time_epoch) :
-                        continue                
+                        continue
                     #Read each line from csv and generate a json
                     thisData = {}
                     for i in range(0,len(row)):
