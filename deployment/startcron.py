@@ -38,7 +38,7 @@ def sshDeploy(retry,hostname):
         session.set_combine_stderr(True)
         session.get_pty()
         if agentType == "lttng":
-            command="cd InsightAgent-testing && ./syscall/getSysTrace.sh -t "+samplingInterval
+            command="cd InsightAgent-testing/syscall && ./getSysTrace.sh -t "+samplingInterval
         else:
             command="cd InsightAgent-testing && sudo ./deployment/install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         session.exec_command(command)
