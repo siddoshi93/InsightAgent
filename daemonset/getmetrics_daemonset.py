@@ -184,7 +184,7 @@ def calculateDelta():
     previousResult = getPreviousResults()
     currentResult = metricResults
     for key in fieldsList:
-        if(key == "CPU"):
+        if((key.split('[')[0]) == "CPU"):
             if  key not in precpu:
                 deltaValue = "NaN"
                 finallogList.append(deltaValue)
@@ -197,7 +197,7 @@ def calculateDelta():
                 if deltaValue < 0:
                     deltaValue = 0
             finallogList.append(deltaValue)
-        elif(checkDelta(key) == True):
+        elif(checkDelta(key.split('[')[0]) == True):
             if (key not in currentResult) or (key not in previousResult):
                 deltaValue = "NaN"
             elif str(currentResult[key]) == "NaN" or str(previousResult[key]) == "NaN":
