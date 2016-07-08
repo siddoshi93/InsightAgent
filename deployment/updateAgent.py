@@ -27,9 +27,21 @@ def getTotalAgents():
            agents+=1
     return agents
 
+def isAgentDeployed(agent):
+    if os.path.isdir("InsightAgent-cleanup") == True:
+        return False
+    if os.path.isfile(os.path.join("InsightAgent-cleanup", "agentLookup.json")) == False:
+        return False
+    with open(os.path.join("InsightAgent-cleanup", "agentLookup.json"), "r") as f:
+        agentLookup = json.load(f)
+    if agentLookup[agent] == "1":
+        return True
+    else:
+        return False
+
 def updateAgent():
     if os.path.isdir("InsightAgent-cleanup") == True:
-        if getTotalAgents() > 1:
+        if getTotalAgents() > 1 or isAgentDeployed(agentType) == True:
             command = "wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
                     tar xzvf insightagent.tar.gz\n \
                     cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
