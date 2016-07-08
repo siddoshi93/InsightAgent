@@ -28,7 +28,7 @@ def getTotalAgents():
     return agents
 
 def isAgentDeployed(agent):
-    if os.path.isdir("InsightAgent-cleanup") == True:
+    if os.path.isdir("InsightAgent-cleanup") == False:
         return False
     if os.path.isfile(os.path.join("InsightAgent-cleanup", "agentLookup.json")) == False:
         return False
