@@ -41,7 +41,7 @@ def sshInstall(retry,hostname):
             wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
             tar xzvf insightagent.tar.gz\n \
             cd InsightAgent-testing\n \
-            python syscall/installLttng.py -d "+ os.getcwd()+"/syscall")
+            ./syscall/installLttng.py -d "+ os.getcwd()+"/syscall")
         else:
             session.exec_command("sudo rm -rf insightagent* InsightAgent*\n \
             wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz\n \
