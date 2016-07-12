@@ -34,27 +34,35 @@ def listtocsv(lists):
             log = log + ','
     resource_usage_file.write("%s\n"%(log))
 
-globalGroupIndex=8
+globalGroupIndex=13
 def getindex(col_name):
     global globalGroupIndex
-    if col_name == "cpuUsed#%":
+    if col_name == "cpuUsed":
         return 1
-    if col_name == "cpuSystem#%":
+    if col_name == "cpuSystem":
         return 2
-    if col_name == "cpuOverlap#%":
+    if col_name == "cpuOverlap":
         return 3
-    if col_name == "cpuRun#%":
+    if col_name == "cpuRun":
         return 4
-    if col_name == "cpuReady#%":
+    if col_name == "cpuReady":
         return 5
-    if col_name == "cpuWait#%":
+    if col_name == "cpuWait":
         return 6
-    elif col_name == "DiskRead#MB/s" or col_name == "DiskWrite#MB/s":
-        return 7
-    elif "Disk" in col_name:
-        return 7
-    elif col_name == "MemUsed#MB":
+    elif col_name == "DiskReadRate" or col_name == "DiskWriteRate":
         return 8
+    elif "Commands" in col_name:
+        return 7
+    elif col_name == "MemUsed":
+        return 9
+    elif col_name == "NetworkIn/vSwitch0Total":
+        return 10
+    elif col_name == "NetworkOut/vSwitch0Total":
+        return 11
+    elif col_name == "NetworkIn/vSwitch1Total":
+        return 12
+    elif col_name == "NetworkOut/vSwitch1Total":
+        return 13
     else:
         globalGroupIndex+=1
         return globalGroupIndex
@@ -66,7 +74,8 @@ try:
     print command
     date = time.strftime("%Y%m%d")
     resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"),'a+')
-    numlines = len(resource_usage_file.readlines())
+    csvContent = resource_usage_file.readlines()
+    numlines = len(csvContent)
     metricValues = []
     proc = subprocess.Popen(command, cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
@@ -74,16 +83,21 @@ try:
     content=logFile.readlines()
     metrics = content[0].split(",")
     values = content[1].split(",")
-    metricList = ["timestamp", "cpuUsed#%", "cpuSystem#%", "cpuOverlap#%", "cpuRun#%", "cpuReady#%", "cpuWait#%", "DiskCommands#Commands/s", "DiskReadCommands#Commands/s", \
-                   "DiskWriteCommands#Commands/s","DiskRead#MB/s", "DiskWrite#MB/s", "MemUsed#MB"]
-    metricDict = {"timestamp" : [], "cpuUsed#%" : ["% Used", "Group Cpu"], "cpuSystem#%" : ["% System", "Group Cpu"], "cpuOverlap#%" : ["% Overlap", "Group Cpu"], \
-                  "cpuRun#%" : ["% Run", "Group Cpu"], "cpuReady#%" : ["% Ready", "Group Cpu"], "cpuWait#%" : ["% Wait", "Group Cpu"], "DiskRead#MB/s" : ["MBytes Read/sec"], \
-                  "DiskWrite#MB/s" : ["MBytes Written/sec"], "MemUsed#MB" : [], "DiskCommands#Commands/s" : ["Commands/sec"], "DiskReadCommands#Commands/s" : ["Reads/sec"], \
-                  "DiskWriteCommands#Commands/s" : ["Writes/sec"]}
+    metricList = ["timestamp", "cpuUsed", "cpuSystem", "cpuOverlap", "cpuRun", "cpuReady", "cpuWait", "DiskCommands", "DiskReadCommands", \
+                   "DiskWriteCommands","DiskReadRate", "DiskWriteRate", "MemUsed", "NetworkIn/vSwitch0Total", "NetworkOut/vSwitch0Total", "NetworkIn/vSwitch1Total", \
+                  "NetworkOut/vSwitch1Total"]
+    metricDict = {"timestamp" : [], "cpuUsed" : ["% Used", "Group Cpu"], "cpuSystem" : ["% System", "Group Cpu"], "cpuOverlap" : ["% Overlap", "Group Cpu"], \
+                  "cpuRun" : ["% Run", "Group Cpu"], "cpuReady" : ["% Ready", "Group Cpu"], "cpuWait" : ["% Wait", "Group Cpu"], "DiskReadRate" : ["MBytes Read/sec"], \
+                  "DiskWriteRate" : ["MBytes Written/sec"], "MemUsed" : [], "DiskCommands" : ["Commands/sec"], "DiskReadCommands" : ["Reads/sec"], \
+                  "DiskWriteCommands" : ["Writes/sec"], "NetworkIn/vSwitch0Total" : ["MBits Received/sec", "vSwitch0"], "NetworkOut/vSwitch0Total" : ["MBits Transmitted/sec", "vSwitch0"], \
+                  "NetworkIn/vSwitch1Total" : ["MBits Received/sec", "vSwitch1"], "NetworkOut/vSwitch1Total" : ["MBits Transmitted/sec", "vSwitch1"]}
     totalMemory = freeMemory = diskRead = diskWrite = networkTx = networkRx = cpu = cpuused = 0
     timestamp = int(time.time()*1000)
     for i in range(0,len(metrics)):
         if "MBits Transmitted/sec" in metrics[i] or "MBits Received/sec" in metrics[i]:
+            if "USB" in metrics[i]:
+                continue
+            #print metrics[i]
             temp = metrics[i]
             s = temp.index('(')
             t = temp.index(')')
@@ -91,10 +105,10 @@ try:
             tok=temp1.split(':')
             fd = tok[0]+"/"+tok[len(tok)-1]
             if "MBits Transmitted/sec" in metrics[i]:
-                fd = "NetworkOut/"+fd+"#Mbps"
+                fd = "NetworkOut/"+fd
                 metricDict.update({fd:["MBits Transmitted/sec"]})
             elif "MBits Received/sec" in metrics[i]:
-                fd = "NetworkIn/"+fd+"#Mbps"
+                fd = "NetworkIn/"+fd
                 metricDict.update({fd:["MBits Received/sec"]})
             metricList.append(fd)
     for i in range(len(metricList)):
@@ -102,7 +116,7 @@ try:
     metricValues[metricList.index("timestamp")] = timestamp
     for i in range(0,len(metrics)):
         for metric in metricDict:
-            if metric == "MemUsed#MB":
+            if metric == "MemUsed":
                 if "Memory\Machine MBytes" in metrics[i]:
                     values[i] = values[i].replace('"', '').strip()
                     totalMemory = totalMemory + float(values[i])
@@ -120,7 +134,7 @@ try:
                         allKeyspresent = False
                         break
                 if allKeyspresent == True:
-                    if "Network" in metric:
+                    if "Network" in metric and metric.count("/") == 2:
                         temp = metrics[i]
                         s = temp.index('(')
                         t = temp.index(')')
@@ -128,23 +142,34 @@ try:
                         tok=temp1.split(':')
                         fd = tok[0]+"/"+tok[len(tok)-1]
                         if "NetworkIn" in metric:
-                            fd = "NetworkIn/"+fd+"#Mbps"
+                            fd = "NetworkIn/"+fd
                         else:
-                            fd = "NetworkOut/"+fd+"#Mbps"
+                            fd = "NetworkOut/"+fd
                         if fd != metric:
                             continue
                     values[i] = values[i].replace('"', '').strip()
                     metricValues[metricList.index(metric)] += float(values[i])
-    if(numlines < 1):
-        for metric in metricList:
-            if metric != "timestamp":
-                groupid = getindex(metric)
-                tempField = metric + "[" + hostname + "]"
-                tempField = tempField + ":" + str(groupid)
-                fields.append(tempField)
-            else:
-                fields.append(metric)
+    for metric in metricList:
+        if metric != "timestamp":
+            groupid = getindex(metric)
+            tempField = metric + "[" + hostname + "]"
+            tempField = tempField + ":" + str(groupid)
+            fields.append(tempField)
+        else:
+            fields.append(metric)
+    print fields
+    if numlines < 1:
         listtocsv(fields)
+    else:
+        headercsv = csvContent[0]
+        header = headercsv.split("\n")[0].split(",")
+        print header
+        if cmp(header,fields) != 0:
+            oldFile = os.path.join(homepath,datadir+date+".csv")
+            newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
+            os.rename(oldFile,newFile)
+            resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
+            listtocsv(fields)
     listtocsv(metricValues)
     resource_usage_file.flush()
     resource_usage_file.close()
