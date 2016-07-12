@@ -1,5 +1,5 @@
 #!/bin/sh
-DATADIR='data/'
+DATADIR='cgroup/data/'
 cd $DATADIR
 
 for SEARCHKEY in "rubis_apache" "rubis_db"

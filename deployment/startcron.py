@@ -7,6 +7,8 @@ import socket
 import Queue
 import threading
 
+BRANCH="cleanup"
+
 class startcron:
     def __init__(self, params):
         self.projectName = params.projectName
@@ -35,7 +37,7 @@ class startcron:
             session = transport.open_session()
             session.set_combine_stderr(True)
             session.get_pty()
-            command = "cd InsightAgent-cleanup && sudo ./deployment/install.sh -i " + self.projectName + " -u " + self.insightUser + " -k " + self.licenseKey + " -s " + self.samplingInterval + " -r " + self.reportingInterval + " -t " + self.agentType
+            command = "cd InsightAgent-"+BRANCH+" && sudo ./deployment/install.sh -i " + self.projectName + " -u " + self.insightUser + " -k " + self.licenseKey + " -s " + self.samplingInterval + " -r " + self.reportingInterval + " -t " + self.agentType
             session.exec_command(command)
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)

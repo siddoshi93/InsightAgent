@@ -5,6 +5,8 @@ import json
 import subprocess
 from optparse import OptionParser
 
+BRANCH="cleanup"
+
 usage = "Usage: %prog [options]"
 parser = OptionParser(usage=usage)
 parser.add_option("-t", "--agentType",
@@ -17,9 +19,9 @@ else:
     agentType = options.agentType
 
 def getTotalAgents():
-    if os.path.isfile(os.path.join("InsightAgent-cleanup", "agentLookup.json")) == False:
+    if os.path.isfile(os.path.join("InsightAgent-"+BRANCH, "agentLookup.json")) == False:
         return 0
-    with open(os.path.join("InsightAgent-cleanup", "agentLookup.json"), "r") as f:
+    with open(os.path.join("InsightAgent-"+BRANCH, "agentLookup.json"), "r") as f:
         agentLookup = json.load(f)
     agents = 0
     for keys in agentLookup:
@@ -28,11 +30,11 @@ def getTotalAgents():
     return agents
 
 def isAgentDeployed(agent):
-    if os.path.isdir("InsightAgent-cleanup") == False:
+    if os.path.isdir("InsightAgent-"+BRANCH) == False:
         return False
-    if os.path.isfile(os.path.join("InsightAgent-cleanup", "agentLookup.json")) == False:
+    if os.path.isfile(os.path.join("InsightAgent-"+BRANCH+"/agentLookup.json")) == False:
         return False
-    with open(os.path.join("InsightAgent-cleanup", "agentLookup.json"), "r") as f:
+    with open(os.path.join("InsightAgent-"+BRANCH, "agentLookup.json"), "r") as f:
         agentLookup = json.load(f)
     if agentLookup[agent] == "1":
         return True
@@ -40,23 +42,23 @@ def isAgentDeployed(agent):
         return False
 
 def updateAgent():
-    if os.path.isdir("InsightAgent-cleanup") == True:
+    if os.path.isdir("InsightAgent-"+BRANCH) == True:
         if getTotalAgents() < 1 or (getTotalAgents() < 2 and isAgentDeployed(agentType) == True):
             command = "sudo rm -rf insightagent* InsightAgent*\n \
-                wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
+                wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/"+BRANCH+".tar.gz -O insightagent.tar.gz\n \
                 tar xzvf insightagent.tar.gz\n \
-                cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
+                cd InsightAgent-"+BRANCH+" && python deployment/checkpackages.py\n \
                 sudo rm ../insightagent*\n"
         else:
-            command = "wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
+            command = "wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/"+BRANCH+".tar.gz -O insightagent.tar.gz\n \
                     tar xzvf insightagent.tar.gz\n \
-                    cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
+                    cd InsightAgent-"+BRANCH+" && python deployment/checkpackages.py\n \
                     sudo rm ../insightagent*\n"
         return command
     command = "sudo rm -rf insightagent* InsightAgent*\n \
-    wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/cleanup.tar.gz -O insightagent.tar.gz\n \
+    wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/"+BRANCH+".tar.gz -O insightagent.tar.gz\n \
         tar xzvf insightagent.tar.gz\n \
-        cd InsightAgent-cleanup && python deployment/checkpackages.py\n \
+        cd InsightAgent-"+BRANCH+" && python deployment/checkpackages.py\n \
         sudo rm ../insightagent*\n"
     return command
 

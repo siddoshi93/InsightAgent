@@ -9,6 +9,8 @@ import threading
 import time
 from Attributes import Attributes
 
+BRANCH = "cleanup"
+
 class stopcron:
     def __init__(self, params):
         self.user = params.user;
@@ -31,7 +33,7 @@ class stopcron:
             session = transport.open_session()
             session.set_combine_stderr(True)
             session.get_pty()
-            command = "sudo mv /etc/cron.d/ifagent"+self.agentType+" InsightAgent-cleanup/"+self.agentType+"/ifagent"+self.agentType+"." + time.strftime("%Y%m%d%H%M%S") + "\n"
+            command = "sudo mv /etc/cron.d/ifagent"+self.agentType+" InsightAgent-"+BRANCH+"/"+self.agentType+"/ifagent"+self.agentType+"." + time.strftime("%Y%m%d%H%M%S") + "\n"
             session.exec_command(command)
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)
