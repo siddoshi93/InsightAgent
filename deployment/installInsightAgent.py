@@ -157,9 +157,6 @@ if __name__ == '__main__':
     global agentType
     hostfile="hostlist.txt"
     user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password = get_args()
-    if agentType == "hypervisor":
-        proc = subprocess.Popen("wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        (out,err) = proc.communicate()
     q = Queue.Queue()
     try:
         with open(os.getcwd()+"/"+hostfile, 'rb') as f:
