@@ -16,11 +16,10 @@ BRANCH="cleanup"
 if homepath is None:
     homepath = os.getcwd()
 
-deltaFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB"]
-procFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "DiskUsed#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
-cadvisorFields = ["CPU#%"]
-cgroupFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
-dockerRemoteApiFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
+procFields = ["CPU", "DiskRead", "DiskWrite", "DiskUsed", "NetworkIn", "NetworkOut", "MemUsed"]
+cadvisorFields = ["CPU"]
+cgroupFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
+dockerRemoteApiFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
 
 
 def get_args():
