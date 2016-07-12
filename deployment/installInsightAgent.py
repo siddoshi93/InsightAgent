@@ -88,7 +88,7 @@ def sshInstallHypervisor(retry,hostname):
             s.connect(hostname, username=user, key_filename = password, timeout=60)
         else:
             s.connect(hostname, username=user, password = password, timeout=60)
-        ftp = ssh.open_sftp()
+        ftp = s.open_sftp()
         ftp.put('insightagent.tar.gz', 'insightagent.tar.gz')
         transport = s.get_transport()
         session = transport.open_session()
