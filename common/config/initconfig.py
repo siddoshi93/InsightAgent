@@ -26,11 +26,11 @@ if homepath is None:
     homepath = os.getcwd()
 
 datadir = agentType+'/data/'
-deltaFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB"]
-procFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "DiskUsed#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
-cadvisorFields = ["CPU#%"]
-cgroupFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
-dockerRemoteApiFields = ["CPU#%", "DiskRead#MB", "DiskWrite#MB", "NetworkIn#MB", "NetworkOut#MB", "MemUsed#MB"]
+deltaFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut"]
+procFields = ["CPU", "DiskRead", "DiskWrite", "DiskUsed", "NetworkIn", "NetworkOut", "MemUsed"]
+cadvisorFields = ["CPU"]
+cgroupFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
+dockerRemoteApiFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
 
 #update endtime in config file
 def update_configs(reporting_interval,prev_endtime,keep_file_days):
