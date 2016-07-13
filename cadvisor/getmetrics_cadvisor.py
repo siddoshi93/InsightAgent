@@ -39,8 +39,12 @@ newInstanceAvailable = False
 def getindex(colName):
     if colName == "CPU":
         return 1
-    elif colName == "MemUsedB":
+    elif colName == "DiskRead" or colName == "DiskWrite":
         return 2
+    elif colName == "NetworkIn" or colName == "NetworkOut":
+        return 3
+    elif colName == "MemUsed":
+        return 4
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
