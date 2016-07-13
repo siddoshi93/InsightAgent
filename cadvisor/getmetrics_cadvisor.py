@@ -153,12 +153,12 @@ def getmetric():
                 curr_network_r = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["network"]["rx_bytes"]
                 network_t = float(float(curr_network_t - prev_network_t)/(1024*1024)) #MB
                 network_r = float(float(curr_network_r - prev_network_r)/(1024*1024)) #MB
-                #log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
-                log = log + "," + str(cur_cpu)
+                log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
+                #log = log + "," + str(cur_cpu)
                 if(numlines < 1):
                     serverType = ["Web", "DB"]
-                    #fields = ["timestamp","CPU","DiskRead","DiskWrite","NetworkIn","NetworkOut","MemUsed"]
-                    fields = ["timestamp","CPU"]
+                    fields = ["timestamp","CPU","DiskRead","DiskWrite","NetworkIn","NetworkOut","MemUsed"]
+                    #fields = ["timestamp","CPU"]
                     if i == 0:
                         fieldnames = fields[0]
                     host = hostname.partition(".")[0]
