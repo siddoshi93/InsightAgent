@@ -13,7 +13,7 @@ cat /proc/net/dev | awk 'BEGIN{NetworkBytesin=0;NetworkBytesout=0} {NetworkBytes
 
 cat /proc/meminfo | grep Mem | awk '{gsub( "[:':']","=" );print}' | awk 'BEGIN{i=0} {mem[i]=$2;i=i+1} END{print "MemUsed="(mem[0]-mem[1])}' > memmetrics.txt & PID6=$!
 
-cat /proc/loadavg | awk '{print "loadavg1="$1; print "loadavg5="$2; print "loadavg15="$3}' > loadavg.txt & PID7=$!
+cat /proc/loadavg | awk '{print "LoadAvg1="$1; print "LoadAvg5="$2; print "LoadAvg15="$3}' > loadavg.txt & PID7=$!
 
 wait $PID1
 wait $PID2

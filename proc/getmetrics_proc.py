@@ -45,7 +45,7 @@ def getindex(col_name):
         return 4
     elif col_name == "MemUsed":
         return 5
-    elif "loadavg" in col_name:
+    elif "LoadAvg" in col_name:
         return 6
 
 def update_results(lists):
