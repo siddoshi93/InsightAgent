@@ -168,7 +168,10 @@ def getmetric():
                         if(fieldnames != ""):
                             fieldnames = fieldnames + ","
                         groupid = getindex(fields[k])
-                        metric = fields[k] + "[" + dockers[i] + "_" + host + "]"
+                        dockerID = dockers[i]
+                        if len(dockerID) > 12:
+                            dockerID = dockerID[:12]
+                        metric = fields[k] + "[" + dockerID + "_" + host + "]"
                         fieldnames = fieldnames + metric +":"+str(groupid)
             if(numlines < 1):
                 resource_usage_file.write("%s\n"%(fieldnames))
