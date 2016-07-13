@@ -45,6 +45,8 @@ def getindex(col_name):
         return 4
     elif col_name == "MemUsed":
         return 5
+    elif "loadavg" in col_name:
+        return 6
 
 def update_results(lists):
     with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
@@ -139,7 +141,7 @@ def get_cpuusage(filename,field_values,which_dict):
         totalresult += float(result)
     field_values.append(totalresult*100)
 
-filenames = ["timestamp.txt", "cpumetrics.txt","diskmetrics.txt","diskusedmetrics.txt","networkmetrics.txt","memmetrics.txt"]
+filenames = ["timestamp.txt", "cpumetrics.txt","diskmetrics.txt","diskusedmetrics.txt","networkmetrics.txt","memmetrics.txt","loadavg.txt"]
 fields = []
 try:
     date = time.strftime("%Y%m%d")
