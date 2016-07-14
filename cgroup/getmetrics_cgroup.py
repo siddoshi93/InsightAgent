@@ -25,6 +25,7 @@ if options.homepath is None:
 else:
     homepath = options.homepath
 datadir = 'data/'
+newInstanceAvailable = False
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -55,6 +56,7 @@ def update_results(lists):
         json.dump(lists,f)
 
 def init_previous_results():
+    global dockerInstances
     first_result = {}
     timestampRead = False
     for containers in dockerInstances:
@@ -164,12 +166,11 @@ try:
     (out,err) = proc.communicate()
     print out
     print err
-
+    update_docker()
     if(os.path.isfile(homepath+"/"+datadir+"timestamp.txt") == False):
         sys.exit()
     if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
         init_previous_results()
-    update_docker()
     for containers in dockerInstances:
         tokens = []
         dockerID = containers
