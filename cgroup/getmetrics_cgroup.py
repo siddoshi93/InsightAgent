@@ -116,8 +116,6 @@ def calculate_delta(fieldname,value):
 dockerInstances = []
 def update_docker():
     global dockers
-    global num_apache
-    global num_sql
     global newInstanceAvailable
     global dockerInstances
 
