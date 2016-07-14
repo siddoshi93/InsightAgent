@@ -154,7 +154,7 @@ def update_docker():
         newInstanceAvailable = True
 
 fields = []
-filenames = ["timestamp.txt","cpumetrics.txt","diskmetricsread.txt","diskmetricswrite.txt","networkmetrics.txt"]
+filenames = ["timestamp.txt","cpumetrics.txt","diskmetricsread.txt","diskmetricswrite.txt","networkmetrics.txt","memmetrics.txt"]
 try:
     date = time.strftime("%Y%m%d")
     if newInstanceAvailable == True and os.path.isfile(os.path.join(homepath,datadir+date+".csv")) == True:
