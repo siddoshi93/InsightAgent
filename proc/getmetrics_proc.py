@@ -39,14 +39,16 @@ def getindex(col_name):
         return 1
     elif col_name == "DiskRead" or col_name == "DiskWrite":
         return 2
-    elif "DiskUsed" in col_name:
+    elif col_name == "DiskUsed":
         return 3
     elif col_name == "NetworkIn" or col_name == "NetworkOut":
         return 4
     elif col_name == "MemUsed":
         return 5
-    elif "LoadAvg" in col_name:
+    elif "DiskUsed" in col_name:
         return 6
+    elif "LoadAvg" in col_name:
+        return 7
 
 def update_results(lists):
     with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
