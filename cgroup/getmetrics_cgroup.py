@@ -26,6 +26,7 @@ else:
     homepath = options.homepath
 datadir = 'data/'
 newInstanceAvailable = False
+hostname = socket.gethostname().partition(".")[0]
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -81,9 +82,9 @@ def init_previous_results():
                 if(len(tokens) == 1):
                     continue
                 if(eachfile == "cpumetrics.txt"):
-                    tokens[0] = tokens[0] + "[" + dockerID + "]"
+                    tokens[0] = tokens[0] + "[" + hostname + "_" + dockerID + "]"
                 elif(correctFile != "timestamp.txt"):
-                    tokens[0] = tokens[0] + "[" + dockerID + "]"
+                    tokens[0] = tokens[0] + "[" + hostname + "_" + dockerID + "]"
                     tokens[1] = float(float(tokens[1])/(1024*1024))
                 if(tokens[0] != "timestamp"):
                     groupid = getindex(tokens[0])
@@ -204,9 +205,9 @@ try:
                 if(len(tokens) == 1):
                     continue
                 if(eachfile == "cpumetrics.txt"):
-                    tokens[0] = tokens[0] + "[" + dockerID + "]"
+                    tokens[0] = tokens[0] + "[" + hostname + "_" + dockerID + "]"
                 elif(correctFile != "timestamp.txt"):
-                    tokens[0] = tokens[0] + "[" + dockerID + "]"
+                    tokens[0] = tokens[0] + "[" + hostname + "_" + dockerID + "]"
                     tokens[1] = float(float(tokens[1])/(1024*1024))
                 if(tokens[0] != "timestamp"):
                     groupid = getindex(tokens[0])
