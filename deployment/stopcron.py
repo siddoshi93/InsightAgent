@@ -9,6 +9,7 @@ import Queue
 import threading
 import time
 from Attributes import Attributes
+import subprocess
 
 BRANCH = "cleanup"
 
@@ -162,9 +163,28 @@ def get_args():
     agentType = args.AGENT_TYPE
     return user, password, agentType
 
+
+def downloadFile(self, filename):
+    proc = subprocess.Popen(
+        "wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/" + BRANCH + "/deployment/" + filename,
+        cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    if "failed" in str(err) or "ERROR" in str(err):
+        sys.exit(err)
+    os.chmod(filename, 0755)
+
+
+def removeFile(self, filename):
+    proc = subprocess.Popen("rm " + filename + "*", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            shell=True)
+    (out, err) = proc.communicate()
+
 if __name__ == '__main__':
     user, password, agentType = get_args()
+    downloadFile("Attributes.py")
     attr = Attributes(user=user, password=password, agentType=agentType)
     print os.getcwd()
     st = stopcron(attr)
     st.stopAgent(st.sshStopCron)
+    removeFile("Attributes.py")
+    removeFile("stopcron.py")
