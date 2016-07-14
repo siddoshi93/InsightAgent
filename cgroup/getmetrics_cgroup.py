@@ -160,7 +160,13 @@ try:
     dict = {}
     timestampread = False
     ipAddress = get_ip_address()
-    proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    if(os.path.isdir("/cgroup") == True:
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    elif(os.path.isdir("/sys/fs/cgroup") == True:
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    else:
+        print"No cgroups found.Stopping."
+        sys.exit()
     (out,err) = proc.communicate()
     print out
     print err
