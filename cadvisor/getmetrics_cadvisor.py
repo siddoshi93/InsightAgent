@@ -1,5 +1,4 @@
-#Version8: based of monitorMetrics7.py
-#This script makes a GET request to the cAdvisor running on hgcc07
+#!/usr/bin/python
 
 import time
 import datetime
@@ -74,16 +73,17 @@ def update_docker():
     else:
         with open(os.path.join(homepath,datadir+"totalInstances.json"),'r') as f:
             dockerInstances = json.load(f)["overallDockerInstances"]
+    newInstances = []
     for eachDocker in dockers:
         if eachDocker == "":
             continue
-        if eachDocker not in dockerInstances:
-            towritePreviousInstances = {}
-            dockerInstances.append(eachDocker)
-            towritePreviousInstances["overallDockerInstances"] = dockerInstances
-            with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
-                json.dump(towritePreviousInstances,f)
-            newInstanceAvailable = True
+        newInstances.append(eachDocker)
+    if cmp(newInstances,dockerInstances) != 0:
+        towritePreviousInstances = {}
+        towritePreviousInstances["overallDockerInstances"] = newInstances
+        with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
+            json.dump(towritePreviousInstances,f)
+        newInstanceAvailable = True
 
 def getmetric():
     global counter_time_map

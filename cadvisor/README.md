@@ -9,7 +9,8 @@ InsightFinder agent can be used to monitor performance metrics of docker contain
 - Go to the link https://insightfinder.com/
 - Sign in with the user credentials or sign up for a new account.
 - Go to Settings and Register for a project under "Insight Agent" tab.
-- Give a project name, select Project Type as "Private Cloud". When registered, a License Key is sent to the registered email account.
+- Give a project name, select Project Type as "Private Cloud".
+- Note down license key which is available in "User Account Information". To go to "User Account Information", click the userid on the top right corner.
 
 ##### Pre-requisites:
 This pre-requisite is needed on the machine which launches deployInsightAgent.py.
@@ -46,8 +47,8 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 - Include IP address of all hosts in hostlist.txt and enter one IP address per line.
 - To deploy run the following command:
 ```
-python deployInsightAgent.py -i PROJECT_NAME_IN_INSIGHTFINDER
-                             -n USER_NAME_IN_HOST 
+python deployInsightAgent.py -n USER_NAME_IN_HOST
+                             -i PROJECT_NAME_IN_INSIGHTFINDER
                              -u USER_NAME_IN_INSIGHTFINDER 
                              -k LICENSE_KEY 
                              -s SAMPLING_INTERVAL_MINUTE 

@@ -1,6 +1,10 @@
 # Kubernetes Daemonset for insightfinder agent
 Insightfinder agent can be deployed as a kubernetes daemonset using the configuration file "insightfinder.yaml".
 
+The insightfinder docker image is found at the link: https://hub.docker.com/r/insightfinderagent/kubernetes-daemon-set/ .
+
+The insightfinder.yaml configuration file takes care of downloading this docker image from docker hub.
+
 ##### Instructions to register a project in Insightfinder.com
 - Go to the link https://insightfinder.com/
 
@@ -22,7 +26,7 @@ In the env part of insightfinder.yaml, the following parameters are required:
 
 - INSIGHTFINDER_PROJECTNAME - name of the registered project with insightfinder.
 
-- INSIGHTFINDER_PROJECTKEY - is available via email when a project is registered with insightfinder
+- INSIGHTFINDER_PROJECTKEY - is available in "User Account Information" as license key. To go to "User Account Information", click the userid on the top right corner.
 
 - INSIGHTFINDER_USERNAME - username used to login into insightfinder website.
 
