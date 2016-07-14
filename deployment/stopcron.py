@@ -181,6 +181,7 @@ def removeFile(filename):
 
 if __name__ == '__main__':
     user, password, agentType = get_args()
+    homepath = os.getcwd()
     downloadFile("Attributes.py")
     attr = Attributes(user=user, password=password, agentType=agentType)
     print os.getcwd()
