@@ -8,6 +8,7 @@ import time
 import os
 from optparse import OptionParser
 import multiprocessing
+import socket
 
 '''
 this script gathers system info from /proc/ and add to daily csv file
