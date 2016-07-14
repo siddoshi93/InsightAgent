@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import argparse
 import os
 import sys
 import paramiko
@@ -33,7 +34,10 @@ class stopcron:
             session = transport.open_session()
             session.set_combine_stderr(True)
             session.get_pty()
-            command = "sudo mv /etc/cron.d/ifagent"+self.agentType+" InsightAgent-"+BRANCH+"/"+self.agentType+"/ifagent"+self.agentType+"." + time.strftime("%Y%m%d%H%M%S") + "\n"
+            command = "sudo mv /etc/cron.d/ifagent"+self.agentType+" InsightAgent-"+BRANCH+"/"+self.agentType+"/ifagent"+self.agentType+"." + time.strftime("%Y%m%d%H%M%S") + "\n" \
+            "sed -i 's#\""+self.agentType+"\": \"1\"#\""+self.agentType+"\": \"0\"#g' InsightAgent-"+BRANCH+"/agentLookup.json\n"
+            #"sed - i 's#"replay": "0"#"replay": "1"#g' InsightAgent-"+BRANCH+"agentLookup.json
+            print command
             session.exec_command(command)
             stdin = session.makefile('wb', -1)
             stdout = session.makefile('rb', -1)
@@ -143,9 +147,24 @@ class stopcron:
             print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
             sys.exit()
 '''
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Script retrieves arguments for insightfinder agent.')
+    parser.add_argument('-n', '--USER_NAME_IN_HOST', type=str, help='User Name in Hosts', required=True)
+    parser.add_argument('-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
+    parser.add_argument('-t', '--AGENT_TYPE', type=str,
+                        help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset',
+                        choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'], required=True)
+    args = parser.parse_args()
+    user = args.USER_NAME_IN_HOST
+    password = args.PASSWORD
+    agentType = args.AGENT_TYPE
+    return user, password, agentType
+
 if __name__ == '__main__':
-    attr = Attributes("proc", "rchandh", "rchandh", "adsdfs", "1", "1", "proc", "Raknahsivar2590")
+    user, password, agentType = get_args()
+    attr = Attributes(user=user, password=password, agentType=agentType)
     print os.getcwd()
     st = stopcron(attr)
     st.stopAgent(st.sshStopCron)
-    st.stopAgent(st.sshRemoveAgent)
