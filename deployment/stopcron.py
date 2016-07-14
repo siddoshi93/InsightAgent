@@ -164,7 +164,7 @@ def get_args():
     return user, password, agentType
 
 
-def downloadFile(self, filename):
+def downloadFile(filename):
     proc = subprocess.Popen(
         "wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/" + BRANCH + "/deployment/" + filename,
         cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -174,7 +174,7 @@ def downloadFile(self, filename):
     os.chmod(filename, 0755)
 
 
-def removeFile(self, filename):
+def removeFile(filename):
     proc = subprocess.Popen("rm " + filename + "*", cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             shell=True)
     (out, err) = proc.communicate()
