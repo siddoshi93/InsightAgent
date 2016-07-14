@@ -91,7 +91,13 @@ def init_previous_results():
                 first_result[tokens[0]] = float(tokens[1])
     update_results(first_result)
     time.sleep(1)
-    proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    if(os.path.isdir("/cgroup") == True):
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    elif(os.path.isdir("/sys/fs/cgroup") == True):
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    else:
+        print"No cgroups found.Stopping."
+        sys.exit()
     (out,err) = proc.communicate()
 
 def get_previous_results():
@@ -160,9 +166,9 @@ try:
     dict = {}
     timestampread = False
     ipAddress = get_ip_address()
-    if(os.path.isdir("/cgroup") == True:
+    if(os.path.isdir("/cgroup") == True):
         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
-    elif(os.path.isdir("/sys/fs/cgroup") == True:
+    elif(os.path.isdir("/sys/fs/cgroup") == True):
         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     else:
         print"No cgroups found.Stopping."
