@@ -25,6 +25,7 @@ if options.homepath is None:
 else:
     homepath = options.homepath
 datadir = 'data/'
+hostname = socket.gethostname().partition(".")[0]
 
 def listtocsv(lists):
     log = ''
@@ -163,8 +164,7 @@ try:
         if(eachfile == "cpumetrics.txt"):
             get_cpuusage(eachfile, tokens,dict)
             groupid = getindex(tokens[0])
-            field = tokens[0]+":"+str(groupid)
-            print field
+            field = tokens[0]+"["+hostname+"]:"+str(groupid)
             fields.append(field)
             if(check_delta(tokens[0]) == True):
                 deltaValue = calculate_cpudelta(dict["cpu_usage"])
@@ -181,8 +181,7 @@ try:
                     continue
                 if(tokens[0] != "timestamp"):
                     groupid = getindex(tokens[0])
-                    field = tokens[0]+":"+str(groupid)
-                    print field
+                    field = tokens[0]+"["+hostname+"]:"+str(groupid)
                 else:
                     field = tokens[0]
                 fields.append(field)
@@ -209,7 +208,6 @@ try:
     else:
         headercsv = csvContent[0]
         header = headercsv.split("\n")[0].split(",")
-        print header
         if cmp(header,fields) != 0:
             oldFile = os.path.join(homepath,datadir+date+".csv")
             newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
