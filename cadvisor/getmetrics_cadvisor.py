@@ -152,31 +152,31 @@ def getmetric():
                 cur_cpu = float(float(cpu_used - prev_cpu)/1000000000)
                 cur_cpu = abs(cur_cpu)
                 #get mem
-                curr_mem = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]['memory']['usage']
+                curr_mem = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]['memory']['usage']
                 mem = float(float(curr_mem)/(1024*1024)) #MB
                 mem = abs(mem)
                 #get disk
-                curr_block_num = len(r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"])
+                curr_block_num = len(r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["diskio"]["io_service_bytes"])
                 curr_io_read = 0
                 curr_io_write = 0
                 prev_io_read = 0
                 prev_io_write = 0
                 for j in range(curr_block_num):
-                    curr_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
-                    curr_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
-                prev_block_num = len(r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"])
+                    curr_io_read += r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
+                    curr_io_write += r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
+                prev_block_num = len(r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"])
                 prev_io_read = 0
                 prev_io_write = 0
                 for j in range(prev_block_num):
-                    prev_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
-                    prev_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
+                    prev_io_read += r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
+                    prev_io_write += r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
                 io_read = float(float(curr_io_read - prev_io_read)/(1024*1024)) #MB
                 io_write = float(float(curr_io_write - prev_io_write)/(1024*1024)) #MB
                 #get network
-                prev_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["network"]["tx_bytes"]
-                prev_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["network"]["rx_bytes"]
-                curr_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["network"]["tx_bytes"]
-                curr_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["network"]["rx_bytes"]
+                prev_network_t = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["network"]["tx_bytes"]
+                prev_network_r = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["network"]["rx_bytes"]
+                curr_network_t = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["network"]["tx_bytes"]
+                curr_network_r = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["network"]["rx_bytes"]
                 network_t = float(float(curr_network_t - prev_network_t)/(1024*1024)) #MB
                 network_r = float(float(curr_network_r - prev_network_r)/(1024*1024)) #MB
                 log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
