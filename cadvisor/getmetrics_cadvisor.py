@@ -146,7 +146,7 @@ def getmetric():
                 index = len(r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"])-1
                 cpu_used = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["cpu"]["usage"]["total"]
                 prev_cpu = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["cpu"]["usage"]["total"]
-                cur_cpu = float(float(cpu_used - prev_cpu)/10000000)
+                cur_cpu = float(float(cpu_used - prev_cpu)/1000000000)
                 cur_cpu = abs(cur_cpu)
                 #get mem
                 curr_mem = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]['memory']['usage']
