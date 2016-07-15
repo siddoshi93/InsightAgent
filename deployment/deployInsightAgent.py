@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument('-k', '--LICENSE_KEY', type=str, help='License key for the user', required=True)
     parser.add_argument('-s', '--SAMPLING_INTERVAL_MINUTE', type=str, help='Sampling Interval Minutes', required=True)
     parser.add_argument('-r', '--REPORTING_INTERVAL_MINUTE', type=str, help='Reporting Interval Minutes', required=True)
-    parser.add_argument('-t', '--AGENT_TYPE', type=str, help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset or hypervisor or lttng', choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset', 'hypervisor', 'lttng'],required=True)
+    parser.add_argument('-t', '--AGENT_TYPE', type=str, help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset', choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'],required=True)
     args = parser.parse_args()
     projectName = args.PROJECT_NAME_IN_INSIGHTFINDER
     user = args.USER_NAME_IN_HOST
@@ -111,11 +111,8 @@ if __name__ == '__main__':
         print "Dependencies are missing. Please install the dependencies as stated in README"
         sys.exit()
 
-    if agentType == "hypervisor":
-        proc = subprocess.Popen("wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/testing.tar.gz -O insightagent.tar.gz", cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        (out,err) = proc.communicate()
     print "Starting Installation"
-    proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen([os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "error" in out:
         sys.exit(out)
