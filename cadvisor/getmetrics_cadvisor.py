@@ -133,12 +133,12 @@ def getmetric():
                 print "Unsupported Cadvisor version"
                 sys.exit()
             index = len(r.json()[jsonStruct[0]+dockers[0]+jsonStruct[1]]["stats"])-1
-            time_stamp = r.json()[jsonStruct[0]+dockers[0]+jsonStruct[1]]["stats"][index]["timestamp"][:19]
+            time_stamp = startTime
             if (time_stamp in counter_time_map.values()):
                 continue
             counter_time_map[counter] = time_stamp
             counter = (counter+1)%60
-            log = str((int(time.mktime(time.strptime(time_stamp, "%Y-%m-%dT%H:%M:%S")))-4*3600)*1000)
+            log = str(startTime)
             cpu_all = 0
             resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"), 'a+')
             numlines = len(resource_usage_file.readlines())
