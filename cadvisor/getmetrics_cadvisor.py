@@ -105,6 +105,7 @@ def getmetric():
     global num_sql
     global cAdvisoraddress
     global dockerInstances
+    global samplingInterval
 
     try:
         startTime = int(round(time.time() * 1000))
