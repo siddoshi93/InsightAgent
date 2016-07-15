@@ -37,10 +37,7 @@ def sshDeploy(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        if agentType == "lttng":
-            command="cd InsightAgent-testing/syscall && ./getSysTrace.sh -t "+samplingInterval
-        else:
-            command="cd InsightAgent-testing && sudo ./deployment/install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
+        command="cd InsightAgent-testing && sudo ./deployment/install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         session.exec_command(command)
         stdin = session.makefile('wb', -1)
         stdout = session.makefile('rb', -1)
@@ -79,7 +76,7 @@ def get_args():
     parser.add_argument(
         '-r', '--REPORTING_INTERVAL_MINUTE', type=str, help='Reporting Interval Minutes', required=True)
     parser.add_argument(
-        '-t', '--AGENT_TYPE', type=str, help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset or hypervisor or lttng', choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset', 'hypervisor', 'lttng'], required=True)
+        '-t', '--AGENT_TYPE', type=str, help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset', choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'], required=True)
     parser.add_argument(
         '-p', '--PASSWORD', type=str, help='Password for hosts', required=True)
     args = parser.parse_args()
