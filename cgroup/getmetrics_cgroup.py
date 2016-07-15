@@ -93,15 +93,17 @@ def init_previous_results():
     update_results(first_result)
     time.sleep(1)
     if(os.path.isdir("/cgroup") == True):
-        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/docker") == True):
-         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/system.slice") == True):
-        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_slice_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_slice_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     else:
         print"No cgroups found.Stopping."
         sys.exit()
     (out,err) = proc.communicate()
+    if "No such file or directory" in err:
+        print "Error in fetching metrics for some containers"
 
 def get_previous_results():
     with open(os.path.join(homepath,datadir+"previous_results.json"),'r') as f:
@@ -173,17 +175,17 @@ try:
     timestampread = False
     ipAddress = get_ip_address()
     if(os.path.isdir("/cgroup") == True):
-        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/docker") == True):
-         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/system.slice") == True):
-        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_slice_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_slice_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     else:
         print"No cgroups found.Stopping."
         sys.exit()
     (out,err) = proc.communicate()
-    print out
-    print err
+    if "No such file or directory" in err:
+        print "Error in fetching metrics for some containers"
     if(os.path.isfile(homepath+"/"+datadir+"timestamp.txt") == False):
         sys.exit()
     if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False) or newInstanceAvailable == True:
