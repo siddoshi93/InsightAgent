@@ -35,6 +35,9 @@ num_apache = 0
 num_sql = 0
 newInstanceAvailable = False
 
+#The json structure to get data from cadvisor varies between latest and old versions
+cAdvisorStruct = {"old": ["/docker/",""], "new": ["/system.slice/docker-", ".scope"]}
+
 def getindex(colName):
     if colName == "CPU":
         return 1
@@ -112,8 +115,15 @@ def getmetric():
                 oldFile = os.path.join(homepath,datadir+date+".csv")
                 newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
                 os.rename(oldFile,newFile)
-            index = len(r.json()["/system.slice/docker-"+dockers[0]+".scope"]["stats"])-1
-            time_stamp = r.json()["/system.slice/docker-"+dockers[0]+".scope"]["stats"][index]["timestamp"][:19]
+            if(cAdvisorStruct["old"][0]+dockers[0]+cAdvisorStruct["old"][1]) in r.json():
+                jsonStruct = cAdvisorStruct[version]
+            elif(cAdvisorStruct["new"][0]+dockers[0]+cAdvisorStruct["new"][1]) in r.json():
+                jsonStruct = cAdvisorStruct[version]
+            else:
+                print "Unsupported Cadvisor version"
+                sys.exit()
+            index = len(r.json()[jsonStruct[0]+dockers[0]+jsonStruct[1]]["stats"])-1
+            time_stamp = r.json()[jsonStruct[0]+dockers[0]+jsonStruct[1]]["stats"][index]["timestamp"][:19]
             if (time_stamp in counter_time_map.values()):
                 continue
             counter_time_map[counter] = time_stamp
@@ -124,37 +134,37 @@ def getmetric():
             numlines = len(resource_usage_file.readlines())
             for i in range(len(dockers)-1):
                 #get cpu
-                index = len(r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"])-1
-                cpu_used = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["cpu"]["usage"]["total"]
-                prev_cpu = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index-1]["cpu"]["usage"]["total"]
+                index = len(r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"])-1
+                cpu_used = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["cpu"]["usage"]["total"]
+                prev_cpu = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-1]["cpu"]["usage"]["total"]
                 cur_cpu = float(float(cpu_used - prev_cpu)/10000000)
                 cur_cpu = abs(cur_cpu)
                 #get mem
-                curr_mem = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]['memory']['usage']
+                curr_mem = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]['memory']['usage']
                 mem = float(float(curr_mem)/(1024*1024)) #MB
                 mem = abs(mem)
                 #get disk
-                curr_block_num = len(r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"])
+                curr_block_num = len(r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"])
                 curr_io_read = 0
                 curr_io_write = 0
                 prev_io_read = 0
                 prev_io_write = 0
                 for j in range(curr_block_num):
-                    curr_io_read += r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
-                    curr_io_write += r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
-                prev_block_num = len(r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"])
+                    curr_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
+                    curr_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
+                prev_block_num = len(r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"])
                 prev_io_read = 0
                 prev_io_write = 0
                 for j in range(prev_block_num):
-                    prev_io_read += r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
-                    prev_io_write += r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
+                    prev_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
+                    prev_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
                 io_read = float(float(curr_io_read - prev_io_read)/(1024*1024)) #MB
                 io_write = float(float(curr_io_write - prev_io_write)/(1024*1024)) #MB
                 #get network
-                prev_network_t = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index-1]["network"]["tx_bytes"]
-                prev_network_r = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index-1]["network"]["rx_bytes"]
-                curr_network_t = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["network"]["tx_bytes"]
-                curr_network_r = r.json()["/system.slice/docker-"+dockers[i]+".scope"]["stats"][index]["network"]["rx_bytes"]
+                prev_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["network"]["tx_bytes"]
+                prev_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["network"]["rx_bytes"]
+                curr_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["network"]["tx_bytes"]
+                curr_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["network"]["rx_bytes"]
                 network_t = float(float(curr_network_t - prev_network_t)/(1024*1024)) #MB
                 network_r = float(float(curr_network_r - prev_network_r)/(1024*1024)) #MB
                 log = log + "," + str(cur_cpu) + "," + str(io_read) + "," + str(io_write)+ "," + str(network_r)+ "," + str(network_t)+ "," + str(mem)
