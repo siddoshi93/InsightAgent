@@ -154,15 +154,18 @@ def update_docker():
         with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
             json.dump(towritePreviousInstances,f)
         newInstanceAvailable = True
+        dockerInstances = newInstances
 
 fields = []
 filenames = ["timestamp.txt","cpumetrics.txt","diskmetricsread.txt","diskmetricswrite.txt","networkmetrics.txt","memmetrics.txt"]
 try:
     date = time.strftime("%Y%m%d")
+    update_docker()
     if newInstanceAvailable == True and os.path.isfile(os.path.join(homepath,datadir+date+".csv")) == True:
         oldFile = os.path.join(homepath,datadir+date+".csv")
         newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
         os.rename(oldFile,newFile)
+        os.remove(os.path.join(homepath,datadir+"previous_results.json"))
     resource_usage_file = open(os.path.join(homepath,datadir+date+".csv"),'a+')
     numlines = len(resource_usage_file.readlines())
     values = []
@@ -181,10 +184,9 @@ try:
     (out,err) = proc.communicate()
     print out
     print err
-    update_docker()
     if(os.path.isfile(homepath+"/"+datadir+"timestamp.txt") == False):
         sys.exit()
-    if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
+    if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False) or newInstanceAvailable == True:
         init_previous_results()
     for containers in dockerInstances:
         tokens = []
