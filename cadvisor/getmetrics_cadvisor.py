@@ -33,7 +33,6 @@ for line in proc.stdout:
     os.environ[key] = value.strip()
 proc.communicate()
 samplingInterval = os.environ["SAMPLING_INTERVAL"]
-samplingInterval = int(samplingInterval) * 60 / 2
 
 counter_time_map = {}
 counter = 0
@@ -126,8 +125,10 @@ def getmetric():
                 os.rename(oldFile,newFile)
             if(cAdvisorStruct["old"][0]+dockers[0]+cAdvisorStruct["old"][1]) in r.json():
                 jsonStruct = cAdvisorStruct["old"]
+                samplingInterval = int(samplingInterval) * 60
             elif(cAdvisorStruct["new"][0]+dockers[0]+cAdvisorStruct["new"][1]) in r.json():
                 jsonStruct = cAdvisorStruct["new"]
+                samplingInterval = int(samplingInterval) * 60 / 2
             else:
                 print "Unsupported Cadvisor version"
                 sys.exit()
