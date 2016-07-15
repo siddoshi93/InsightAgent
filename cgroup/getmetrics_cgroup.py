@@ -95,7 +95,7 @@ def init_previous_results():
     if(os.path.isdir("/cgroup") == True):
         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/docker") == True):
-         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/system.slice") == True):
         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_slice_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     else:
@@ -177,7 +177,7 @@ try:
     if(os.path.isdir("/cgroup") == True):
         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/docker") == True):
-         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     elif(os.path.isdir("/sys/fs/cgroup/blkio/system.slice") == True):
         proc = subprocess.Popen([os.path.join(homepath,"cgroup/getmetrics_sys_fs_slice_cgroup.sh")], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     else:
