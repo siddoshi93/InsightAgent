@@ -26,6 +26,15 @@ datadir = 'data/'
 hostname=socket.gethostname()
 cAdvisoraddress = "http://"+hostname+":8080/api/v1.3/docker/"
 
+command = ['bash', '-c', 'source ' + str(homepath) + '/.agent.bashrc && env']
+proc = subprocess.Popen(command, stdout = subprocess.PIPE)
+for line in proc.stdout:
+    (key, _, value) = line.partition("=")
+    os.environ[key] = value.strip()
+proc.communicate()
+samplingInterval = os.environ["SAMPLING_INTERVAL"]
+samplingInterval = int(samplingInterval) * 60 / 2
+
 counter_time_map = {}
 counter = 0
 ##the default value it 60-1, when cAdvisor started, the code need to calculate the index because of the sliding window
@@ -116,9 +125,9 @@ def getmetric():
                 newFile = os.path.join(homepath,datadir+date+"."+time.strftime("%Y%m%d%H%M%S")+".csv")
                 os.rename(oldFile,newFile)
             if(cAdvisorStruct["old"][0]+dockers[0]+cAdvisorStruct["old"][1]) in r.json():
-                jsonStruct = cAdvisorStruct[version]
+                jsonStruct = cAdvisorStruct["old"]
             elif(cAdvisorStruct["new"][0]+dockers[0]+cAdvisorStruct["new"][1]) in r.json():
-                jsonStruct = cAdvisorStruct[version]
+                jsonStruct = cAdvisorStruct["new"]
             else:
                 print "Unsupported Cadvisor version"
                 sys.exit()
@@ -136,7 +145,7 @@ def getmetric():
                 #get cpu
                 index = len(r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"])-1
                 cpu_used = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index]["cpu"]["usage"]["total"]
-                prev_cpu = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-1]["cpu"]["usage"]["total"]
+                prev_cpu = r.json()[jsonStruct[0]+dockers[i]+jsonStruct[1]]["stats"][index-int(samplingInterval)]["cpu"]["usage"]["total"]
                 cur_cpu = float(float(cpu_used - prev_cpu)/10000000)
                 cur_cpu = abs(cur_cpu)
                 #get mem
@@ -152,17 +161,17 @@ def getmetric():
                 for j in range(curr_block_num):
                     curr_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
                     curr_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
-                prev_block_num = len(r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"])
+                prev_block_num = len(r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"])
                 prev_io_read = 0
                 prev_io_write = 0
                 for j in range(prev_block_num):
-                    prev_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
-                    prev_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
+                    prev_io_read += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"][j]["stats"]["Read"]
+                    prev_io_write += r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["diskio"]["io_service_bytes"][j]["stats"]["Write"]
                 io_read = float(float(curr_io_read - prev_io_read)/(1024*1024)) #MB
                 io_write = float(float(curr_io_write - prev_io_write)/(1024*1024)) #MB
                 #get network
-                prev_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["network"]["tx_bytes"]
-                prev_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-1]["network"]["rx_bytes"]
+                prev_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["network"]["tx_bytes"]
+                prev_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index-int(samplingInterval)]["network"]["rx_bytes"]
                 curr_network_t = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["network"]["tx_bytes"]
                 curr_network_r = r.json()[jsonStruct[0]+dockers[i]+".scope"]["stats"][index]["network"]["rx_bytes"]
                 network_t = float(float(curr_network_t - prev_network_t)/(1024*1024)) #MB
