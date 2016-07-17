@@ -133,6 +133,14 @@ def getMetricsToReport():
             metrictoReport = json.load(conf)['reportingFields']
             configMetricAvailable = True
 
+def isMetricInConfig(field):
+    global metrictoReport
+    for eachmetric in metrictoReport:
+        print eachmetric
+        if eachmetric in field:
+            return True
+    return False
+
 #main
 with open(os.path.join(homepath, datadir, "reporting_config.json"), 'r') as f:
     config = json.load(f)
@@ -193,7 +201,7 @@ if options.inputFile is None:
                             thisData[fieldnames[i]] = row[i]
                         else:
                             colname = fieldnames[i]
-                            if (colname in metrictoReport) == False and configMetricAvailable == True:
+                            if isMetricInConfig(colname) == False and configMetricAvailable == True:
                                 continue
                             if colname.find("]") == -1:
                                 colname = colname+"["+hostname+"]"
