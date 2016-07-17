@@ -46,7 +46,13 @@ if [ -z "$INSIGHTAGENTDIR" ]; then
 	export INSIGHTAGENTDIR=`pwd`
 fi
 
-if [[ -d $INSIGHTAGENTDIR/$AGENT_TYPE/data ]]
+if [ $AGENT_TYPE == 'daemonset' ]; then
+	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
+else
+	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
+fi
+
+if [[ ! -d $INSIGHTAGENTDIR/data ]]
 then
 	rm -rf $INSIGHTAGENTDIR/$AGENT_TYPE/data
 fi
@@ -56,11 +62,6 @@ then
 	rm -rf $INSIGHTAGENTDIR/$AGENT_TYPE/log
 fi
 mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
-
-if [ $AGENT_TYPE == 'daemonset' ]; then
-	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
-else
-	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
 fi
 
 AGENTRC=$INSIGHTAGENTDIR/$AGENT_TYPE/.agent.bashrc
@@ -72,6 +73,8 @@ echo "export INSIGHTFINDER_LICENSE_KEY=$LICENSEKEY" >> $AGENTRC
 echo "export INSIGHTFINDER_PROJECT_NAME=$PROJECTNAME" >> $AGENTRC
 echo "export INSIGHTFINDER_USER_NAME=$USERNAME" >> $AGENTRC
 echo "export INSIGHTAGENTDIR=$INSIGHTAGENTDIR" >> $AGENTRC
+echo "export SAMPLING_INTERVAL=$SAMPLING_INTERVAL" >> $AGENTRC
+echo "export REPORTING_INTERVAL=$REPORTING_INTERVAL" >> $AGENTRC
 
 if [ $AGENT_TYPE == 'replay' ]; then
 	exit 1
