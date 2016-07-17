@@ -5,6 +5,9 @@ Platform: Linux
 
 InsightFinder agent can be used to monitor performance metrics of docker containers using cgroup.
 
+Tested with Ubuntu 14.04, Redhat 6.8, Redhat 7.2, Centos 7.1, Amazon Linux AMI 2016.03.3.
+Tested with docker version 1.9.1 and later.
+
 ##### Instructions to register a project in Insightfinder.com
 - Go to the link https://insightfinder.com/
 - Sign in with the user credentials or sign up for a new account.
@@ -13,13 +16,17 @@ InsightFinder agent can be used to monitor performance metrics of docker contain
 - Note down license key which is available in "User Account Information". To go to "User Account Information", click the userid on the top right corner.
 
 ##### Pre-requisites:
+Python 2.7.
+
 This pre-requisite is needed on the machine which launches deployInsightAgent.py.
-For Debian and Ubuntu, the following command will ensure that the required dependencies are installed:
+For Debian and Ubuntu, the following commands will ensure that the required dependencies are installed:
 ```
+sudo apt-get update
 sudo apt-get install build-essential libssl-dev libffi-dev python-dev
 ```
-For Fedora and RHEL-derivatives, the following command will ensure that the required dependencies are installed:
+For Fedora and RHEL-derivatives, the following commands will ensure that the required dependencies are installed:
 ```
+sudo yum update
 sudo yum install gcc libffi-devel python-devel openssl-devel
 ```
 
