@@ -1,5 +1,5 @@
 #!/bin/sh
-DATADIR='data/'
+DATADIR='cgroup/data/'
 cd $DATADIR
 
 dockers=$(docker ps --no-trunc | awk '{if(NR!=1)print $1}')
