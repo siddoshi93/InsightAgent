@@ -56,7 +56,7 @@ def updateAgent():
                     sudo rm ../insightagent*\n"
         return command
     command = "sudo rm -rf insightagent* InsightAgent*\n \
-    wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/"+BRANCH+".tar.gz -O insightagent.tar.gz\n \
+        wget --no-check-certificate https://github.com/insightfinder/InsightAgent/archive/"+BRANCH+".tar.gz -O insightagent.tar.gz\n \
         tar xzvf insightagent.tar.gz\n \
         cd InsightAgent-"+BRANCH+" && python deployment/checkpackages.py\n \
         sudo rm ../insightagent*\n"

@@ -93,10 +93,10 @@ if __name__ == '__main__':
     from changeConfig import changeConfig
     attr = Attributes(projectName, user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType, password)
     attr.displayAttributes()
-    config = changeConfig(attr)
-    configStatus = config.finalizeConfig()
     checkReq = checkpackages()
     checkReq.installPackagesForDeployment()
+    config = changeConfig(attr)
+    configStatus = config.finalizeConfig()
     stopagent = stopcron(attr)
     stopagent.stopAgent(stopagent.sshStopCron)
     install = installInsightAgent(attr)

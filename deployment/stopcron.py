@@ -122,33 +122,6 @@ class stopcron:
             print "Socket connection failed in %s:" % hostname, e
             return self.sshRemoveAgent(retry - 1, hostname, hostQueue)
 
-'''
-    def removeAgent(self):
-        hostfile = "hostlist.txt"
-
-        try:
-            with open(os.getcwd() + "/" + hostfile, 'rb') as f:
-                while True:
-                    line = f.readline()
-                    if line:
-                        host = line.split("\n")[0]
-                        self.q.put(host)
-                    else:
-                        break
-                while self.q.empty() != True:
-                    host = self.q.get()
-                    t = threading.Thread(target=self.sshRemoveAgent, args=(3, host,))
-                    t.daemon = True
-                    t.start()
-                self.q.join()
-        except (KeyboardInterrupt, SystemExit):
-            print "Keyboard Interrupt!!"
-            sys.exit()
-        except IOError as e:
-            print "I/O error({0}): {1}: {2}".format(e.errno, e.strerror, e.filename)
-            sys.exit()
-'''
-
 
 def get_args():
     parser = argparse.ArgumentParser(description='Script retrieves arguments for insightfinder agent.')
