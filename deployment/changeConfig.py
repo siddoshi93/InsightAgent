@@ -16,8 +16,8 @@ BRANCH="cleanup"
 if homepath is None:
     homepath = os.getcwd()
 
-procFields = ["CPU", "DiskRead", "DiskWrite", "DiskUsed", "NetworkIn", "NetworkOut", "MemUsed"]
-cadvisorFields = ["CPU"]
+procFields = ["CPU", "DiskRead", "DiskWrite", "DiskUsed", "NetworkIn", "NetworkOut", "MemUsed", "LoadAvg1", "LoadAvg5", "LoadAvg15"]
+cadvisorFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
 cgroupFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
 dockerRemoteApiFields = ["CPU", "DiskRead", "DiskWrite", "NetworkIn", "NetworkOut", "MemUsed"]
 
