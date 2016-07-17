@@ -125,13 +125,13 @@ class changeConfig:
             return
         except paramiko.SSHException, e:
             print "Invalid Username/Password for %s:" % hostname, e
-            return self.sshConfig(retry - 1, hostname)
+            return self.sshConfig(retry - 1, hostname, hostQueue)
         except paramiko.AuthenticationException:
             print "Authentication failed for some reason in %s:" % hostname
-            return self.sshConfig(retry - 1, hostname)
+            return self.sshConfig(retry - 1, hostname, hostQueue)
         except socket.error, e:
             print "Socket connection failed in %s:" % hostname, e
-            return self.sshConfig(retry - 1, hostname)
+            return self.sshConfig(retry - 1, hostname, hostQueue)
         except:
             print "Unexpected error in %s:" % hostname
             sys.exit()
