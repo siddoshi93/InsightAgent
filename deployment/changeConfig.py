@@ -181,4 +181,5 @@ if __name__ == '__main__':
     config.configChange(config.sshConfig)
     os.remove("changeConfig.py")
     os.remove("Attributes.py")
+    os.remove("config.json")
 
