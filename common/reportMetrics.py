@@ -136,7 +136,6 @@ def getMetricsToReport():
 def isMetricInConfig(field):
     global metrictoReport
     for eachmetric in metrictoReport:
-        print eachmetric
         if eachmetric in field:
             return True
     return False
