@@ -62,7 +62,6 @@ then
 	rm -rf $INSIGHTAGENTDIR/$AGENT_TYPE/log
 fi
 mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
-fi
 
 AGENTRC=$INSIGHTAGENTDIR/$AGENT_TYPE/.agent.bashrc
 if [[ -f $AGENTRC ]]
@@ -99,4 +98,4 @@ sudo chown root:root $TEMPCRON
 sudo chmod 644 $TEMPCRON
 sudo mv $TEMPCRON /etc/cron.d/
 
-echo "Agent configuration completed. Two cron jobs are created via /etc/cron.d/ifagent"$AGENTTYPE
+echo "Agent configuration completed. Two cron jobs are created via /etc/cron.d/ifagent"$AGENT_TYPE
