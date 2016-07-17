@@ -45,6 +45,7 @@ AGENT_TYPE is *proc*.
 ```
 - When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
 Example: /home/insight/.ssh/id_rsa
+- Follow the on-screen instructions to complete installation.
 
 
 ##### To get more details on the command, run
@@ -69,3 +70,9 @@ python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
 ./install.sh -i PROJECT_NAME -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
 ```
 
+##### To change the reported metrics to insightfinder:
+Run the follwoing commands and follow the on-screen prompts
+```
+wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/deployment/changeConfig.py
+sudo python changeConfig.py -n USER_NAME_IN_HOST -p PASSWORD/KEY_FILE_PATH -t AGENT_TYPE
+```
