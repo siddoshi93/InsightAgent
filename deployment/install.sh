@@ -60,7 +60,7 @@ mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
 if [ $AGENT_TYPE == 'daemonset' ]; then
 	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
 else
-	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
+	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
 fi
 
 AGENTRC=$INSIGHTAGENTDIR/$AGENT_TYPE/.agent.bashrc
