@@ -58,7 +58,7 @@ fi
 mkdir $INSIGHTAGENTDIR/$AGENT_TYPE/log
 
 if [ $AGENT_TYPE == 'daemonset' ] || [ $AGENT_TYPE == 'filereplay' ]; then
-	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
+	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
 else
 	$INSIGHTAGENTDIR/pyenv/bin/python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL -t $AGENT_TYPE
 fi
