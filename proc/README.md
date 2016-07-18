@@ -62,7 +62,11 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 - Include IP address of all hosts in hostlist.txt and enter one IP address per line.
 - To stop the agent run the following command:
 ```
-python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
+python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD -t AGENT_TYPE
+```
+- If more than one agent was running in the host and if all agents need to be removed, run the following command:
+```
+python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD -t AGENT_TYPE --all
 ```
 
 ##### To install agent on local machine:
