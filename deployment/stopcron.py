@@ -166,7 +166,7 @@ def get_args():
     parser.add_argument('-t', '--AGENT_TYPE', type=str,
                         help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset',
                         choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'], required=True)
-    parser.add_argumetn('-a' '--all', help='Specify to delete all agents in the host', action="store_true")
+    parser.add_argument('-a' '--all', help='Specify to delete all agents in the host', action="store_true")
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
     password = args.PASSWORD
