@@ -122,6 +122,43 @@ class stopcron:
             print "Socket connection failed in %s:" % hostname, e
             return self.sshRemoveAgent(retry - 1, hostname, hostQueue)
 
+    def sshRemoveAllAgents(self, retry, hostname, hostQueue):
+        if retry == 0:
+            print "Remove Agent Failed in", hostname
+            hostQueue.task_done()
+            return
+        try:
+            s = paramiko.SSHClient()
+            s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            if os.path.isfile(self.password) == True:
+                s.connect(hostname, username=self.user, key_filename=self.password, timeout=60)
+            else:
+                s.connect(hostname, username=self.user, password=self.password, timeout=60)
+            transport = s.get_transport()
+            session = transport.open_session()
+            session.set_combine_stderr(True)
+            session.get_pty()
+            command = "sudo rm -rf insightagent* InsightAgent*\n \
+                       sudo rm /etc/cron.d/ifagent*\n"
+            session.exec_command(command)
+            stdin = session.makefile('wb', -1)
+            stdout = session.makefile('rb', -1)
+            stdin.write(self.password + '\n')
+            stdin.flush()
+            session.recv_exit_status()  # wait for exec_command to finish
+            s.close()
+            print "Removed Agent in ", hostname
+            hostQueue.task_done()
+            return
+        except paramiko.SSHException, e:
+            print "Invalid Username/Password for %s:" % hostname, e
+            return self.sshRemoveAllAgents(retry - 1, hostname, hostQueue)
+        except paramiko.AuthenticationException:
+            print "Authentication failed for some reason in %s:" % hostname
+            return self.sshRemoveAllAgents(retry - 1, hostname, hostQueue)
+        except socket.error, e:
+            print "Socket connection failed in %s:" % hostname, e
+            return self.sshRemoveAllAgents(retry - 1, hostname, hostQueue)
 
 def get_args():
     parser = argparse.ArgumentParser(description='Script retrieves arguments for insightfinder agent.')
@@ -130,11 +167,13 @@ def get_args():
     parser.add_argument('-t', '--AGENT_TYPE', type=str,
                         help='Agent type: proc or cadvisor or docker_remote_api or cgroup or daemonset',
                         choices=['proc', 'cadvisor', 'docker_remote_api', 'cgroup', 'daemonset'], required=True)
+    parser.add_argumetn('-a' '--all', help='Specify to delete all agents in the host', action="store_true")
     args = parser.parse_args()
     user = args.USER_NAME_IN_HOST
     password = args.PASSWORD
     agentType = args.AGENT_TYPE
-    return user, password, agentType
+    removeAgentOption = args.all
+    return user, password, agentType, removeAgentOption
 
 
 def downloadFile(filename):
@@ -153,12 +192,14 @@ def removeFile(filename):
     (out, err) = proc.communicate()
 
 if __name__ == '__main__':
-    user, password, agentType = get_args()
+    user, password, agentType, removeAgentOption = get_args()
     homepath = os.getcwd()
     downloadFile("Attributes.py")
     attr = Attributes(user=user, password=password, agentType=agentType)
     print os.getcwd()
     st = stopcron(attr)
     st.stopAgent(st.sshStopCron)
+    if removeAgentOption == True:
+        st.stopAgent(st.sshRemoveAllAgents)
     removeFile("Attributes.py")
     removeFile("stopcron.py")
