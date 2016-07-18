@@ -8,7 +8,6 @@ import socket
 import Queue
 import threading
 import time
-from Attributes import Attributes
 import subprocess
 
 BRANCH = "cleanup"
@@ -195,6 +194,7 @@ if __name__ == '__main__':
     user, password, agentType, removeAgentOption = get_args()
     homepath = os.getcwd()
     downloadFile("Attributes.py")
+    from Attributes import Attributes
     attr = Attributes(user=user, password=password, agentType=agentType)
     print os.getcwd()
     st = stopcron(attr)
