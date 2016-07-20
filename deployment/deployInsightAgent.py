@@ -29,7 +29,7 @@ def get_args():
     agentType = args.AGENT_TYPE
     return projectName, user, userInsightfinder, licenseKey, samplingInterval, reportingInterval, agentType
 
-downloadFiles = ["installInsightAgent.py", "startcron.py", "checkpackages.py", "get-pip.py"]
+downloadFiles = ["installInsightAgent.py", "startcron.py", "get-pip.py"]
 homepath = os.getcwd()
 
 def removeFile(filename):

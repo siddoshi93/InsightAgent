@@ -83,7 +83,7 @@ rm requirements
 rm get-pip.py
 
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/deployInsightAgent.py
-sudo python deployInsightAgent.py -n $INSIGHTFINDER_USERNAME -i $PROJECTNAME -u $USERNAME -k $LICENSEKEY -s $SAMPLING_INTERVAL -r $REPORTING_INTERVAL -t $AGENT_TYPE
+python deployInsightAgent.py -n $INSIGHTFINDER_USERNAME -i $PROJECTNAME -u $USERNAME -k $LICENSEKEY -s $SAMPLING_INTERVAL -r $REPORTING_INTERVAL -t $AGENT_TYPE
 deactivate
 rm -rf pyenv
 rm deployInsightAgent.sh
