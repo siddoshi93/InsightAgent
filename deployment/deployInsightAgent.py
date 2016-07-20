@@ -105,13 +105,13 @@ if __name__ == '__main__':
     downloadRequiredFiles()
 
     print "Starting Installation"
-    proc = subprocess.Popen("python "+[os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["python "+os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "error" in out:
         sys.exit(out)
     print out
     print "Proceeding to Deployment"
-    proc = subprocess.Popen("python "+[os.path.join(homepath,"startcron.py")+ " -i " +projectName+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["python "+os.path.join(homepath,"startcron.py")+ " -i " +projectName+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
     clearDownloads()
