@@ -36,8 +36,10 @@ AllMetricList.append("timestamp")
 AllMetricDict["timestamp"] = timestamp
 date = time.strftime("%Y%m%d")
 hostname = socket.gethostname().partition(".")[0]
-deltaFields = ["TotalIndexRequestsPerNode", "TotalMerges", "TotalQueryTime", "TotalSearchRequestsPerNode", "GarbageCollectorTime", "TotalSearchRequestsPerNode"]
+deltaFields = ["TotalIndexRequestsPerNode", "TotalMerges", "TotalQueryTime", "TotalSearchRequestsPerNode", "GarbageCollectorTime", "TotalSearchRequestsPerCluster"]
 newResult = {}
+previousResult = {}
+firstresult = False
 
 NodeDict = {
 "TotalGetRequests": "nodes.%s.indices.get.total",
@@ -360,7 +362,7 @@ def getNodeInfo():
             result = reduce(lambda x,y: x[y], values, jsonContent)
             if converttoMB == True:
                 result = float(float(result)/(1024*1024))
-            if key.split("[")[0] in deltaFields:
+            if key.split("[")[0] in deltaFields and firstresult == False:
                  newResult[key] = abs(result)
                  result = result - float(previousResult[key])
             AllMetricDict[key] = abs(result)
@@ -371,6 +373,7 @@ def getIndexInfo():
     global AllMetricDict
     global newResult
     global deltaFields
+    global previousResult
     jsonContent = getJson(esIndexUrl)
     indexCount = "Indices["+hostname+"]:" + str(getindex("Indices"))
     AllMetricList.append(indexCount)
@@ -386,7 +389,7 @@ def getIndexInfo():
             result = reduce(lambda x,y: x[y], values, jsonContent['indices'][indicesName])
             if converttoMB == True:
                 result = float(float(result)/(1024*1024))
-            if key.split("[")[0] in deltaFields:
+            if key.split("[")[0] in deltaFields and firstresult == False:
                  newResult[key] = abs(result)
                  result = result - float(previousResult[key])
             AllMetricDict[key] = abs(result)
@@ -398,6 +401,7 @@ def update_results(lists):
 def init_previous_results():
     global deltaFields
     global AllMetricDict
+    global firstresult
     getClusterInfo()
     getNodeInfo()
     getIndexInfo()
@@ -411,12 +415,14 @@ def init_previous_results():
     AllMetricList.append("timestamp")
     AllMetricDict["timestamp"] = timestamp
     time.sleep(1)
+    firstresult = False
 
 def get_previous_results():
     with open(os.path.join(homepath,datadir+"previous_results.json"),'r') as f:
         return json.load(f)
 
 if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
+    firstresult = True
     init_previous_results()
 previousResult = get_previous_results()
 getClusterInfo()
