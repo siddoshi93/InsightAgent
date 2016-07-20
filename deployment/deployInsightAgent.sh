@@ -47,7 +47,7 @@ fi
 
 wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --force-reinstall --user
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/requirements
-pip install -U --force-reinstall --user virtualenv
+/home/$USER/.local/bin/pip install -U --force-reinstall --user virtualenv
 if [ "$?" -ne "0" ]; then
     echo "pip install failed. Please install the pre-requisites mentioned in README"
     rm get-pip.py
