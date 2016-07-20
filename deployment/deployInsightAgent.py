@@ -61,7 +61,7 @@ def stopCron():
         print "Can't download stopcron.py"
         return
     os.chmod("stopcron.py",0755)
-    proc = subprocess.Popen(["sudo python "+os.path.join(homepath,"stopcron.py")+" -n "+user+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["pyenv/bin/python "+os.path.join(homepath,"stopcron.py")+" -n "+user+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "failed" in str(err) or "error" in str(err):
         print "Can't stop agent in some machines"
@@ -105,13 +105,13 @@ if __name__ == '__main__':
     downloadRequiredFiles()
 
     print "Starting Installation"
-    proc = subprocess.Popen(["python "+os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["pyenv/bin/python "+os.path.join(homepath,"installInsightAgent.py")+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     if "error" in out:
         sys.exit(out)
     print out
     print "Proceeding to Deployment"
-    proc = subprocess.Popen(["python "+os.path.join(homepath,"startcron.py")+ " -i " +projectName+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
+    proc = subprocess.Popen(["pyenv/bin/python "+os.path.join(homepath,"startcron.py")+ " -i " +projectName+" -n "+user+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType+" -p "+password], cwd=homepath, stdout=subprocess.PIPE, shell=True)
     (out,err) = proc.communicate()
     print out
     clearDownloads()
