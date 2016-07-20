@@ -16,11 +16,13 @@ InsightFinder agent can be used to monitor system performance metrics on bare me
 This pre-requisite is needed on the machine which launches deployInsightAgent.py.
 For Debian and Ubuntu, the following command will ensure that the required dependencies are installed:
 ```
-sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+sudo apt-get update
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev wget
 ```
 For Fedora and RHEL-derivatives, the following command will ensure that the required dependencies are installed:
 ```
-sudo yum install gcc libffi-devel python-devel openssl-devel
+sudo yum update
+sudo yum install gcc libffi-devel python-devel openssl-devel wget
 ```
 
 ##### To deploy agent on multiple hosts:
