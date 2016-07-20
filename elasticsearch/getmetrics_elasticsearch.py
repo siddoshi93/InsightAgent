@@ -364,7 +364,10 @@ def getNodeInfo():
                 result = float(float(result)/(1024*1024))
             if key.split("[")[0] in deltaFields and firstresult == False:
                  newResult[key] = abs(result)
-                 result = result - float(previousResult[key])
+                 if key not in previousResult:
+                     result = 0
+                 else:
+                     result = result - float(previousResult[key])
             AllMetricDict[key] = abs(result)
 
 def getIndexInfo():
@@ -391,7 +394,10 @@ def getIndexInfo():
                 result = float(float(result)/(1024*1024))
             if key.split("[")[0] in deltaFields and firstresult == False:
                  newResult[key] = abs(result)
-                 result = result - float(previousResult[key])
+                 if key not in previousResult:
+                     result = 0
+                 else:
+                     result = result - float(previousResult[key])
             AllMetricDict[key] = abs(result)
 
 def update_results(lists):
