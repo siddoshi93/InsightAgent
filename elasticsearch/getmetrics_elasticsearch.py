@@ -36,6 +36,8 @@ AllMetricList.append("timestamp")
 AllMetricDict["timestamp"] = timestamp
 date = time.strftime("%Y%m%d")
 hostname = socket.gethostname().partition(".")[0]
+deltaFields = ["TotalIndexRequestsPerNode", "TotalMerges", "TotalQueryTime", "TotalSearchRequestsPerNode", "GarbageCollectorTime", "TotalSearchRequestsPerNode"]
+previousResult = {}
 
 NodeDict = {
 "TotalGetRequests": "nodes.%s.indices.get.total",
@@ -340,6 +342,8 @@ def getNodeInfo():
     global NodeDict
     global AllMetricList
     global AllMetricDict
+    global previousResult
+    global deltaFields
     jsonContent = getJson(esNodeUrl)
     NodeStats = {}
     for node in sorted(jsonContent['nodes'].keys()):
@@ -355,12 +359,16 @@ def getNodeInfo():
             result = reduce(lambda x,y: x[y], values, jsonContent)
             if converttoMB == True:
                 result = float(float(result)/(1024*1024))
+            if key.split("[")[0] in deltaFields:
+                 previousResult[key] = abs(result)
             AllMetricDict[key] = abs(result)
 
 def getIndexInfo():
     global IndexDict
     global AllMetricList
     global AllMetricDict
+    global previousResult
+    global deltaFields
     jsonContent = getJson(esIndexUrl)
     indexCount = "Indices["+hostname+"]:" + str(getindex("Indices"))
     AllMetricList.append(indexCount)
@@ -376,9 +384,39 @@ def getIndexInfo():
             result = reduce(lambda x,y: x[y], values, jsonContent['indices'][indicesName])
             if converttoMB == True:
                 result = float(float(result)/(1024*1024))
+            if key.split("[")[0] in deltaFields:
+                 previousResult[key] = abs(result)
             AllMetricDict[key] = abs(result)
-            
+
+def update_results(lists):
+    with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
+        json.dump(lists,f)
+
+def init_previous_results():
+    global deltaFields
+    global AllMetricDict
+    getClusterInfo()
+    getNodeInfo()
+    getIndexInfo()
+    firstResult = {}
+    for metric in AllMetricDict.keys():
+        if metric.split("[")[0] in deltaFields:
+            firstResult[metric] = AllMetricDict[metric]
+    update_results(firstResult)
+    AllMetricDict = {}
+    AllMetricList = []
+    AllMetricList.append("timestamp")
+    AllMetricDict["timestamp"] = timestamp
+    time.sleep(1)
+
+def get_previous_results():
+    with open(os.path.join(homepath,datadir+"previous_results.json"),'r') as f:
+        return json.load(f)
+
+if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
+    init_previous_results()
 getClusterInfo()
 getNodeInfo()
 getIndexInfo()
 writeToCsv()
+update_results(previousResult)
