@@ -5,5 +5,5 @@ pip install -U --force-reinstall --user virtualenv
 version=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
 python  /home/$USER/.local/lib/python$version/site-packages/virtualenv.py pyenv
 source pyenv/bin/activate
-pip install -r deployment/requirements
+pip install -r deployment/requirementsHost
 deactivate
