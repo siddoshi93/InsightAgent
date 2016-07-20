@@ -37,7 +37,7 @@ AllMetricDict["timestamp"] = timestamp
 date = time.strftime("%Y%m%d")
 hostname = socket.gethostname().partition(".")[0]
 deltaFields = ["TotalIndexRequestsPerNode", "TotalMerges", "TotalQueryTime", "TotalSearchRequestsPerNode", "GarbageCollectorTime", "TotalSearchRequestsPerNode"]
-previousResult = {}
+newResult = {}
 
 NodeDict = {
 "TotalGetRequests": "nodes.%s.indices.get.total",
@@ -342,8 +342,9 @@ def getNodeInfo():
     global NodeDict
     global AllMetricList
     global AllMetricDict
-    global previousResult
+    global newResult
     global deltaFields
+    global previousResult
     jsonContent = getJson(esNodeUrl)
     NodeStats = {}
     for node in sorted(jsonContent['nodes'].keys()):
@@ -360,14 +361,15 @@ def getNodeInfo():
             if converttoMB == True:
                 result = float(float(result)/(1024*1024))
             if key.split("[")[0] in deltaFields:
-                 previousResult[key] = abs(result)
+                 newResult[key] = abs(result)
+                 result = result - float(previousResult[key])
             AllMetricDict[key] = abs(result)
 
 def getIndexInfo():
     global IndexDict
     global AllMetricList
     global AllMetricDict
-    global previousResult
+    global newResult
     global deltaFields
     jsonContent = getJson(esIndexUrl)
     indexCount = "Indices["+hostname+"]:" + str(getindex("Indices"))
@@ -385,7 +387,8 @@ def getIndexInfo():
             if converttoMB == True:
                 result = float(float(result)/(1024*1024))
             if key.split("[")[0] in deltaFields:
-                 previousResult[key] = abs(result)
+                 newResult[key] = abs(result)
+                 result = result - float(previousResult[key])
             AllMetricDict[key] = abs(result)
 
 def update_results(lists):
@@ -415,8 +418,9 @@ def get_previous_results():
 
 if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False):
     init_previous_results()
+previousResult = get_previous_results()
 getClusterInfo()
 getNodeInfo()
 getIndexInfo()
 writeToCsv()
-update_results(previousResult)
+update_results(newResult)
