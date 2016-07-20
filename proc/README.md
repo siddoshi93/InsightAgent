@@ -29,20 +29,20 @@ sudo yum install gcc libffi-devel python-devel openssl-devel wget
 
 - Get the deployment script from github using below command:
 ```
-wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/deployment/deployInsightAgent.py
+wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/deployment/deployInsightAgent.sh
 ```
 - Get IP address of all machines (or hosts) on which InsightFinder agent needs to be installed.
 - All machines should have same login username and password.
 - Include IP address of all hosts in hostlist.txt and enter one IP address per line.
 - To deploy run the following command:
 ```
-python deployInsightAgent.py -n USER_NAME_IN_HOST
-                             -i PROJECT_NAME_IN_INSIGHTFINDER
-                             -u USER_NAME_IN_INSIGHTFINDER 
-                             -k LICENSE_KEY 
-                             -s SAMPLING_INTERVAL_MINUTE 
-                             -r REPORTING_INTERVAL_MINUTE 
-                             -t AGENT_TYPE
+./deployInsightAgent.sh -n USER_NAME_IN_HOST
+                        -i PROJECT_NAME_IN_INSIGHTFINDER
+                        -u USER_NAME_IN_INSIGHTFINDER
+                        -k LICENSE_KEY
+                        -s SAMPLING_INTERVAL_MINUTE
+                        -r REPORTING_INTERVAL_MINUTE
+                        -t AGENT_TYPE
 AGENT_TYPE is *proc*.
 ```
 - When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
@@ -64,6 +64,8 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 - To stop the agent run the following command:
 ```
 python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
+USER_NAME_IN_HOST - username used to login into the host machines
+PASSWORD - password or name of the identity file along with path
 ```
 
 ##### To install agent on local machine:
