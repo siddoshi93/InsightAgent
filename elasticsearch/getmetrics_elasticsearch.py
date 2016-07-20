@@ -327,29 +327,14 @@ def getClusterInfo():
     global AllMetricDict
     clusterDict = {}
     jsonContent = getJson(esClusterUrl)
-    #print jsonContent
-    #print getClusterName(jsonContent)
     #clusterDict = {"ClusterName": ["cluster_name"], "ClusterStatus": ["status"], "Nodes": ["number_of_nodes"], "DataNodes": ["number_of_data_nodes"], \
     clusterDict = {"NumberOfNodes": ["number_of_nodes"], "NumberOfDataNodes": ["number_of_data_nodes"], \
     "NumberOfActivePrimaryShards": ["active_primary_shards"], "NumberOfActiveShards": ["active_shards"], "NumberOfRelocatingShards": ["relocating_shards"], \
     "NumberOfInitializingShards": ["initializing_shards"], "NumberOfUnAssignedShards": ["unassigned_shards"]}
     for keyName in sorted(clusterDict):
-        #clusterStats[key] = jsonContent[clusterDict[key]]
         key = keyName+"["+hostname+"]:" + str(getindex(keyName))
         AllMetricDict[key] = abs(reduce(lambda x,y: x[y], clusterDict[keyName], jsonContent))
         AllMetricList.append(key)
-
-def getProcessInfo():
-    processDict = {"ProcessOpenFileDescriptors%s": "nodes.%s.process.open_file_descriptors", "cpuPercent%s": "nodes.%s.process.cpu.percent", "mem%s": "nodes.%s.process.mem.total_virtual_in_bytes"}
-    jsonContent = getJson(esNodeUrl)
-    processStats = {}
-    for node in sorted(jsonContent['nodes'].keys()):
-        for keyName in processDict:
-            key = keyName %node
-            values = processDict[keyName] %node
-            values = values.split(".")
-            processStats[key] = reduce(lambda x,y: x[y], values, jsonContent)
-    print processStats
 
 def getNodeInfo():
     global NodeDict
@@ -365,14 +350,11 @@ def getNodeInfo():
             values = NodeDict[keyName] %node
             if "bytes" in values:
                 converttoMB = True
-                print values
             values = values.split(".")
             AllMetricList.append(key)
             result = reduce(lambda x,y: x[y], values, jsonContent)
             if converttoMB == True:
-                print result
                 result = float(float(result)/(1024*1024))
-                print result
             AllMetricDict[key] = abs(result)
 
 def getIndexInfo():
@@ -388,15 +370,12 @@ def getIndexInfo():
             converttoMB = False
             if "bytes" in IndexDict[keyName]:
                 converttoMB = True
-                print IndexDict[keyName]
             values = IndexDict[keyName].split(".")
             key = keyName + "[" + hostname + "_" + indicesName + "]:" + str(getindex(keyName))
             AllMetricList.append(key)
             result = reduce(lambda x,y: x[y], values, jsonContent['indices'][indicesName])
             if converttoMB == True:
-                print result
                 result = float(float(result)/(1024*1024))
-                print result
             AllMetricDict[key] = abs(result)
             
 getClusterInfo()
