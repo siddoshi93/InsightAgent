@@ -229,5 +229,5 @@ else:
     new_prev_endtimeinsec = math.ceil(long(new_prev_endtime_epoch)/1000.0)
     new_prev_endtime = time.strftime("%Y%m%d%H%M%S", time.localtime(long(new_prev_endtimeinsec)))
     update_timestamp(new_prev_endtime)
-
+    sendData()
 
