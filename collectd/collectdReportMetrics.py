@@ -120,6 +120,7 @@ def sendData():
 fieldnames = []
 log = []
 allLog = []
+alldata = {}
 contentsNum = 0
 rawData = collections.OrderedDict()
 filenames = {'cpu/percent-active-': ['CPU'], 'memory/memory-used-': ['MemUsed'], 'load/load-': ['LoadAvg1', 'LoadAvg5', 'LoadAvg15']}#, 'disk_octets-': ['DiskWrite', 'DiskRead']}
