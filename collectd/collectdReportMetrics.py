@@ -8,13 +8,10 @@ import socket
 import collections
 import sys
 import subprocess
+import requests
 
 usage = "Usage: %prog [options]"
 parser = OptionParser(usage=usage)
-parser.add_option("-f", "--fileInput",
-    action="store", dest="inputFile", help="Input data file (overriding daily data file)")
-parser.add_option("-m", "--mode",
-    action="store", dest="mode", help="Running mode: live or replay")
 parser.add_option("-d", "--directory",
     action="store", dest="homepath", help="Directory to run from")
 (options, args) = parser.parse_args()
@@ -108,12 +105,7 @@ def sendData():
     #print the json
     json_data = json.dumps(alldata)
     #print json_data
-    if mode == "replay":
-        reportedDataSize += len(bytearray(json.dumps(metricData)))
-        reportedDataPer = (float(reportedDataSize)/float(totalSize))*100
-        print str(min(100.0,math.ceil(reportedDataPer))) + "% of data are reported"
-    else:
-        print str(len(bytearray(json_data))) + " bytes data are reported"
+    print str(len(bytearray(json_data))) + " bytes data are reported"
     url = serverUrl + "/customprojectrawdata"
     response = requests.post(url, data=json.loads(json_data))
 
