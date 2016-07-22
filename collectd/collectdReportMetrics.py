@@ -154,14 +154,12 @@ for eachfile in filenames:
                 valueList = {}
                 valueList[filenames[eachfile][0]]= row[1]
                 if ("disk" in eachfile) or ("interface" in eachfile):
-                    print "disk"
                     valueList[filenames[eachfile][1]] = row[2]
                 elif "load" in eachfile:
                     valueList[filenames[eachfile][1]] = row[2]
                     valueList[filenames[eachfile][2]] = row[3]
                 rawData[timestampStr] = valueList
     allLatestTimestamps.append(new_prev_endtime_epoch)
-print rawData
 new_prev_endtime_epoch = max(allLatestTimestamps)
 
 metricData = []
@@ -178,7 +176,6 @@ if bool(rawData) == False:
     sys.exit()
 
 for eachtimestamp in rawData:
-    print eachtimestamp
     data = rawData[eachtimestamp]
     thisData = {}
     thisData['timestamp'] = str(int(eachtimestamp)*1000)
@@ -230,7 +227,6 @@ if new_prev_endtime_epoch == 0:
     print "No data is reported"
 else:
     new_prev_endtimeinsec = math.ceil(long(new_prev_endtime_epoch)/1000.0)
-    print new_prev_endtimeinsec
     new_prev_endtime = time.strftime("%Y%m%d%H%M%S", time.localtime(long(new_prev_endtimeinsec)))
     update_timestamp(new_prev_endtime)
 
