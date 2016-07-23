@@ -62,6 +62,8 @@ def getindex(col_name):
         return 7006
     elif "LoadAvg" in col_name:
         return 7007
+    elif "Process" in col_name:
+        return 7008
 
 def update_results(lists):
     with open(os.path.join(homepath,datadir+"previous_results.json"),'w') as f:
@@ -115,7 +117,9 @@ allLog = []
 alldata = {}
 contentsNum = 0
 rawData = collections.OrderedDict()
-filenames = {'cpu/percent-active-': ['CPU'], 'memory/memory-used-': ['MemUsed'], 'load/load-': ['LoadAvg1', 'LoadAvg5', 'LoadAvg15']}#, 'disk_octets-': ['DiskWrite', 'DiskRead']}
+filenames = {'cpu/percent-active-': ['CPU'], 'memory/memory-used-': ['MemUsed'], 'load/load-': ['LoadAvg1', 'LoadAvg5', 'LoadAvg15'],\
+             'processes/ps_state-blocked-': ['BlockedProcess'], 'processes/ps_state-paging-': ['PagingProcess'], 'processes/ps_state-running-': ['RunningProcess'], \
+             'processes/ps_state-sleeping-': ['SleepingProcess'], 'processes/ps_state-stopped-': ['StoppedProcess'], 'processes/ps_state-zombies-': ['ZombieProcess']}
 allDirectories = os.listdir(csvpath)
 
 for eachdir in allDirectories:
@@ -156,7 +160,9 @@ for eachfile in filenames:
 new_prev_endtime_epoch = max(allLatestTimestamps)
 
 metricData = []
-metricList = ["CPU", "MemUsed", "DiskWrite", "DiskRead", "NetworkIn", "NetworkOut", "LoadAvg1", "LoadAvg5", "LoadAvg15"]
+metricList = ["CPU", "MemUsed", "DiskWrite", "DiskRead", "NetworkIn", "NetworkOut", "LoadAvg1", "LoadAvg5", "LoadAvg15", \
+              "BlockedProcess", "PagingProcess", "RunningProcess", "SleepingProcess", "StoppedProcess", "ZombieProcess"]
+deltaFields = ["DiskRead", "DiskWrite", "NetworkIn", "NetworkOut"]
 previousResult = {}
 thisData = {}
 if os.path.isfile(os.path.join(homepath,datadir+"previous_results.json")) == False:
@@ -186,26 +192,27 @@ for eachtimestamp in rawData:
                 if "NetworkOut" in eachdata:
                     networkout = float(data[eachdata])
         if (eachmetric not in data) and eachmetric != "DiskRead" and eachmetric != "DiskWrite" and eachmetric != "NetworkIn" and eachmetric != "NetworkOut":
-            thisData[eachmetric] = "NaN"
+            finalMetricName = str(eachmetric) + "[" + str(hostnameShort) + "]:" + str(getindex(eachmetric))
+            thisData[finalMetricName] = "NaN"
             continue
         else:
             finalMetricName = str(eachmetric) + "[" + str(hostnameShort) + "]:" + str(getindex(eachmetric))
             if eachmetric == "DiskWrite":
-                thisData[finalMetricName] = float(float(diskwrite)/(1024*1024))
+                thisData[finalMetricName] = str(float(float(diskwrite)/(1024*1024)))
             elif eachmetric == "DiskRead":
-                thisData[finalMetricName] = float(float(diskread)/(1024*1024))
+                thisData[finalMetricName] = str(float(float(diskread)/(1024*1024)))
             elif eachmetric == "NetworkIn":
-                thisData[finalMetricName] = float(float(networkin)/(1024*1024))
+                thisData[finalMetricName] = str(float(float(networkin)/(1024*1024)))
             elif eachmetric == "NetworkOut":
-                thisData[finalMetricName] = float(float(networkout)/(1024*1024))
+                thisData[finalMetricName] = str(float(float(networkout)/(1024*1024)))
             elif eachmetric == "MemUsed":
-                thisData[finalMetricName] = float(float(data[eachmetric])/(1024*1024))
+                thisData[finalMetricName] = str(float(float(data[eachmetric])/(1024*1024)))
             else:
-                thisData[finalMetricName] = data[eachmetric]
+                thisData[finalMetricName] = str(data[eachmetric])
             newResult[finalMetricName] = thisData[finalMetricName]
-            if eachmetric != "CPU" and eachmetric != "MemUsed" and ("LoadAvg" not in eachmetric):
+            if eachmetric in deltaFields:
                 if finalMetricName in previousResult:
-                    thisData[finalMetricName] = float(thisData[finalMetricName]) - float(previousResult[finalMetricName])
+                    thisData[finalMetricName] = str(float(thisData[finalMetricName]) - float(previousResult[finalMetricName]))
                 else:
                     thisData[finalMetricName] = "NaN"
     previousResult = newResult
