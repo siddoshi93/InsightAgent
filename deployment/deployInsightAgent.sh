@@ -56,14 +56,29 @@ if [ "$?" -ne "0" ]; then
 fi
 version=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
 if [ "$?" -ne "0" ]; then
-    echo "Unable to get python version. Please install the pre-requisites mentioned in README"
+    echo "Unable to get python version. Please install the pre-requisites using the following commands and retry deployment again"
+if [ "$(command -v yum)" ]; then
+    echo "sudo yum update"
+    echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
+else
+    echo "sudo apt-get upgrade"
+    echo "sudo apt-get install build-essential libssl-dev libffi-dev python-dev wget"
+fi
     rm get-pip.py
     rm requirements
     exit 1
+
 fi
 python  /home/$USER/.local/lib/python$version/site-packages/virtualenv.py pyenv
 if [ "$?" -ne "0" ]; then
-    echo "python virtual environment install failed. Please install the pre-requisites mentioned in README"
+    echo "Unable to install python virtual environment. Please install the pre-requisites using the following commands and retry deployment again"
+if [ "$(command -v yum)" ]; then
+    echo "sudo yum update"
+    echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
+else
+    echo "sudo apt-get upgrade"
+    echo "sudo apt-get install build-essential libssl-dev libffi-dev python-dev wget"
+fi
     rm get-pip.py
     rm requirements
     exit 1
@@ -71,7 +86,14 @@ fi
 source pyenv/bin/activate
 pip install -r requirements
 if [ "$?" -ne "0" ]; then
-    echo "install failed. Please install the pre-requisites mentioned in README"
+    echo "Install failed. Please install the pre-requisites using the following commands and retry deployment again"
+if [ "$(command -v yum)" ]; then
+    echo "sudo yum update"
+    echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
+else
+    echo "sudo apt-get upgrade"
+    echo "sudo apt-get install build-essential libssl-dev libffi-dev python-dev wget"
+fi
     rm get-pip.py
     rm requirements
     rm -rf pyenv
