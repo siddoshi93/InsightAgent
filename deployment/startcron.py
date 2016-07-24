@@ -38,7 +38,7 @@ def sshDeploy(retry,hostname):
         session.set_combine_stderr(True)
         session.get_pty()
         if agentType == "hypervisor":
-            command="cd InsightAgent-testing && sudo ./hypervisor/install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
+            command="cd InsightAgent-testing && ./hypervisor/install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         else:
             command="cd InsightAgent-testing && sudo ./deployment/install.sh -i "+projectName+" -u "+userInsightfinder+" -k "+licenseKey+" -s "+samplingInterval+" -r "+reportingInterval+" -t "+agentType
         session.exec_command(command)
