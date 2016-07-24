@@ -49,7 +49,14 @@ wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --force-reinstall
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/requirements
 /home/$USER/.local/bin/pip install -U --force-reinstall --user virtualenv
 if [ "$?" -ne "0" ]; then
-    echo "pip install failed. Please install the pre-requisites mentioned in README"
+    echo "pip install failed. Please install the pre-requisites using the following commands and retry deployment again"
+if [ "$(command -v yum)" ]; then
+    echo "sudo yum update"
+    echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
+else
+    echo "sudo apt-get upgrade"
+    echo "sudo apt-get install build-essential libssl-dev libffi-dev python-dev wget"
+fi
     rm get-pip.py
     rm requirements
     exit 1
