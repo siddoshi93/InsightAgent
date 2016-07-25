@@ -87,7 +87,7 @@ def sshInstallHypervisor(retry,hostname):
         session = transport.open_session()
         session.set_combine_stderr(True)
         session.get_pty()
-        session.exec_command("sudo rm -rf InsightAgent*\n \
+        session.exec_command("rm -rf InsightAgent*\n \
         tar xzvf insightagent.tar.gz\n \
         cd InsightAgent-testing\n")
         stdin = session.makefile('wb', -1)
