@@ -1,9 +1,9 @@
-# InsightAgent: proc
-Agent Type: proc
+# InsightAgent: hypervisor
+Agent Type: hypervisor
 
-Platform: Linux
+Platform: VMkernel
 
-InsightFinder agent can be used to monitor system performance metrics on bare metal machines or virtual machines.
+InsightFinder agent can be used to monitor system performance metrics of hypervisor hosts.
 
 ##### Instructions to register a project in Insightfinder.com
 - Go to the link https://insightfinder.com/
@@ -41,7 +41,7 @@ python deployInsightAgent.py -n USER_NAME_IN_HOST
                              -s SAMPLING_INTERVAL_MINUTE 
                              -r REPORTING_INTERVAL_MINUTE 
                              -t AGENT_TYPE
-AGENT_TYPE is *proc*.
+AGENT_TYPE is *hypervisor*.
 ```
 - When the above script is run, if prompted for password, enter either the password or the name of the identity file along with file path.
 Example: /home/insight/.ssh/id_rsa
@@ -52,20 +52,8 @@ Example: /home/insight/.ssh/id_rsa
 python deployInsightAgent.py -h
 ```
 
-##### To undo agent deployment on multiple hosts:
-- Get the script for stopping agents from github using below command:
-```
-wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/deployment/stopcron.py
-```
-
-- Include IP address of all hosts in hostlist.txt and enter one IP address per line.
-- To stop the agent run the following command:
-```
-python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
-```
-
 ##### To install agent on local machine:
 ```
-./install.sh -i PROJECT_NAME -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
+./hypervisor/install.sh -i PROJECT_NAME -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
 ```
 

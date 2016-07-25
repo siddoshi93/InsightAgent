@@ -34,35 +34,35 @@ def listtocsv(lists):
             log = log + ','
     resource_usage_file.write("%s\n"%(log))
 
-globalGroupIndex=13
+globalGroupIndex=8013
 def getindex(col_name):
     global globalGroupIndex
     if col_name == "cpuUsed":
-        return 1
+        return 8001
     if col_name == "cpuSystem":
-        return 2
+        return 8002
     if col_name == "cpuOverlap":
-        return 3
+        return 8003
     if col_name == "cpuRun":
-        return 4
+        return 8004
     if col_name == "cpuReady":
-        return 5
+        return 8005
     if col_name == "cpuWait":
-        return 6
+        return 8006
     elif col_name == "DiskReadRate" or col_name == "DiskWriteRate":
-        return 8
+        return 8008
     elif "Commands" in col_name:
-        return 7
+        return 8007
     elif col_name == "MemUsed":
-        return 9
+        return 8009
     elif col_name == "NetworkIn/vSwitch0Total":
-        return 10
+        return 8010
     elif col_name == "NetworkOut/vSwitch0Total":
-        return 11
+        return 8011
     elif col_name == "NetworkIn/vSwitch1Total":
-        return 12
+        return 8012
     elif col_name == "NetworkOut/vSwitch1Total":
-        return 13
+        return 8013
     else:
         globalGroupIndex+=1
         return globalGroupIndex
