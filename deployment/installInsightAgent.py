@@ -95,6 +95,7 @@ def sshInstallHypervisor(retry,hostname):
         stdin.write(password+'\n')
         stdin.flush()
         session.recv_exit_status() #wait for exec_command to finish
+        print stdout.readlines()
         s.close()
         print "Install Succeed in", hostname
         q.task_done()
