@@ -95,7 +95,11 @@ def sshInstallHypervisor(retry,hostname):
         stdin.write(password+'\n')
         stdin.flush()
         session.recv_exit_status() #wait for exec_command to finish
-        print stdout.readlines()
+        if "IOError" in stdout.readlines():
+             print "Not enough space in host"
+             print "Install Failed in ",hostname
+             s.close()
+             return sshInstallHypervisor(retry-1,hostname)
         s.close()
         print "Install Succeed in", hostname
         q.task_done()
