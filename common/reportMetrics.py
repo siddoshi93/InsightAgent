@@ -101,7 +101,7 @@ def sendData():
     #print the json
     json_data = json.dumps(alldata)
     #print json_data
-    if mode == "replay":
+    if "FileReplay" in mode:#handles both metricFileReplay and logFileReplay
         reportedDataSize += len(bytearray(json.dumps(metricData)))
         reportedDataPer = (float(reportedDataSize)/float(totalSize))*100
         print str(min(100.0,math.ceil(reportedDataPer))) + "% of data are reported"

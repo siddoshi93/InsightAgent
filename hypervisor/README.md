@@ -36,10 +36,10 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 ```
 python deployInsightAgent.py -n USER_NAME_IN_HOST
                              -i PROJECT_NAME_IN_INSIGHTFINDER
-                             -u USER_NAME_IN_INSIGHTFINDER 
-                             -k LICENSE_KEY 
-                             -s SAMPLING_INTERVAL_MINUTE 
-                             -r REPORTING_INTERVAL_MINUTE 
+                             -u USER_NAME_IN_INSIGHTFINDER
+                             -k LICENSE_KEY
+                             -s SAMPLING_INTERVAL_MINUTE
+                             -r REPORTING_INTERVAL_MINUTE
                              -t AGENT_TYPE
 AGENT_TYPE is *hypervisor*.
 ```
@@ -50,6 +50,21 @@ Example: /home/insight/.ssh/id_rsa
 ##### To get more details on the command, run
 ```
 python deployInsightAgent.py -h
+```
+
+##### To undo agent deployment on multiple hosts:
+- Get the script for stopping agents from github using below command:
+```
+wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/master/hypervisor/stopcron.py
+```
+
+- Include IP address of all hosts in hostlist.txt and enter one IP address per line.
+- To stop the agent run the following command:
+```
+python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD
+
+USER_NAME_IN_HOST - username used to login into the host machines
+PASSWORD - password or name of the identity file along with path
 ```
 
 ##### To install agent on local machine:
