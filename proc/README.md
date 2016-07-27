@@ -71,7 +71,7 @@ python stopcron.py -n USER_NAME_IN_HOST -p PASSWORD -t AGENT_TYPE --all
 
 ##### To install agent on local machine:
 ```
-./install.sh -i PROJECT_NAME -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
+./deployment/install.sh -i PROJECT_NAME -u USER_NAME -k LICENSE_KEY -s SAMPLING_INTERVAL_MINUTE -r REPORTING_INTERVAL_MINUTE -t AGENT_TYPE
 ```
 
 ##### To change the reported metrics to insightfinder:
