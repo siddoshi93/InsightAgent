@@ -7,6 +7,7 @@ import json
 import time
 import datetime
 import socket
+import sys
 
 usage = "Usage: %prog [options]"
 parser = OptionParser(usage=usage)
@@ -100,14 +101,14 @@ def initPreviousResults():
         containerConfig = open("/var/lib/docker/containers/"+dockers[i]+"/"+configFileName[0],"r")
         dataline = containerConfig.readline()
         containerName = json.loads(dataline)["Name"]
-        if "insightfinder" in containerName:
-            continue
         fields = ["timestamp","CPU","DiskRead","DiskWrite","NetworkIn","NetworkOut","MemUsed"]
         if timestampRecorded == False:
             fieldnames = fields[0]
         host = dockers[i]
         if len(host) > 12:
             host = host[:12]
+            if "insightfinder" in containerName:
+                host = "insightagent"
         for j in range(1,len(fields)):
             if(fieldnames != ""):
                 fieldnames = fieldnames + ","
@@ -145,6 +146,9 @@ def initPreviousResults():
         towritePreviousInstances["overallDockerInstances"] = dockerInstances
         with open(os.path.join(homepath,datadir+"totalInstances.json"),'w') as f:
             json.dump(towritePreviousInstances,f)
+    if(os.path.isfile(os.path.join(homepath, datadir + "totalInstances.json")) == False):
+        print "No valid containers are available to get data."
+        sys.exit()
     toJson(fieldnames,log)
     updateResults()
     time.sleep(1)
@@ -326,7 +330,7 @@ def getmetrics():
                 dataline = containerConfig.readline()
                 containerName = json.loads(dataline)["Name"]
                 if "insightfinder" in containerName:
-                    continue
+                    host = "insightagent"
                 for j in range(1,len(fields)):
                     if(fieldnames != ""):
                         fieldnames = fieldnames + ","
