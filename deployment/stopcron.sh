@@ -2,7 +2,7 @@
 
 function usage()
 {
-	echo "Usage: ./stopcron.sh -n USER_NAME_IN_HOST -p PASSWORD
+	echo "Usage: ./stopcron.sh -n USER_NAME_IN_HOST -p PASSWORD"
 }
 
 if [ "$#" -lt 4 ]; then
@@ -23,6 +23,7 @@ while [ "$1" != "" ]; do
 	esac
 	shift
 done
+
 
 wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --force-reinstall --user
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/requirements
