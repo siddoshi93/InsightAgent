@@ -29,7 +29,7 @@ wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --force-reinstall
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/requirements
 /home/$USER/.local/bin/pip install -U --force-reinstall --user virtualenv
 if [ "$?" -ne "0" ]; then
-    echo "pip install failed. Please install the pre-requisites using the following commands and retry deployment again"
+    echo "pip install failed. Please install the pre-requisites using the following commands and retry stopcron again"
 if [ "$(command -v yum)" ]; then
     echo "sudo yum update"
     echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
@@ -43,7 +43,7 @@ fi
 fi
 version=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
 if [ "$?" -ne "0" ]; then
-    echo "Unable to get python version. Please install the pre-requisites using the following commands and retry deployment again"
+    echo "Unable to get python version. Please install the pre-requisites using the following commands and retry stopcron again"
 if [ "$(command -v yum)" ]; then
     echo "sudo yum update"
     echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
@@ -58,7 +58,7 @@ fi
 fi
 python  /home/$USER/.local/lib/python$version/site-packages/virtualenv.py pyenv
 if [ "$?" -ne "0" ]; then
-    echo "Unable to install python virtual environment. Please install the pre-requisites using the following commands and retry deployment again"
+    echo "Unable to install python virtual environment. Please install the pre-requisites using the following commands and retry stopcron again"
 if [ "$(command -v yum)" ]; then
     echo "sudo yum update"
     echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
@@ -73,7 +73,7 @@ fi
 source pyenv/bin/activate
 pip install -r requirements
 if [ "$?" -ne "0" ]; then
-    echo "Install failed. Please install the pre-requisites using the following commands and retry deployment again"
+    echo "Install failed. Please install the pre-requisites using the following commands and retry stopcron again"
 if [ "$(command -v yum)" ]; then
     echo "sudo yum update"
     echo "sudo yum install gcc libffi-devel python-devel openssl-devel wget"
@@ -95,4 +95,4 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 python stopcron.py -n $USERNAME -p $PASSWORD
 deactivate
 rm -rf pyenv
-rm deployInsightAgent.sh
+rm stopcron.sh
