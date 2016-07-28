@@ -75,6 +75,7 @@ def init_previous_results():
             try:
                 txt_file = open(os.path.join(homepath,datadir,correctFile))
             except IOError:
+                print "Failed to open file "+correctFile
                 continue
             lines = txt_file.read().split("\n")
             for eachline in lines:
@@ -211,6 +212,7 @@ try:
             try:
                 txt_file = open(os.path.join(homepath,datadir,correctFile))
             except IOError:
+                print "Failed to open file " + correctFile
                 continue
             lines = txt_file.read().split("\n")
             for eachline in lines:
