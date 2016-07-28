@@ -364,11 +364,11 @@ def getmetrics():
                         networkTx = "NaN"
                 try:
                     cpu = round(float(metricData['cpu_stats']['cpu_usage']['total_usage'])/10000000,4) #Convert nanoseconds to jiffies
-                    precpu["CPU["+dockerInstances[i]+"_"+hostname+"]"+":"+str(1)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
+                    precpu["CPU["+dockerInstances[i]+"_"+hostname+"]"+":"+str(4001)] = round(float(metricData['precpu_stats']['cpu_usage']['total_usage'])/10000000,4)
                 except KeyError, e:
                     print "Couldn't fetch cpu information for container: " + dockerInstances[i]
                     cpu = "NaN"
-                    precpu["CPU["+dockerInstances[i]+"_"+hostname+"]"+":"+str(1)] = "NaN"
+                    precpu["CPU["+dockerInstances[i]+"_"+hostname+"]"+":"+str(4001)] = "NaN"
                 try:
                     memUsed = round(float(float(metricData['memory_stats']['usage'])/(1024*1024)),4) #MB
                 except KeyError, e:
