@@ -147,7 +147,7 @@ def initPreviousResults():
             print "Couldn't fetch memory information for container: " + host
             memUsed = 0
         try:
-            if len(metricData['blkio_stats']['io_service_bytes_recursive'] == 0):
+            if len(metricData['blkio_stats']['io_service_bytes_recursive']) == 0:
                 diskRead = 0
                 diskWrite = 0
             else:
@@ -409,7 +409,7 @@ def getmetrics():
                     memUsed = 0
 
                 try:
-                    if len(metricData['blkio_stats']['io_service_bytes_recursive'] == 0):
+                    if len(metricData['blkio_stats']['io_service_bytes_recursive']) == 0:
                         diskRead = 0
                         diskWrite = 0
                     else:
