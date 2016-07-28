@@ -104,6 +104,7 @@ def init_previous_results():
     (out,err) = proc.communicate()
     if "No such file or directory" in err:
         print "Error in fetching metrics for some containers"
+        print err
 
 def get_previous_results():
     with open(os.path.join(homepath,datadir+"previous_results.json"),'r') as f:
@@ -189,6 +190,7 @@ try:
     (out,err) = proc.communicate()
     if "No such file or directory" in err:
         print "Error in fetching metrics for some containers"
+        print err
     if(os.path.isfile(homepath+"/"+datadir+"timestamp.txt") == False):
         sys.exit()
     if(os.path.isfile(homepath+"/"+datadir+"previous_results.json") == False) or newInstanceAvailable == True:
