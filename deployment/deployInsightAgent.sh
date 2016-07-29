@@ -112,7 +112,7 @@ rm requirements
 rm get-pip.py
 
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/verifyInsightCredentials.py
-if ! python deployment/verifyInsightCredentials.py -i $PROJECTNAME -u $USERNAME -k $LICENSEKEY
+if ! python verifyInsightCredentials.py -i $PROJECTNAME -u $USERNAME -k $LICENSEKEY
 then
     rm verifyInsightCredentials.py
     rm -rf pyenv
