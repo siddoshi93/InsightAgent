@@ -93,6 +93,7 @@ rm get-pip.py
 
 wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/InsightAgent/testing/deployment/stopcron.py
 python stopcron.py -n $USERNAME -p $PASSWORD
+rm stopcron.py
 deactivate
 rm -rf pyenv
 rm stopcron.sh
