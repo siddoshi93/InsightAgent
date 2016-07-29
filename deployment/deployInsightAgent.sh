@@ -115,6 +115,8 @@ wget --no-check-certificate https://raw.githubusercontent.com/insightfinder/Insi
 if ! python deployment/verifyInsightCredentials.py -i $PROJECTNAME -u $USERNAME -k $LICENSEKEY
 then
     rm verifyInsightCredentials.py
+    rm -rf pyenv
+    deactivate
     exit 1
 fi
 rm verifyInsightCredentials.py
