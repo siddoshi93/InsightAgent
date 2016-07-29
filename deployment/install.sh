@@ -46,6 +46,13 @@ if [ -z "$INSIGHTAGENTDIR" ]; then
 	export INSIGHTAGENTDIR=`pwd`
 fi
 
+if [[ $INSIGHTAGENTDIR != *"InsightAgent-testing" ]] && [[ $INSIGHTAGENTDIR != *"InsightAgent-testing/" ]];then
+        echo "Wrong home directory. Run ./deployment/install.sh from InsightAgent-testing folder"
+        exit 1
+else
+	echo "Correct path"
+fi
+
 if [ $AGENT_TYPE == 'daemonset' ]; then
 	python $INSIGHTAGENTDIR/common/config/initconfig.py -r $REPORTING_INTERVAL
 else
