@@ -1,6 +1,6 @@
 #!/bin/bash
 wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py --force-reinstall --user
-sudo chown -R $USER /home/$USER/.local
+sudo chown -R $USER ~/.local
 ~/.local/bin/pip install -U --force-reinstall --user virtualenv
 version=`python -c 'import sys; print(str(sys.version_info[0])+"."+str(sys.version_info[1]))'`
 python  ~/.local/lib/python$version/site-packages/virtualenv.py pyenv
