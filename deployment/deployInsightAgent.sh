@@ -76,7 +76,7 @@ fi
     exit 1
 
 fi
-python  /home/$USER/.local/lib/python$version/site-packages/virtualenv.py pyenv
+python  ~/.local/lib/python$version/site-packages/virtualenv.py pyenv
 if [ "$?" -ne "0" ]; then
     echo "Unable to install python virtual environment. Please install the pre-requisites using the following commands and retry deployment again"
 if [ "$(command -v yum)" ]; then
